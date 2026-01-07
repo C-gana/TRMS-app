@@ -13,13 +13,11 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
-import com.cgana.trmsownerapp.MainActivity;
-import com.cgana.trmsownerapp.R;
-import com.cgana.trmsownerapp.data.api.FCMApiService;
-import com.cgana.trmsownerapp.data.api.RetrofitClient;
-import com.cgana.trmsownerapp.data.local.TokenManager;
-import com.cgana.trmsownerapp.data.model.FCMTokenRequest;
-import com.cgana.trmsownerapp.data.model.GenericResponse;
+import com.cgana.trmsdriver.MainActivity;
+import com.cgana.trmsdriver.R;
+import com.cgana.trmsdriver.data.local.TokenManager;
+import com.cgana.trmsdriver.data.model.FCMTokenRequest;
+import com.cgana.trmsdriver.data.model.GenericResponse;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -79,7 +77,7 @@ public class TRMSFirebaseMessagingService extends FirebaseMessagingService {
             switch (type) {
                 case "dashboard_update":
                     // Silently refresh dashboard (send broadcast)
-                    sendBroadcast(new Intent("com.cgana.trmsownerapp.REFRESH_DASHBOARD"));
+                    sendBroadcast(new Intent("com.cgana.trmsdriver.REFRESH_DASHBOARD"));
                     break;
 
                 case "boarding":
@@ -217,6 +215,10 @@ public class TRMSFirebaseMessagingService extends FirebaseMessagingService {
             return;
         }
 
+        // TODO: Implement FCM token registration API when backend is ready
+        Log.d(TAG, "FCM token saved locally. Backend registration pending.");
+
+        /*
         FCMApiService apiService = RetrofitClient.getInstance().getFCMApi();
         FCMTokenRequest request = new FCMTokenRequest(token);
 
@@ -236,6 +238,7 @@ public class TRMSFirebaseMessagingService extends FirebaseMessagingService {
                         Log.e(TAG, "Error sending FCM token: " + t.getMessage());
                     }
                 });
+        */
     }
 }
 

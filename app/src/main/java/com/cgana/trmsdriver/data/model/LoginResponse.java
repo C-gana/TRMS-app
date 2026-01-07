@@ -3,8 +3,9 @@ package com.cgana.trmsdriver.data.model;
 public class LoginResponse {
     private boolean success;
     private String token;
-    private User user;
+    private Driver driver;
     private String error;
+    private String message;
 
     public boolean isSuccess() {
         return success;
@@ -14,12 +15,11 @@ public class LoginResponse {
         return token;
     }
 
-    public User getUser() {
-        return user;
+    public Driver getUser() {
+        return driver;
     }
 
     public String getError() {
-        return error;
+        return error != null ? error : message;
     }
 }
-

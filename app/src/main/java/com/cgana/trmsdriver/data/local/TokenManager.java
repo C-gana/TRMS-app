@@ -3,11 +3,7 @@ package com.cgana.trmsdriver.data.local;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.security.crypto.EncryptedSharedPreferences;
-import androidx.security.crypto.MasterKey;
-
 import com.cgana.trmsdriver.data.model.Driver;
-import com.cgana.trmsdriver.data.model.User;
 import com.google.gson.Gson;
 
 public class TokenManager {
@@ -22,24 +18,8 @@ public class TokenManager {
 
     public TokenManager(Context context) {
         gson = new Gson();
-
-        try {
-            MasterKey masterKey = new MasterKey.Builder(context)
-                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                    .build();
-
-            sharedPreferences = EncryptedSharedPreferences.create(
-                    context,
-                    PREFS_NAME,
-                    masterKey,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Fallback to regular SharedPreferences
-            sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        }
+        // Use regular SharedPreferences since security-crypto 1.0.0 has different API
+        sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
     public void saveToken(String token) {
@@ -92,4 +72,3 @@ public class TokenManager {
         sharedPreferences.edit().clear().apply();
     }
 }
-

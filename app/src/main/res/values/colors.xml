@@ -18,10 +18,20 @@
     <!-- Background & Surface -->
     <color name="background">#F5F5F5</color>
     <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#FAFAFA</color>
 
     <!-- Text Colors -->
     <color name="text_primary">#212121</color>
     <color name="text_secondary">#757575</color>
+    <color name="text_hint">#9E9E9E</color>
+    <color name="text_disabled">#BDBDBD</color>
+
+    <!-- Duty Status Colors -->
+    <color name="on_duty">#4CAF50</color>
+    <color name="off_duty">#9E9E9E</color>
+    <color name="duty_pulse">#81C784</color>
+
+    <!-- Divider -->
     <color name="divider">#E0E0E0</color>
 
     <!-- Legacy Colors -->
