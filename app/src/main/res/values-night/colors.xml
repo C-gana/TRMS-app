@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Mode Colors -->
+
+    <!-- Primary Colors -->
+    <color name="primary">#90CAF9</color>
+    <color name="primary_dark">#42A5F5</color>
+    <color name="accent">#FFB74D</color>
+
+    <!-- Status Colors -->
+    <color name="success">#81C784</color>
+    <color name="warning">#FFD54F</color>
+    <color name="danger">#E57373</color>
+
+    <!-- Background & Surface -->
+    <color name="background">#121212</color>
+    <color name="surface">#1E1E1E</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B0B0B0</color>
+    <color name="divider">#2C2C2C</color>
+
+    <!-- Status Colors -->
+    <color name="online">#81C784</color>
+    <color name="offline">#757575</color>
+    <color name="active">#81C784</color>
+    <color name="awaiting">#90CAF9</color>
+    <color name="approaching">#FFB74D</color>
+
+    <!-- Legacy Colors -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
+
