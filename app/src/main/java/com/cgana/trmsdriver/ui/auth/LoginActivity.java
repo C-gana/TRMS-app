@@ -230,9 +230,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
     private void navigateToNextScreen() {
+        android.util.Log.d("LoginActivity", "navigateToNextScreen() called");
+        android.util.Log.d("LoginActivity", "  - Creating intent for DutyStatusActivity");
         Intent intent = new Intent(this, DutyStatusActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        android.util.Log.d("LoginActivity", "  - Starting DutyStatusActivity");
         startActivity(intent);
+        android.util.Log.d("LoginActivity", "  - Calling finish() on LoginActivity");
         finish();
     }
     private void showSuccessAndNavigate() {

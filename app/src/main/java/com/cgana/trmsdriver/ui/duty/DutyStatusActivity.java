@@ -73,19 +73,37 @@ public class DutyStatusActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        android.util.Log.d("DutyStatusActivity", "onCreate() called");
+
         setContentView(R.layout.activity_duty_status);
 
         // Initialize
+        android.util.Log.d("DutyStatusActivity", "Initializing TokenManager");
         tokenManager = new TokenManager(this);
+
+        android.util.Log.d("DutyStatusActivity", "Getting driver from TokenManager");
         driver = tokenManager.getDriver();
+
+        android.util.Log.d("DutyStatusActivity", "Driver check result:");
+        android.util.Log.d("DutyStatusActivity", "  - Driver object: " + (driver != null ? "NOT NULL" : "NULL"));
+        if (driver != null) {
+            android.util.Log.d("DutyStatusActivity", "  - Driver ID: " + driver.getDriverId());
+            android.util.Log.d("DutyStatusActivity", "  - Driver Name: " + driver.getFullName());
+            android.util.Log.d("DutyStatusActivity", "  - Vehicle ID: " + driver.getVehicleId());
+        }
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         durationHandler = new Handler(Looper.getMainLooper());
 
         // Check authentication
         if (driver == null) {
+            android.util.Log.e("DutyStatusActivity", "Driver is NULL! Redirecting to LoginActivity");
+            android.util.Log.e("DutyStatusActivity", "This should NOT happen if login was successful!");
             navigateToLogin();
             return;
         }
+
+        android.util.Log.d("DutyStatusActivity", "Driver authenticated successfully, continuing...");
 
         // Initialize views
         initializeViews();
