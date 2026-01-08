@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardSeat"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardElevation="6dp"
+    app:cardCornerRadius="16dp"
+    app:strokeWidth="2dp"
+    app:strokeColor="@color/divider"
+    android:layout_margin="@dimen/seat_card_margin"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:backgroundTint="@color/surface"
+    android:transitionName="seatCard">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- Seat Number -->
+        <TextView
+            android:id="@+id/tvSeatNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SEAT 1"
+            android:textSize="@dimen/text_seat_number"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginTop="8dp"
+            android:gravity="center" />
+
+        <!-- State Icon -->
+        <ImageView
+            android:id="@+id/ivSeatState"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/ic_seat_vacant"
+            android:contentDescription="@string/seats_icon"
+            app:tint="@color/seat_vacant"
+            android:alpha="0.9"/>
+
+        <!-- State Label -->
+        <TextView
+            android:id="@+id/tvSeatState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="VACANT"
+            android:textSize="@dimen/text_seat_status"
+            android:textStyle="bold"
+            android:textColor="@color/status_vacant"
+            android:layout_marginTop="4dp"
+            android:gravity="center" />
+
+        <!-- Timeout Timer / Proximity Alert -->
+        <TextView
+            android:id="@+id/tvSeatTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⏱️ 45s"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/status_awaiting"
+            android:layout_marginTop="2dp"
+            android:visibility="gone" />
+
+        <!-- Destination Name -->
+        <TextView
+            android:id="@+id/tvDestination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="@dimen/text_destination"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:visibility="gone" />
+
+        <!-- Journey Details (distance / ETA) -->
+        <TextView
+            android:id="@+id/tvJourneyDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="@dimen/text_journey_detail"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:visibility="gone" />
+
+        <!-- Alert Icon (e.g. Approaching!) -->
+        <ImageView
+            android:id="@+id/ivAlert"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_alert"
+            android:contentDescription="@string/seats_icon"
+            app:tint="@color/seat_approaching"
+            android:layout_marginTop="4dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
+

@@ -44,4 +44,9 @@ public class RetrofitClient {
     public AuthApiService getAuthApi() {
         return retrofit.create(AuthApiService.class);
     }
+
+    // Generic method to create any API service
+    public <T> T create(Class<T> serviceClass) {
+        return retrofit.create(serviceClass);
+    }
 }

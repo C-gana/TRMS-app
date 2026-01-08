@@ -1,108 +1,311 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/background">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <!-- App Bar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/primary"
-        app:title="Dashboard"
-        app:titleTextColor="@android:color/white"
-        android:elevation="4dp" />
+        android:layout_height="wrap_content"
+        android:elevation="4dp">
 
-    <ScrollView
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary"
+            app:title="@string/dashboard"
+            app:titleTextColor="@android:color/white"
+            app:menu="@menu/menu_dashboard"
+            style="@style/Widget.MaterialComponents.Toolbar.Primary" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="32dp">
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
-            <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@drawable/ic_directions_car"
-                app:tint="@color/primary"
-                android:contentDescription="Dashboard Icon"
-                android:layout_marginBottom="24dp" />
-
-            <TextView
-                android:id="@+id/tvPlaceholder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dashboard Coming Soon"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:gravity="center"
-                android:layout_marginBottom="16dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Module 2 will implement:\n\n• 4-seat grid display\n• Real-time seat status\n• Boarding recording\n• Journey management\n• Destination selection\n• Earnings tracking"
-                android:textSize="16sp"
-                android:textColor="@color/text_secondary"
-                android:gravity="center"
-                android:lineSpacingExtra="4dp" />
-
-            <com.google.android.material.card.MaterialCardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/surface">
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_md">
 
-                <LinearLayout
+                <!-- Vehicle Header Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/vehicleHeaderCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    app:cardElevation="@dimen/elevation_sm"
+                    app:cardCornerRadius="@dimen/card_radius_md"
+                    android:layout_marginBottom="@dimen/spacing_md">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Current Status"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary"
-                        android:layout_marginBottom="8dp" />
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                        <!-- Vehicle Info Row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:src="@drawable/ic_vehicle"
+                                app:tint="@color/primary"
+                                android:contentDescription="@string/vehicle_icon" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="@dimen/spacing_sm"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvVehicleId"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="TRM-BT-001"
+                                    android:textSize="@dimen/text_body_large"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/text_primary" />
+
+                                <TextView
+                                    android:id="@+id/tvVehicleRegistration"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="MJ 1234"
+                                    android:textSize="@dimen/text_label"
+                                    android:textColor="@color/text_secondary" />
+
+                            </LinearLayout>
+
+                            <!-- Duty Status Badge -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:background="@drawable/duty_badge_background"
+                                android:padding="@dimen/spacing_sm"
+                                android:gravity="center_vertical">
+
+                                <View
+                                    android:layout_width="8dp"
+                                    android:layout_height="8dp"
+                                    android:background="@drawable/circle_shape"
+                                    android:backgroundTint="@color/on_duty" />
+
+                                <TextView
+                                    android:id="@+id/tvDutyStatus"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/spacing_xs"
+                                    android:text="@string/on_duty"
+                                    android:textSize="@dimen/text_caption"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/on_duty" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <!-- Duty Duration & Active Seats -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_sm"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvDutyDuration"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="On duty since 08:15 AM"
+                                android:textSize="@dimen/text_caption"
+                                android:textColor="@color/text_secondary"
+                                android:drawableStart="@drawable/ic_time"
+                                android:drawablePadding="@dimen/spacing_xs"
+                                android:drawableTint="@color/text_secondary" />
+
+                            <TextView
+                                android:id="@+id/tvActiveSeats"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Active: 3/4"
+                                android:textSize="@dimen/text_caption"
+                                android:textStyle="bold"
+                                android:textColor="@color/primary"
+                                android:drawableStart="@drawable/ic_passengers"
+                                android:drawablePadding="@dimen/spacing_xs"
+                                android:drawableTint="@color/primary" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Seats Grid (2x2) -->
+                <GridLayout
+                    android:id="@+id/seatsGrid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2"
+                    android:rowCount="2"
+                    android:alignmentMode="alignBounds"
+                    android:layout_marginBottom="@dimen/spacing_md">
+
+                    <!-- Seat cards will be added programmatically -->
+
+                </GridLayout>
+
+                <!-- Today's Summary Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/summaryCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardElevation="@dimen/elevation_sm"
+                    app:cardCornerRadius="@dimen/card_radius_md"
+                    android:layout_marginBottom="@dimen/spacing_md">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="✓ Logged In"
-                        android:textSize="14sp"
-                        android:textColor="@color/success"
-                        android:drawablePadding="8dp"
-                        android:layout_marginBottom="4dp" />
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="✓ On Duty"
-                        android:textSize="14sp"
-                        android:textColor="@color/success"
-                        android:drawablePadding="8dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/todays_summary"
+                            android:textSize="@dimen/text_body"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:drawableStart="@drawable/ic_summary"
+                            android:drawablePadding="@dimen/spacing_sm"
+                            android:drawableTint="@color/primary" />
 
-                </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_sm"
+                            android:orientation="horizontal">
 
-            </com.google.android.material.card.MaterialCardView>
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
 
-        </LinearLayout>
+                                <ImageView
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:src="@drawable/ic_passengers"
+                                    app:tint="@color/info"
+                                    android:contentDescription="@string/passengers_icon" />
 
-    </ScrollView>
+                                <TextView
+                                    android:id="@+id/tvTodayPassengers"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/spacing_xs"
+                                    android:text="15"
+                                    android:textSize="24sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/text_primary" />
 
-</LinearLayout>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/passengers"
+                                    android:textSize="@dimen/text_caption"
+                                    android:textColor="@color/text_secondary" />
 
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/divider" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <ImageView
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:src="@drawable/ic_money"
+                                    app:tint="@color/accent"
+                                    android:contentDescription="@string/revenue_icon" />
+
+                                <TextView
+                                    android:id="@+id/tvTodayRevenue"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/spacing_xs"
+                                    android:text="22,500"
+                                    android:textSize="24sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/accent" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/revenue_mk"
+                                    android:textSize="@dimen/text_caption"
+                                    android:textColor="@color/text_secondary" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Last Updated Footer -->
+                <TextView
+                    android:id="@+id/tvLastUpdated"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Last updated: Just now"
+                    android:textSize="@dimen/text_caption"
+                    android:textColor="@color/text_secondary"
+                    android:gravity="center"
+                    android:padding="@dimen/spacing_sm" />
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- Loading Overlay -->
+    <include layout="@layout/loading_overlay" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
