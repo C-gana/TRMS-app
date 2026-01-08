@@ -12,7 +12,7 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
-
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -85,5 +85,5 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:2.5.2")
 
     // Secure Storage
-    implementation("androidx.security:security-crypto:1.0.0")
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
 }

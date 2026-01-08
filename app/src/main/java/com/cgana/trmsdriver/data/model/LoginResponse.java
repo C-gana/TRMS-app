@@ -4,22 +4,21 @@ public class LoginResponse {
     private boolean success;
     private String token;
     private Driver driver;
-    private String error;
     private String message;
 
-    public boolean isSuccess() {
-        return success;
-    }
+    // Constructor
+    public LoginResponse() {}
 
-    public String getToken() {
-        return token;
-    }
+    // Getters and Setters
+    public boolean isSuccess() { return success; }
+    public void setSuccess(boolean success) { this.success = success; }
 
-    public Driver getUser() {
-        return driver;
-    }
+    public String getToken() { return token; }
+    public void setToken(String token) { this.token = token; }
 
-    public String getError() {
-        return error != null ? error : message;
-    }
+    public Driver getDriver() { return driver; }
+    public void setDriver(Driver driver) { this.driver = driver; }
+
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
 }

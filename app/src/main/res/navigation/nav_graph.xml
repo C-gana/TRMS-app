@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.cgana.trmsdriver.ui.login.LoginFragment"
+        android:name="com.cgana.trmsdriver.ui.auth.LoginFragment"
         android:label="Login"
         tools:layout="@layout/fragment_login">
         <action

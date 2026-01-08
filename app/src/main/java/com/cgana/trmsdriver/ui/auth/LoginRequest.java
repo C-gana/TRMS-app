@@ -1,4 +1,4 @@
-package com.cgana.trmsdriver.ui.login;
+package com.cgana.trmsdriver.ui.auth;
 
 public class LoginRequest {
     private final String phone_number;

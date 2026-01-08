@@ -1,18 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- App Name -->
     <string name="app_name">TRMS Driver</string>
     <string name="app_tagline">Your Journey, Our System</string>
-    <string name="welcome_back">Welcome back, Driver</string>
-    <string name="login_instruction">Use your assigned phone number and password</string>
+    <string name="app_logo">App Logo</string>
+    <string name="app_version">Version 1.0.0</string>
+
+    <!-- Login Screen -->
+    <string name="welcome_back">Welcome Back</string>
+    <string name="login_instruction">Sign in to start your duty</string>
     <string name="phone_number">Phone Number</string>
     <string name="password">Password</string>
     <string name="remember_me">Remember me</string>
     <string name="login_to_drive">LOGIN TO DRIVE</string>
     <string name="logging_in">Logging in…</string>
-    <string name="error_invalid_credentials">Invalid credentials. Please try again.</string>
-    <string name="app_version">Version 1.0.0</string>
-    <string name="app_logo">TRMS Driver logo</string>
-    <string name="error_icon">Error icon</string>
-    <string name="default_notification_channel_id">trms_driver_notifications</string>
-    <string name="default_notification_channel_name">TRMS Driver Notifications</string>
-</resources>
 
+    <!-- Login Errors -->
+    <string name="error_phone_required">Phone number is required</string>
+    <string name="error_phone_invalid">Phone number must be 9 digits</string>
+    <string name="error_phone_digits_only">Phone number must contain only digits</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_password_too_short">Password must be at least 8 characters</string>
+    <string name="error_invalid_credentials">Invalid phone number or password</string>
+    <string name="error_network">Network error. Please check your connection. </string>
+
+    <!-- Duty Status Screen -->
+    <string name="duty_status">Duty Status</string>
+    <string name="welcome_driver">Welcome</string>
+    <string name="your_vehicle">Your Vehicle</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+
+    <!-- Duty Status Messages -->
+    <string name="you_are_off_duty">YOU ARE OFF DUTY</string>
+    <string name="tap_to_start">Tap button below to start accepting passengers</string>
+    <string name="you_are_on_duty">YOU ARE ON DUTY</string>
+    <string name="started_at">Started at %s</string>
+    <string name="duration_format">Duration: %s</string>
+
+    <!-- Duty Buttons -->
+    <string name="start_duty">START DUTY</string>
+    <string name="end_duty">END DUTY</string>
+
+    <!-- Duty Confirmations -->
+    <string name="end_duty_confirmation_title">End Duty? </string>
+    <string name="end_duty_confirmation_message">Are you sure you want to end your duty?  All active journeys must be completed first.</string>
+    <string name="yes_end_duty">Yes, End Duty</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Duty Status Messages -->
+    <string name="duty_started_successfully">Duty started successfully.  Drive safe!</string>
+    <string name="duty_ended_successfully">Duty ended successfully. See you next time!</string>
+    <string name="updating_status">Updating duty status…</string>
+    <string name="use_end_duty_button">Please use End Duty button to go off duty</string>
+
+    <!-- Today's Summary -->
+    <string name="todays_summary">TODAY\'S SUMMARY</string>
+    <string name="passengers_today">Passengers Today</string>
+    <string name="active_passengers">Active Passengers</string>
+    <string name="revenue_today">Revenue Today</string>
+
+    <!-- Location Permission -->
+    <string name="location_permission_title">Location Permission Required</string>
+    <string name="location_permission_message">TRMS needs your location to:\n\n• Track vehicle position\n• Send proximity alerts\n• Record journey routes\n\nYour location is only tracked while on duty.</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="getting_location">Getting your location…</string>
+    <string name="location_unavailable">Location unavailable. Using default. </string>
+
+    <!-- Background Location Permission (Android 10+) -->
+    <string name="background_location_title">Background Location Access</string>
+    <string name="background_location_message">For continuous tracking while on duty, please allow location access "All the time" in the next screen.\n\nThis ensures accurate journey recording and proximity alerts.</string>
+    <string name="skip">Skip</string>
+
+    <!-- Permission Denied -->
+    <string name="permission_denied">Permission Denied</string>
+    <string name="permission_denied_message">Location permission is required to go on duty. Please grant permission in app settings.</string>
+    <string name="open_settings">Open Settings</string>
+
+    <!-- Logout -->
+    <string name="logout">Logout</string>
+    <string name="logout_confirmation">Are you sure you want to logout? </string>
+
+    <!-- Common -->
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="error">Error</string>
+    <string name="success">Success</string>
+    <string name="loading">Loading…</string>
+    <string name="retry">Retry</string>
+
+    <!-- Content Descriptions (Accessibility) -->
+    <string name="error_icon">Error icon</string>
+    <string name="vehicle_icon">Vehicle icon</string>
+    <string name="off_duty_icon">Off duty icon</string>
+    <string name="on_duty_icon">On duty icon</string>
+    <string name="summary_icon">Summary icon</string>
+    <string name="passengers_icon">Passengers icon</string>
+    <string name="seats_icon">Seats icon</string>
+    <string name="revenue_icon">Revenue icon</string>
+
+    <!-- Menu Items -->
+    <string name="settings">Settings</string>
+    <string name="help">Help</string>
+    <string name="about">About</string>
+
+    <string name="default_notification_channel_id" translatable="false">trms_alerts_channel</string>
+    <!-- Placeholder MainActivity -->
+    <string name="dashboard">Dashboard</string>
+    <string name="coming_soon">Coming soon in Module 2</string>
+
+    <!-- Dashboard Screen -->
+    <string name="on_duty">On Duty</string>
+    <string name="off_duty">Off Duty</string>
+    <string name="active_seats">Active: %d/4</string>
+    <string name="duty_since">On duty since %s</string>
+    <string name="last_updated">Last updated: %s</string>
+    <string name="just_now">Just now</string>
+    <string name="seconds_ago">%d seconds ago</string>
+    <string name="minutes_ago">%d minutes ago</string>
+
+    <!-- Seat Status -->
+    <string name="seat_vacant">VACANT</string>
+    <string name="seat_awaiting">AWAITING</string>
+    <string name="seat_active">ACTIVE</string>
+    <string name="seat_approaching">APPROACHING</string>
+    <string name="seat_number">SEAT %d</string>
+    <string name="timeout">⏱️ %ds</string>
+    <string name="distance_eta">%s • %d min</string>
+    <string name="tap_to_board">Tap to board passenger</string>
+
+    <!-- Summary -->
+    <string name="passengers">Passengers</string>
+    <string name="revenue_mk">Revenue (MK)</string>
+
+    <!-- Dashboard Menu -->
+    <string name="refresh">Refresh</string>
+    <string name="end_duty_menu">End Duty</string>
+
+    <!-- Boarding -->
+    <string name="boarding_success">Passenger boarded successfully</string>
+    <string name="boarding_failed">Failed to record boarding</string>
+    <string name="select_destination">Select destination</string>
+</resources>

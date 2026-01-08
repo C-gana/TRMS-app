@@ -3,12 +3,14 @@
     <!-- Primary Colors -->
     <color name="primary">#2196F3</color>
     <color name="primary_dark">#1976D2</color>
+    <color name="primary_light">#BBDEFB</color>
     <color name="accent">#FF9800</color>
 
     <!-- Status Colors -->
     <color name="success">#4CAF50</color>
     <color name="warning">#FFC107</color>
     <color name="danger">#F44336</color>
+    <color name="info">#2196F3</color>
     <color name="online">#4CAF50</color>
     <color name="offline">#9E9E9E</color>
     <color name="active">#2196F3</color>
@@ -33,6 +35,18 @@
 
     <!-- Divider -->
     <color name="divider">#E0E0E0</color>
+
+    <!-- Seat State Colors -->
+    <color name="seat_vacant">#E0E0E0</color>
+    <color name="seat_awaiting">#2196F3</color>
+    <color name="seat_active">#4CAF50</color>
+    <color name="seat_approaching">#FF9800</color>
+
+    <!-- Status Indicators -->
+    <color name="status_vacant">#9E9E9E</color>
+    <color name="status_awaiting">#1976D2</color>
+    <color name="status_active">#388E3C</color>
+    <color name="status_approaching">#F57C00</color>
 
     <!-- Legacy Colors -->
     <color name="black">#FF000000</color>

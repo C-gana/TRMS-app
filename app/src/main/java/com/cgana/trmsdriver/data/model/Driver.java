@@ -1,18 +1,26 @@
 package com.cgana.trmsdriver.data.model;
 
-import java.util.List;
-
-public class Driver{
+public class Driver {
     private String driver_id;
     private String full_name;
-    private String role;
     private String phone_number;
     private String email;
     private String vehicle_id;
-
     private String vehicle_registration;
     private boolean on_duty;
     private String duty_started_at;
+
+    // Constructor
+    public Driver() {}
+
+    public Driver(String driver_id, String full_name, String phone_number,
+                  String vehicle_id, String vehicle_registration) {
+        this.driver_id = driver_id;
+        this.full_name = full_name;
+        this.phone_number = phone_number;
+        this.vehicle_id = vehicle_id;
+        this.vehicle_registration = vehicle_registration;
+    }
 
     // Getters and Setters
     public String getDriverId() { return driver_id; }
@@ -42,5 +50,18 @@ public class Driver{
     public void setDutyStartedAt(String duty_started_at) {
         this.duty_started_at = duty_started_at;
     }
-}
 
+    // Helper method to get driver initials for avatar
+    public String getInitials() {
+        if (full_name != null && !full_name.isEmpty()) {
+            String[] parts = full_name.split(" ");
+            if (parts.length >= 2) {
+                return String.valueOf(parts[0].charAt(0)).toUpperCase() +
+                        String.valueOf(parts[1].charAt(0)).toUpperCase();
+            } else if (parts.length == 1) {
+                return String.valueOf(parts[0].charAt(0)).toUpperCase();
+            }
+        }
+        return "D";
+    }
+}
