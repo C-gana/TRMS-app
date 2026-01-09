@@ -6,10 +6,13 @@ import com.cgana.trmsdriver.data.model.BoardingRequest;
 import com.cgana.trmsdriver.data.model.BoardingResponse;
 import com.cgana.trmsdriver.data.model.DashboardResponse;
 import com.cgana.trmsdriver.data.model.DestinationResponse;
+import com.cgana.trmsdriver.data.model.JourneyDetailResponse;
+import com.cgana.trmsdriver.data.model.JourneyHistoryResponse;
 import com.cgana.trmsdriver.data.model.MissedStopRequest;
 import com.cgana.trmsdriver.data.model.MissedStopResponse;
 import com.cgana.trmsdriver.data.model.SetDestinationRequest;
 import com.cgana.trmsdriver.data.model.SetDestinationResponse;
+import com.cgana.trmsdriver.data.model.StatisticsResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -17,6 +20,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface DashboardApiService {
 
@@ -55,6 +59,29 @@ public interface DashboardApiService {
     @POST("api/mobile/driver/missed-stop")
     Call<MissedStopResponse> reportMissedStop(
             @Body MissedStopRequest request,
+            @Header("Authorization") String token
+    );
+
+    // Module 5: Journey History & Statistics Endpoints
+    @GET("api/mobile/driver/journey-history")
+    Call<JourneyHistoryResponse> getJourneyHistory(
+            @Query("vehicle_id") String vehicleId,
+            @Query("page") int page,
+            @Query("per_page") int perPage,
+            @Query("filter") String filter,
+            @Header("Authorization") String token
+    );
+
+    @GET("api/mobile/driver/journey/{journeyId}")
+    Call<JourneyDetailResponse> getJourneyDetail(
+            @Path("journeyId") long journeyId,
+            @Header("Authorization") String token
+    );
+
+    @GET("api/mobile/driver/statistics")
+    Call<StatisticsResponse> getStatistics(
+            @Query("vehicle_id") String vehicleId,
+            @Query("period") String period,
             @Header("Authorization") String token
     );
 }

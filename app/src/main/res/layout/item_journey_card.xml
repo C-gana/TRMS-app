@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardJourney"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_md"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="12dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_md">
+
+        <!-- Header: Journey ID + Seat Number -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Journey ID -->
+            <TextView
+                android:id="@+id/tvJourneyId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Journey #1234"
+                android:textSize="@dimen/text_journey_id"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <!-- Seat Number Badge -->
+            <TextView
+                android:id="@+id/tvSeatNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Seat 1"
+                android:textSize="@dimen/text_caption"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:background="@drawable/seat_badge_background"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
+
+        </LinearLayout>
+
+        <!-- Destination -->
+        <TextView
+            android:id="@+id/tvDestination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="Chichiri Shopping Centre"
+            android:textSize="@dimen/text_body_large"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:drawableStart="@drawable/ic_location"
+            android:drawablePadding="@dimen/spacing_xs"
+            android:drawableTint="@color/primary" />
+
+        <!-- Time Info -->
+        <TextView
+            android:id="@+id/tvTimeInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="08:15 → 08:23 (8 min)"
+            android:textSize="@dimen/text_label"
+            android:textColor="@color/text_secondary"
+            android:drawableStart="@drawable/ic_time"
+            android:drawablePadding="@dimen/spacing_xs"
+            android:drawableTint="@color/text_secondary" />
+
+        <!-- Bottom Row: Fare + Distance -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Fare with Collection Status -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvFare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1,500 MK"
+                    android:textSize="@dimen/text_body"
+                    android:textStyle="bold"
+                    android:textColor="@color/fare_text"
+                    android:drawableStart="@drawable/ic_money_small"
+                    android:drawablePadding="@dimen/spacing_xs"
+                    android:drawableTint="@color/fare_text" />
+
+                <!-- Fare Status Icon -->
+                <ImageView
+                    android:id="@+id/ivFareStatus"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:src="@drawable/ic_check_circle"
+                    android:tint="@color/fare_collected"
+                    android:contentDescription="@string/fare_collected_icon" />
+
+            </LinearLayout>
+
+            <!-- Distance -->
+            <TextView
+                android:id="@+id/tvDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2.5 km"
+                android:textSize="@dimen/text_label"
+                android:textColor="@color/text_secondary"
+                android:drawableStart="@drawable/ic_directions_car"
+                android:drawablePadding="@dimen/spacing_xs"
+                android:drawableTint="@color/text_secondary" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
+

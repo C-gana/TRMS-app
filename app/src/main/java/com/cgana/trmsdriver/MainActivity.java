@@ -3,8 +3,10 @@ package com.cgana.trmsdriver;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.TextView;
@@ -794,6 +796,59 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
             .setMessage(message)
             .setIcon(R.drawable.ic_alert)
             .setPositiveButton(R.string.ok, null)
+            .show();
+    }
+
+    // ==================== Module 5: Menu & Navigation ====================
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_journey_history) {
+            // Navigate to Journey History (Module 5)
+            Intent intent = new Intent(this, com.cgana.trmsdriver.ui.history.JourneyHistoryActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_refresh) {
+            // Refresh dashboard
+            viewModel.refreshNow();
+            return true;
+        } else if (id == R.id.action_settings) {
+            // Navigate to Settings (Module 7)
+            Intent intent = new Intent(this, com.cgana.trmsdriver.ui.settings.SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_end_duty) {
+            // End duty - navigate to duty status
+            Intent intent = new Intent(this, DutyStatusActivity.class);
+            intent.putExtra("end_duty", true);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_logout) {
+            // Logout confirmation
+            showLogoutConfirmation();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showLogoutConfirmation() {
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.logout)
+            .setMessage(R.string.logout_confirmation)
+            .setPositiveButton(R.string.yes, (dialog, which) -> {
+                tokenManager.clearToken();
+                navigateToLogin();
+            })
+            .setNegativeButton(R.string.no, null)
             .show();
     }
 }

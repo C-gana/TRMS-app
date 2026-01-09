@@ -55,6 +55,24 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- JOURNEY HISTORY ACTIVITY - Module 5 -->
+        <activity
+            android:name=".ui.history.JourneyHistoryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- SETTINGS ACTIVITY - Module 7 -->
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- EDIT PROFILE ACTIVITY - Module 7 -->
+        <activity
+            android:name=".ui.settings.EditProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <!-- FCM Service -->
         <service
             android:name=".fcm.TRMSFirebaseMessagingService"
@@ -66,3 +84,4 @@
     </application>
 
 </manifest>
+

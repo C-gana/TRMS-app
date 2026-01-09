@@ -276,4 +276,68 @@
     <string name="proximity_alert">Proximity Alert</string>
     <string name="destination_reached">Destination Reached</string>
     <string name="notification_channel_proximity">Proximity Alerts</string>
+
+    <!-- Module 5: Journey History -->
+    <string name="journey_history">Journey History</string>
+    <string name="search_journeys">Search journeys...</string>
+    <string name="no_journeys_found">No journeys found</string>
+    <string name="no_journeys_subtitle">Your completed journeys will appear here</string>
+    <string name="no_journeys_icon">No journeys icon</string>
+    <string name="filter">Filter</string>
+    <string name="export">Export</string>
+    <string name="close">Close</string>
+    <string name="boarding_time">Boarding Time</string>
+    <string name="alighting_time">Alighting Time</string>
+    <string name="fare_status">Fare Status</string>
+    <string name="fare_collected_icon">Fare collected icon</string>
+
+    <!-- Filter Options -->
+    <string name="filter_all">All Journeys</string>
+    <string name="filter_today">Today</string>
+    <string name="filter_week">This Week</string>
+    <string name="filter_month">This Month</string>
+    <string name="filter_fare_collected">Fare Collected</string>
+    <string name="filter_fare_not_collected">Fare Not Collected</string>
+
+    <!-- Module 7: Settings & Profile -->
+    <string name="settings">Settings</string>
+    <string name="view_profile">View Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="preferences">Preferences</string>
+    <string name="appearance">Appearance</string>
+    <string name="light_theme">Light</string>
+    <string name="dark_theme">Dark</string>
+    <string name="system_default">System Default</string>
+    <string name="theme_icon">Theme icon</string>
+    <string name="notifications">Notifications</string>
+    <string name="notification_preferences">Manage your notification settings</string>
+    <string name="notifications_icon">Notifications icon</string>
+    <string name="account">Account</string>
+    <string name="change_password">Change Password</string>
+    <string name="update_password">Update your account password</string>
+    <string name="lock_icon">Lock icon</string>
+    <string name="sign_out_account">Sign out from your account</string>
+    <string name="logout_icon">Logout icon</string>
+    <string name="support">Support</string>
+    <string name="help_support">Help &amp; Support</string>
+    <string name="contact_faq">Contact us or view FAQs</string>
+    <string name="help_icon">Help icon</string>
+    <string name="about">About</string>
+    <string name="info_icon">Info icon</string>
+    <string name="navigate_icon">Navigate icon</string>
+
+    <!-- Edit Profile -->
+    <string name="full_name">Full Name</string>
+    <string name="phone_readonly">Phone number cannot be changed</string>
+    <string name="email_readonly">Email cannot be changed</string>
+    <string name="email">Email</string>
+    <string name="vehicle_information">Vehicle Information</string>
+    <string name="vehicle_id">Vehicle ID</string>
+    <string name="registration_number">Registration Number</string>
+    <string name="change_photo">Change Photo</string>
+    <string name="save">Save</string>
+    <string name="profile_updated">Profile updated successfully</string>
+    <string name="profile_update_failed">Failed to update profile</string>
+    <string name="name_required">Name is required</string>
+    <string name="app_version_format">Version %s</string>
 </resources>

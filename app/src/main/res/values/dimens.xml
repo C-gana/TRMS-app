@@ -58,4 +58,11 @@
     <dimen name="text_journey_summary">18sp</dimen>
     <dimen name="text_fare_amount">28sp</dimen>
     <dimen name="alighting_button_height">72dp</dimen>
+
+    <!-- Module 5: Journey History -->
+    <dimen name="text_journey_id">14sp</dimen>
+
+    <!-- Module 7: Settings -->
+    <dimen name="text_setting_title">16sp</dimen>
+    <dimen name="text_setting_subtitle">14sp</dimen>
 </resources>

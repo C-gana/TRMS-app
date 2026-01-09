@@ -67,4 +67,8 @@
     <color name="missed_stop">#F44336</color>
     <color name="fare_collected">#4CAF50</color>
     <color name="fare_not_collected">#FFC107</color>
+
+    <!-- Module 5: Journey History Colors -->
+    <color name="seat_badge_background">#E3F2FD</color>
+    <color name="journey_card_background">#FFFFFF</color>
 </resources>
