@@ -127,7 +127,7 @@
     <string name="seat_approaching">APPROACHING</string>
     <string name="seat_number">SEAT %d</string>
     <string name="timeout">⏱️ %ds</string>
-    <string name="distance_eta">%s • %d min</string>
+    <string name="distance_eta" formatted="false">%s • %d min</string>
     <string name="tap_to_board">Tap to board passenger</string>
 
     <!-- Summary -->
@@ -153,4 +153,43 @@
     <string name="board_passenger_title">Board Passenger - Seat %d</string>
     <string name="board_passenger_message">Confirm boarding of passenger for this seat. Location will be captured automatically.</string>
     <string name="confirm_boarding">Confirm Boarding</string>
+
+    <!-- Enhanced Boarding Dialog (Module 2 Part 4) -->
+    <string name="record_boarding">Record Boarding</string>
+    <string name="boarding_confirmation_message">Record passenger boarding in Seat %d?</string>
+    <string name="boarding_icon">Boarding Icon</string>
+    <string name="boarding_success_message">Passenger boarded successfully! Journey started.</string>
+    <string name="boarding_failed_message">Failed to record boarding. Please try again.</string>
+
+    <!-- Module 2 Part 5: Additional Resources -->
+    <string name="active_seats_format">Active: %d/4</string>
+    <string name="on_duty_since">On duty since %s</string>
+    <string name="vacant">VACANT</string>
+    <string name="awaiting">AWAITING</string>
+    <string name="active">ACTIVE</string>
+    <string name="approaching">APPROACHING</string>
+    <string name="unknown">UNKNOWN</string>
+    <string name="journey_detail_format" formatted="false">%.1fkm · %dmin</string>
+    <string name="distance_format">%.0fm</string>
+    <string name="last_updated_now">Last updated: Just now</string>
+
+    <!-- Boarding Progress -->
+    <string name="boarding_in_progress">Recording boarding…</string>
+    <string name="boarding_recorded_success">Passenger boarded successfully. Select destination.</string>
+    <string name="seat_already_occupied">This seat is already occupied</string>
+    <string name="seat_not_available">Seat not available</string>
+    <string name="boarding_timeout">Request timeout. Please try again.</string>
+
+    <!-- Dashboard Errors (Enhanced) -->
+    <string name="dashboard_load_error">Failed to load dashboard</string>
+    <string name="session_expired">Session expired. Please login again.</string>
+    <string name="vehicle_not_found">Vehicle not found</string>
+    <string name="server_error">Server error. Please try again.</string>
+    <string name="network_error">Network error. Check your connection.</string>
+    <string name="connection_timeout">Connection timeout. Check your internet.</string>
+    <string name="no_internet">No internet connection</string>
+
+    <!-- Additional Content Descriptions -->
+    <string name="seat_icon">Seat icon</string>
+    <string name="alert_icon">Alert icon</string>
 </resources>

@@ -21,7 +21,7 @@ import com.cgana.trmsdriver.data.local.TokenManager;
 import com.cgana.trmsdriver.data.model.DashboardResponse;
 import com.cgana.trmsdriver.data.model.SeatStatus;
 import com.cgana.trmsdriver.ui.auth.LoginActivity;
-import com.cgana.trmsdriver.ui.dashboard.BoardingDialogFragment;
+import com.cgana.trmsdriver.ui.dashboard.BoardingDialog;
 import com.cgana.trmsdriver.ui.dashboard.DashboardViewModel;
 import com.cgana.trmsdriver.data.repository.DashboardRepository;
 import com.cgana.trmsdriver.ui.dashboard.DashboardViewModelFactory;
@@ -39,10 +39,11 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * MainActivity - Real-Time Dashboard with 4-Seat Grid (Module 2)
+ * MainActivity - Real-Time Dashboard with 4-Seat Grid (Module 2 Part 4)
  * Displays live seat status, handles boarding, and auto-refreshes every 5 seconds
+ * Enhanced with professional boarding dialog and error handling
  */
-public class MainActivity extends AppCompatActivity implements BoardingDialogFragment.BoardingConfirmListener {
+public class MainActivity extends AppCompatActivity implements BoardingDialog.BoardingDialogListener {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
@@ -145,50 +146,76 @@ public class MainActivity extends AppCompatActivity implements BoardingDialogFra
     }
 
     private void setupObservers() {
-        // Dashboard data observer
-        viewModel.getDashboardData().observe(this, this::updateDashboard);
+        // Dashboard state observer (Module 2 Part 4 - Enhanced with state management)
+        viewModel.getDashboardState().observe(this, state -> {
+            switch (state.getStatus()) {
+                case LOADING:
+                    // Don't show loading overlay for refresh (SwipeRefresh handles it)
+                    break;
 
-        // Boarding result observer
-        viewModel.getBoardingResult().observe(this, boardingResponse -> {
-            if (boardingResponse != null && boardingResponse.isSuccess()) {
-                Toast.makeText(this, R.string.boarding_success, Toast.LENGTH_SHORT).show();
-                viewModel.clearBoardingResult();
+                case SUCCESS:
+                    loadingOverlay.setVisibility(View.GONE);
+                    swipeRefresh.setRefreshing(false);
+                    updateDashboard(state.getData());
+                    tvLastUpdated.setText(getString(R.string.just_now));
+                    break;
+
+                case ERROR:
+                    loadingOverlay.setVisibility(View.GONE);
+                    swipeRefresh.setRefreshing(false);
+                    showError(state.getError());
+                    break;
+
+                case IDLE:
+                default:
+                    loadingOverlay.setVisibility(View.GONE);
+                    swipeRefresh.setRefreshing(false);
+                    break;
             }
         });
 
-        // Loading state observer
-        viewModel.getIsLoading().observe(this, isLoading -> {
-            if (isLoading != null) {
-                loadingOverlay.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-                swipeRefresh.setRefreshing(false);
-            }
-        });
+        // Boarding state observer (Module 2 Part 4 - Enhanced with state management)
+        viewModel.getBoardingState().observe(this, state -> {
+            switch (state.getStatus()) {
+                case LOADING:
+                    loadingOverlay.setVisibility(View.VISIBLE);
+                    break;
 
-        // Error message observer
-        viewModel.getErrorMessage().observe(this, errorMessage -> {
-            if (errorMessage != null && !errorMessage.isEmpty()) {
-                Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
-                viewModel.clearError();
-            }
-        });
+                case SUCCESS:
+                    loadingOverlay.setVisibility(View.GONE);
+                    showBoardingSuccess(state.getData().getMessage());
+                    // Dashboard will auto-refresh
+                    break;
 
-        // Last update time observer
-        viewModel.getLastUpdateTime().observe(this, timestamp -> {
-            if (timestamp != null) {
-                updateLastUpdatedText(timestamp);
+                case ERROR:
+                    loadingOverlay.setVisibility(View.GONE);
+                    showBoardingError(state.getError());
+                    break;
+
+                case IDLE:
+                default:
+                    loadingOverlay.setVisibility(View.GONE);
+                    break;
             }
         });
     }
 
     private void setupToolbarMenu() {
+        toolbar.inflateMenu(R.menu.menu_dashboard);
         toolbar.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
 
             if (itemId == R.id.action_refresh) {
-                loadDashboardData();
+                viewModel.refreshNow();
                 return true;
             } else if (itemId == R.id.action_end_duty) {
                 showEndDutyDialog();
+                return true;
+            } else if (itemId == R.id.action_settings) {
+                showSettingsPlaceholder();
+                return true;
+            } else if (itemId == R.id.action_help) {
+                showHelpPlaceholder();
                 return true;
             } else if (itemId == R.id.action_logout) {
                 showLogoutDialog();
@@ -297,30 +324,14 @@ public class MainActivity extends AppCompatActivity implements BoardingDialogFra
         }
     }
 
-    private void updateLastUpdatedText(long timestamp) {
-        long diff = System.currentTimeMillis() - timestamp;
-        long seconds = diff / 1000;
-
-        String text;
-        if (seconds < 5) {
-            text = getString(R.string.just_now);
-        } else if (seconds < 60) {
-            text = getString(R.string.seconds_ago, seconds);
-        } else {
-            long minutes = seconds / 60;
-            text = getString(R.string.minutes_ago, minutes);
-        }
-
-        tvLastUpdated.setText(getString(R.string.last_updated, text));
-    }
-
     private void onSeatCardClicked(int seatNumber) {
-        // Get current seat status
-        DashboardResponse dashboard = viewModel.getDashboardData().getValue();
-        if (dashboard == null || dashboard.getSeats() == null) {
+        // Get current seat status from state (Module 2 Part 4)
+        DashboardViewModel.DashboardState state = viewModel.getDashboardState().getValue();
+        if (state == null || state.getData() == null || state.getData().getSeats() == null) {
             return;
         }
 
+        DashboardResponse dashboard = state.getData();
         SeatStatus seat = null;
         for (SeatStatus s : dashboard.getSeats()) {
             if (s.getSeatNumber() == seatNumber) {
@@ -344,39 +355,23 @@ public class MainActivity extends AppCompatActivity implements BoardingDialogFra
     }
 
     private void confirmBoarding(int seatNumber) {
-        // Get seat object for the dialog
-        DashboardResponse dashboard = viewModel.getDashboardData().getValue();
-        if (dashboard == null || dashboard.getSeats() == null) {
-            return;
-        }
-
-        SeatStatus seat = null;
-        for (SeatStatus s : dashboard.getSeats()) {
-            if (s.getSeatNumber() == seatNumber) {
-                seat = s;
-                break;
-            }
-        }
-
-        if (seat == null) return;
-
-        // Show professional Material dialog (Module 2 Part 3)
-        // Convert SeatStatus to Seat for dialog (they should be compatible)
-        com.cgana.trmsdriver.data.model.Seat dialogSeat = new com.cgana.trmsdriver.data.model.Seat();
-        dialogSeat.setSeat_number(seat.getSeatNumber());
-        dialogSeat.setStatus(seat.getStatus());
-
-        BoardingDialogFragment dialog = BoardingDialogFragment.newInstance(dialogSeat);
+        // Show professional Material dialog (Module 2 Part 4)
+        BoardingDialog dialog = BoardingDialog.newInstance(seatNumber);
         dialog.show(getSupportFragmentManager(), "BoardingDialog");
     }
 
     /**
-     * Implementation of BoardingConfirmListener (Module 2 Part 3)
+     * Implementation of BoardingDialog.BoardingDialogListener (Module 2 Part 4)
      * Called when user confirms boarding in the dialog
      */
     @Override
     public void onConfirmBoarding(int seatNumber) {
         recordBoarding(seatNumber);
+    }
+
+    @Override
+    public void onCancelBoarding() {
+        // User cancelled boarding - no action needed
     }
 
     private void recordBoarding(int seatNumber) {
@@ -389,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements BoardingDialogFra
             return;
         }
 
-        // Get current location and record boarding
+        // Get current location and record boarding (Module 2 Part 4)
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
                     double latitude = -15.7891; // Default
@@ -400,16 +395,75 @@ public class MainActivity extends AppCompatActivity implements BoardingDialogFra
                         longitude = location.getLongitude();
                     }
 
-                    viewModel.recordBoarding(vehicleId, seatNumber, latitude, longitude);
+                    viewModel.recordBoarding(seatNumber, latitude, longitude);
                 })
                 .addOnFailureListener(e -> {
                     // Use default location on failure
-                    viewModel.recordBoarding(vehicleId, seatNumber, -15.7891, 35.0412);
+                    viewModel.recordBoarding(seatNumber, -15.7891, 35.0412);
                 });
     }
 
     // Auto-refresh now handled by ViewModel (Module 2 Part 3)
     // See onResume() and onPause() methods
+
+    /**
+     * Show boarding success message (Module 2 Part 4)
+     */
+    private void showBoardingSuccess(String message) {
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.boarding_success)
+            .setMessage(message != null ? message : getString(R.string.boarding_success_message))
+            .setIcon(R.drawable.ic_check)
+            .setPositiveButton(R.string.ok, null)
+            .show();
+
+        // Haptic feedback
+        findViewById(android.R.id.content).performHapticFeedback(
+            android.view.HapticFeedbackConstants.CONFIRM
+        );
+    }
+
+    /**
+     * Show boarding error message (Module 2 Part 4)
+     */
+    private void showBoardingError(String error) {
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.boarding_failed)
+            .setMessage(error != null ? error : getString(R.string.boarding_failed_message))
+            .setIcon(R.drawable.ic_error)
+            .setPositiveButton(R.string.ok, null)
+            .show();
+
+        // Haptic feedback
+        findViewById(android.R.id.content).performHapticFeedback(
+            android.view.HapticFeedbackConstants.REJECT
+        );
+    }
+
+    /**
+     * Show general error message (Module 2 Part 4)
+     */
+    private void showError(String error) {
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Settings placeholder (Module 2 Part 5)
+     */
+    private void showSettingsPlaceholder() {
+        Toast.makeText(this, "Settings - Coming in future update", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Help placeholder (Module 2 Part 5)
+     */
+    private void showHelpPlaceholder() {
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.help)
+            .setMessage("TRMS Driver App\nVersion 1.0.0\n\nFor support:\nEmail: support@trms.mw\nPhone: +265 888 123 456")
+            .setPositiveButton(R.string.ok, null)
+            .show();
+    }
 
     private void showEndDutyDialog() {
         new AlertDialog.Builder(this)

@@ -2,21 +2,39 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- Refresh -->
     <item
         android:id="@+id/action_refresh"
-        android:title="@string/refresh"
         android:icon="@drawable/ic_refresh"
+        android:title="@string/refresh"
         app:showAsAction="ifRoom" />
 
+    <!-- End Duty -->
     <item
         android:id="@+id/action_end_duty"
-        android:title="@string/end_duty_menu"
+        android:icon="@drawable/ic_stop"
+        android:title="@string/end_duty"
         app:showAsAction="never" />
 
+    <!-- Settings -->
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/settings"
+        app:showAsAction="never" />
+
+    <!-- Help -->
+    <item
+        android:id="@+id/action_help"
+        android:icon="@drawable/ic_help"
+        android:title="@string/help"
+        app:showAsAction="never" />
+
+    <!-- Logout -->
     <item
         android:id="@+id/action_logout"
-        android:title="@string/logout"
         android:icon="@drawable/ic_logout"
+        android:title="@string/logout"
         app:showAsAction="never" />
 
 </menu>

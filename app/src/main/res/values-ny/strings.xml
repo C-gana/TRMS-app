@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Module 2: Dashboard Chichewa Translations -->
+    <string name="dashboard">Dashibodi</string>
+    <string name="refresh">Konzanso</string>
+    <string name="seat_number_format">CHIPUNA %d</string>
+    <string name="active_seats_format">Okwera: %d/4</string>
+    <string name="on_duty_since">Pa ntchito kuyambira %s</string>
+
+    <!-- Seat States -->
+    <string name="vacant">CHOPANDA</string>
+    <string name="awaiting">AKUDIKIRA</string>
+    <string name="active">APAULENDO</string>
+    <string name="approaching">KUFIKA</string>
+    <string name="unknown">OSADZIWIKA</string>
+
+    <!-- Boarding -->
+    <string name="record_boarding">Lembani Kukwera</string>
+    <string name="boarding_confirmation_message">Lemba wokwera pa chipuna %d?</string>
+    <string name="confirm_boarding">Tsimikizani</string>
+    <string name="boarding_success">Kwatheka</string>
+    <string name="boarding_failed">Sinalakwe</string>
+    <string name="boarding_in_progress">Kulembedwa kukwera…</string>
+
+    <!-- Summary -->
+    <string name="passengers">Okwera</string>
+    <string name="revenue_mk">MK</string>
+    <string name="last_updated_now">Kosinthidwa: Pano</string>
+    <string name="todays_summary">ZACHITIKA LERO</string>
+
+    <!-- Common -->
+    <string name="cancel">Siya</string>
+    <string name="ok">Chabwino</string>
+    <string name="yes">Inde</string>
+    <string name="no">Ayi</string>
+
+    <!-- Menu -->
+    <string name="settings">Zosintha</string>
+    <string name="help">Thandizo</string>
+    <string name="logout">Tuluka</string>
+    <string name="end_duty">Maliza Ntchito</string>
+</resources>
+

@@ -12,15 +12,15 @@ import com.cgana.trmsdriver.data.model.BoardingResponse;
 import com.cgana.trmsdriver.data.model.DashboardResponse;
 import com.cgana.trmsdriver.data.repository.DashboardRepository;
 
+/**
+ * DashboardViewModel - Enhanced with Result wrapper and state management (Module 2 Part 4)
+ */
 public class DashboardViewModel extends ViewModel {
     private static final long REFRESH_INTERVAL_MS = 5000; // 5 seconds as per Module 2 Part 3
 
     private final DashboardRepository repository;
-    private final MutableLiveData<DashboardResponse> dashboardData = new MutableLiveData<>();
-    private final MutableLiveData<BoardingResponse> boardingResult = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
-    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private final MediatorLiveData<Long> lastUpdateTime = new MediatorLiveData<>();
+    private final MutableLiveData<DashboardState> dashboardState = new MutableLiveData<>();
+    private final MutableLiveData<BoardingState> boardingState = new MutableLiveData<>();
 
     // Auto-refresh components
     private Handler handler;
@@ -30,93 +30,77 @@ public class DashboardViewModel extends ViewModel {
     public DashboardViewModel(DashboardRepository repository) {
         this.repository = repository;
         this.handler = new Handler(Looper.getMainLooper());
-        lastUpdateTime.setValue(System.currentTimeMillis());
+        dashboardState.setValue(DashboardState.idle());
+        boardingState.setValue(BoardingState.idle());
     }
 
     /**
      * Fetch dashboard status from backend
      */
     public void loadDashboardData(String vehicleId) {
-        isLoading.setValue(true);
-        errorMessage.setValue(null);
+        this.currentVehicleId = vehicleId;
+        fetchDashboard(false);
+    }
 
-        LiveData<DashboardResponse> result = repository.getDashboardStatus(vehicleId);
+    /**
+     * Manual refresh (called by swipe-to-refresh)
+     */
+    public void refreshNow() {
+        fetchDashboard(true);
+    }
+
+    private void fetchDashboard(boolean isRefresh) {
+        if (!isRefresh) {
+            dashboardState.setValue(DashboardState.loading());
+        }
+
+        LiveData<DashboardRepository.Result<DashboardResponse>> result =
+            repository.getDashboardStatus(currentVehicleId);
 
         // Use MediatorLiveData to observe the repository result
-        MediatorLiveData<DashboardResponse> mediator = new MediatorLiveData<>();
-        mediator.addSource(result, response -> {
-            isLoading.setValue(false);
-            if (response != null) {
-                dashboardData.setValue(response);
-                lastUpdateTime.setValue(System.currentTimeMillis());
-
-                // Schedule next auto-refresh if auto-refresh is active
-                if (currentVehicleId != null) {
-                    scheduleRefresh();
-                }
+        MediatorLiveData<DashboardRepository.Result<DashboardResponse>> mediator = new MediatorLiveData<>();
+        mediator.addSource(result, dashboardResult -> {
+            if (dashboardResult.isSuccess()) {
+                dashboardState.setValue(DashboardState.success(dashboardResult.getData()));
+                scheduleRefresh();
             } else {
-                errorMessage.setValue("Failed to load dashboard data");
+                dashboardState.setValue(DashboardState.error(dashboardResult.getError()));
+                // Retry after error
+                scheduleRefresh();
             }
             mediator.removeSource(result);
         });
     }
 
     /**
-     * Record passenger boarding
+     * Record passenger boarding (Module 2 Part 4)
      */
-    public void recordBoarding(String vehicleId, int seatNumber, double latitude, double longitude) {
-        isLoading.setValue(true);
-        errorMessage.setValue(null);
+    public void recordBoarding(int seatNumber, double latitude, double longitude) {
+        boardingState.setValue(BoardingState.loading());
 
-        LiveData<BoardingResponse> result = repository.recordBoarding(vehicleId, seatNumber, latitude, longitude);
+        LiveData<DashboardRepository.Result<BoardingResponse>> result =
+            repository.recordBoarding(currentVehicleId, seatNumber, latitude, longitude);
 
-        MediatorLiveData<BoardingResponse> mediator = new MediatorLiveData<>();
-        mediator.addSource(result, response -> {
-            isLoading.setValue(false);
-            if (response != null && response.isSuccess()) {
-                boardingResult.setValue(response);
-                // Refresh dashboard after successful boarding
-                loadDashboardData(vehicleId);
+        MediatorLiveData<DashboardRepository.Result<BoardingResponse>> mediator = new MediatorLiveData<>();
+        mediator.addSource(result, boardingResult -> {
+            if (boardingResult.isSuccess()) {
+                boardingState.setValue(BoardingState.success(boardingResult.getData()));
+                // Refresh dashboard immediately after successful boarding
+                refreshNow();
             } else {
-                errorMessage.setValue("Failed to record boarding");
+                boardingState.setValue(BoardingState.error(boardingResult.getError()));
             }
             mediator.removeSource(result);
         });
     }
 
     // Getters for LiveData
-    public LiveData<DashboardResponse> getDashboardData() {
-        return dashboardData;
+    public LiveData<DashboardState> getDashboardState() {
+        return dashboardState;
     }
 
-    public LiveData<BoardingResponse> getBoardingResult() {
-        return boardingResult;
-    }
-
-    public LiveData<Boolean> getIsLoading() {
-        return isLoading;
-    }
-
-    public LiveData<String> getErrorMessage() {
-        return errorMessage;
-    }
-
-    public LiveData<Long> getLastUpdateTime() {
-        return lastUpdateTime;
-    }
-
-    /**
-     * Clear boarding result after handling
-     */
-    public void clearBoardingResult() {
-        boardingResult.setValue(null);
-    }
-
-    /**
-     * Clear error message after displaying
-     */
-    public void clearError() {
-        errorMessage.setValue(null);
+    public LiveData<BoardingState> getBoardingState() {
+        return boardingState;
     }
 
     /**
@@ -138,15 +122,6 @@ public class DashboardViewModel extends ViewModel {
     }
 
     /**
-     * Manual refresh (called by swipe-to-refresh)
-     */
-    public void refreshNow() {
-        if (currentVehicleId != null) {
-            loadDashboardData(currentVehicleId);
-        }
-    }
-
-    /**
      * Schedule next auto-refresh
      */
     private void scheduleRefresh() {
@@ -154,7 +129,7 @@ public class DashboardViewModel extends ViewModel {
 
         refreshTask = () -> {
             if (currentVehicleId != null) {
-                loadDashboardData(currentVehicleId);
+                fetchDashboard(true);
             }
         };
 
@@ -165,5 +140,75 @@ public class DashboardViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
         stopAutoRefresh(); // Clean up when ViewModel is destroyed
+    }
+
+    // Dashboard State
+    public static class DashboardState {
+        public enum Status { IDLE, LOADING, SUCCESS, ERROR }
+
+        private Status status;
+        private DashboardResponse data;
+        private String error;
+
+        private DashboardState(Status status, DashboardResponse data, String error) {
+            this.status = status;
+            this.data = data;
+            this.error = error;
+        }
+
+        public static DashboardState idle() {
+            return new DashboardState(Status.IDLE, null, null);
+        }
+
+        public static DashboardState loading() {
+            return new DashboardState(Status.LOADING, null, null);
+        }
+
+        public static DashboardState success(DashboardResponse data) {
+            return new DashboardState(Status.SUCCESS, data, null);
+        }
+
+        public static DashboardState error(String error) {
+            return new DashboardState(Status.ERROR, null, error);
+        }
+
+        public Status getStatus() { return status; }
+        public DashboardResponse getData() { return data; }
+        public String getError() { return error; }
+    }
+
+    // Boarding State
+    public static class BoardingState {
+        public enum Status { IDLE, LOADING, SUCCESS, ERROR }
+
+        private Status status;
+        private BoardingResponse data;
+        private String error;
+
+        private BoardingState(Status status, BoardingResponse data, String error) {
+            this.status = status;
+            this.data = data;
+            this.error = error;
+        }
+
+        public static BoardingState idle() {
+            return new BoardingState(Status.IDLE, null, null);
+        }
+
+        public static BoardingState loading() {
+            return new BoardingState(Status.LOADING, null, null);
+        }
+
+        public static BoardingState success(BoardingResponse data) {
+            return new BoardingState(Status.SUCCESS, data, null);
+        }
+
+        public static BoardingState error(String error) {
+            return new BoardingState(Status.ERROR, null, error);
+        }
+
+        public Status getStatus() { return status; }
+        public BoardingResponse getData() { return data; }
+        public String getError() { return error; }
     }
 }

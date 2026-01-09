@@ -31,15 +31,15 @@ public class DashboardRepository {
     }
 
     /**
-     * Fetch dashboard status from backend
+     * Fetch dashboard status from backend (Enhanced with error handling - Module 2 Part 4)
      */
-    public LiveData<DashboardResponse> getDashboardStatus(String vehicleId) {
-        MutableLiveData<DashboardResponse> result = new MutableLiveData<>();
+    public LiveData<Result<DashboardResponse>> getDashboardStatus(String vehicleId) {
+        MutableLiveData<Result<DashboardResponse>> result = new MutableLiveData<>();
 
         String token = tokenManager.getToken();
         if (token == null || token.isEmpty()) {
             Log.e(TAG, "No auth token available");
-            result.setValue(null);
+            result.setValue(Result.error("Authentication required"));
             return result;
         }
 
@@ -51,17 +51,35 @@ public class DashboardRepository {
                                    @NonNull Response<DashboardResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "Dashboard status fetched successfully");
-                    result.setValue(response.body());
+                    result.setValue(Result.success(response.body()));
                 } else {
+                    String error = "Failed to load dashboard";
+                    if (response.code() == 401) {
+                        error = "Session expired. Please login again.";
+                    } else if (response.code() == 404) {
+                        error = "Vehicle not found";
+                    } else if (response.code() >= 500) {
+                        error = "Server error. Please try again.";
+                    }
                     Log.e(TAG, "Failed to fetch dashboard: " + response.code());
-                    result.setValue(null);
+                    result.setValue(Result.error(error));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<DashboardResponse> call, @NonNull Throwable t) {
+                String error = "Network error";
+                if (t.getMessage() != null) {
+                    if (t.getMessage().contains("timeout")) {
+                        error = "Connection timeout. Check your internet.";
+                    } else if (t.getMessage().contains("Unable to resolve host")) {
+                        error = "No internet connection";
+                    } else {
+                        error = t.getMessage();
+                    }
+                }
                 Log.e(TAG, "Network error fetching dashboard", t);
-                result.setValue(null);
+                result.setValue(Result.error(error));
             }
         });
 
@@ -69,16 +87,16 @@ public class DashboardRepository {
     }
 
     /**
-     * Record passenger boarding
+     * Record passenger boarding (Enhanced with error handling - Module 2 Part 4)
      */
-    public LiveData<BoardingResponse> recordBoarding(String vehicleId, int seatNumber,
-                                                      double latitude, double longitude) {
-        MutableLiveData<BoardingResponse> result = new MutableLiveData<>();
+    public LiveData<Result<BoardingResponse>> recordBoarding(String vehicleId, int seatNumber,
+                                                              double latitude, double longitude) {
+        MutableLiveData<Result<BoardingResponse>> result = new MutableLiveData<>();
 
         String token = tokenManager.getToken();
         if (token == null || token.isEmpty()) {
             Log.e(TAG, "No auth token available");
-            result.setValue(null);
+            result.setValue(Result.error("Authentication required"));
             return result;
         }
 
@@ -90,18 +108,31 @@ public class DashboardRepository {
             public void onResponse(@NonNull Call<BoardingResponse> call,
                                    @NonNull Response<BoardingResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d(TAG, "Boarding recorded successfully");
-                    result.setValue(response.body());
+                    BoardingResponse boardingResponse = response.body();
+                    if (boardingResponse.isSuccess()) {
+                        Log.d(TAG, "Boarding recorded successfully");
+                        result.setValue(Result.success(boardingResponse));
+                    } else {
+                        result.setValue(Result.error(boardingResponse.getMessage()));
+                    }
                 } else {
+                    String error = "Boarding failed";
+                    if (response.code() == 400) {
+                        error = "Seat already occupied";
+                    } else if (response.code() == 401) {
+                        error = "Session expired";
+                    } else if (response.code() == 409) {
+                        error = "Seat not available";
+                    }
                     Log.e(TAG, "Failed to record boarding: " + response.code());
-                    result.setValue(null);
+                    result.setValue(Result.error(error));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<BoardingResponse> call, @NonNull Throwable t) {
                 Log.e(TAG, "Network error recording boarding", t);
-                result.setValue(null);
+                result.setValue(Result.error("Network error: " + t.getMessage()));
             }
         });
 
