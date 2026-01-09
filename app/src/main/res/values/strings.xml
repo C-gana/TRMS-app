@@ -192,4 +192,88 @@
     <!-- Additional Content Descriptions -->
     <string name="seat_icon">Seat icon</string>
     <string name="alert_icon">Alert icon</string>
+
+    <!-- Module 3: Destination Selection -->
+    <string name="select_destination">Select Destination</string>
+    <string name="search_destinations">Search destinations...</string>
+    <string name="no_destinations_found">No destinations found</string>
+    <string name="confirm_destination">Confirm Destination</string>
+    <string name="seat_label">Seat</string>
+    <string name="destination_label">Destination</string>
+    <string name="fare_label">Fare</string>
+    <string name="journey_details_label">Journey Details</string>
+    <string name="destination_confirmation_warning">Make sure passenger confirms this destination before proceeding.</string>
+    <string name="confirm">Confirm</string>
+    <string name="timeout_warning">Time remaining to select destination</string>
+    <string name="destination_set_success">Destination set successfully</string>
+    <string name="destination_set_failed">Failed to set destination</string>
+    <string name="destination_timeout">Destination selection timed out</string>
+    <string name="loading_destinations">Loading destinations...</string>
+    <string name="no_destinations_available">No destinations available</string>
+    <string name="destination_icon">Destination icon</string>
+    <string name="selected_icon">Selected icon</string>
+    <string name="warning_icon">Warning icon</string>
+    <string name="no_destinations_icon">No destinations icon</string>
+    <string name="passenger_waiting">Passenger waiting</string>
+    <string name="seat_x_select_destination">Seat %d - Select Destination</string>
+    <string name="estimated_x_minutes">Estimated %d minutes</string>
+
+    <!-- Module 3 Part 3: Additional Strings -->
+    <string name="timeout_title">Timeout</string>
+    <string name="timeout_message">90 seconds have passed. The destination must be selected immediately or the journey will be cancelled.</string>
+    <string name="cancel_selection_title">Cancel Selection?</string>
+    <string name="cancel_selection_message">You haven\'t selected a destination yet. The passenger is waiting. Are you sure you want to cancel?</string>
+    <string name="yes_cancel">Yes, Cancel</string>
+    <string name="no_continue">No, Continue</string>
+    <string name="invalid_destination">Invalid destination selected</string>
+    <string name="destination_already_set">Destination already set for this journey</string>
+    <string name="journey_not_found">Journey not found</string>
+
+    <!-- Module 4: Passenger Alighting & Journey Completion -->
+    <string name="confirm_alighting">Confirm Alighting</string>
+    <string name="alighting_subtitle">Record passenger exit</string>
+    <string name="alighting_icon">Alighting icon</string>
+    <string name="seat">Seat</string>
+    <string name="destination">Destination</string>
+    <string name="fare">Fare</string>
+    <string name="duration">Duration</string>
+    <string name="distance">Distance</string>
+    <string name="did_passenger_alight">Did the passenger alight?</string>
+    <string name="yes_alighted">Yes, Alighted</string>
+    <string name="missed_stop">Missed Stop</string>
+    <string name="was_fare_collected">Was the fare collected?</string>
+    <string name="alighting_success">Journey completed successfully</string>
+    <string name="alighting_failed">Failed to record alighting</string>
+    <string name="recording_alighting">Recording alighting…</string>
+
+    <!-- Missed Stop Dialog -->
+    <string name="missed_stop_icon">Missed stop icon</string>
+    <string name="missed_stop_explanation">The passenger did not alight at their destination. An alert will be sent to the vehicle owner.</string>
+    <string name="add_notes_optional">Add notes (optional)</string>
+    <string name="missed_stop_warning">An alert will be sent to management. The journey will remain active until the passenger alights.</string>
+    <string name="report_missed_stop">Report Missed Stop</string>
+    <string name="missed_stop_reported">Missed stop reported successfully</string>
+    <string name="missed_stop_report_failed">Failed to report missed stop</string>
+
+    <!-- Journey Summary -->
+    <string name="journey_completed">Journey Completed</string>
+    <string name="fare_collected">Fare Collected</string>
+    <string name="fare_not_collected_label">Fare Not Collected</string>
+    <string name="journey_duration">Journey Duration</string>
+    <string name="total_distance">Total Distance</string>
+    <string name="info_icon">Info icon</string>
+
+    <!-- Alighting Errors -->
+    <string name="journey_already_completed">Journey already completed</string>
+    <string name="invalid_journey">Invalid journey</string>
+    <string name="alighting_location_error">Failed to get location</string>
+    <string name="awaiting_destination_selection">Passenger is awaiting destination selection</string>
+    <string name="journey_completed_summary">Journey completed in %d minutes · %.1f km</string>
+
+    <!-- Module 4 Part 3: Proximity Alerts & FCM -->
+    <string name="approaching_destination">Approaching Destination</string>
+    <string name="approaching_notification_text">Seat %d approaching %s - %.0fm away</string>
+    <string name="proximity_alert">Proximity Alert</string>
+    <string name="destination_reached">Destination Reached</string>
+    <string name="notification_channel_proximity">Proximity Alerts</string>
 </resources>

@@ -44,4 +44,18 @@
     <dimen name="elevation_md">4dp</dimen>
     <dimen name="elevation_lg">6dp</dimen>
     <dimen name="elevation_xl">8dp</dimen>
+
+    <!-- Module 3: Destination Selection -->
+    <dimen name="text_destination_name">20sp</dimen>
+    <dimen name="text_fare">18sp</dimen>
+    <dimen name="text_distance">14sp</dimen>
+    <dimen name="text_timeout">16sp</dimen>
+    <dimen name="destination_card_height">88dp</dimen>
+    <dimen name="destination_card_padding">16dp</dimen>
+    <dimen name="search_input_height">56dp</dimen>
+
+    <!-- Module 4: Alighting & Journey Completion -->
+    <dimen name="text_journey_summary">18sp</dimen>
+    <dimen name="text_fare_amount">28sp</dimen>
+    <dimen name="alighting_button_height">72dp</dimen>
 </resources>

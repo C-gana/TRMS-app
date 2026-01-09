@@ -18,8 +18,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.cgana.trmsdriver.data.local.TokenManager;
+import com.cgana.trmsdriver.data.model.AlightingResponse;
 import com.cgana.trmsdriver.data.model.DashboardResponse;
+import com.cgana.trmsdriver.data.model.MissedStopResponse;
 import com.cgana.trmsdriver.data.model.SeatStatus;
+import com.cgana.trmsdriver.data.repository.AlightingRepository;
+import com.cgana.trmsdriver.ui.alighting.AlightingConfirmationDialog;
+import com.cgana.trmsdriver.ui.alighting.MissedStopDialog;
 import com.cgana.trmsdriver.ui.auth.LoginActivity;
 import com.cgana.trmsdriver.ui.dashboard.BoardingDialog;
 import com.cgana.trmsdriver.ui.dashboard.DashboardViewModel;
@@ -29,6 +34,7 @@ import com.cgana.trmsdriver.ui.dashboard.SeatCardBinder;
 import com.cgana.trmsdriver.ui.duty.DutyStatusActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import java.text.SimpleDateFormat;
@@ -46,6 +52,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements BoardingDialog.BoardingDialogListener {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+    private static final int REQUEST_DESTINATION_SELECTION = 2001;
 
     // UI Components
     private MaterialToolbar toolbar;
@@ -65,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
     private DashboardViewModel viewModel;
     private TokenManager tokenManager;
     private FusedLocationProviderClient fusedLocationClient;
+    private AlightingRepository alightingRepository; // Module 4 Part 2
 
     // Seat card views cache
     private final Map<Integer, View> seatCardViews = new HashMap<>();
@@ -110,6 +118,9 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
         DashboardRepository repository = new DashboardRepository(this);
         DashboardViewModelFactory factory = new DashboardViewModelFactory(repository);
         viewModel = new ViewModelProvider(this, factory).get(DashboardViewModel.class);
+
+        // Initialize Alighting Repository (Module 4 Part 2)
+        alightingRepository = new AlightingRepository(tokenManager);
 
         // Setup observers
         setupObservers();
@@ -175,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
         });
 
         // Boarding state observer (Module 2 Part 4 - Enhanced with state management)
+        // Module 3 Part 3: Auto-launch destination selection after boarding
         viewModel.getBoardingState().observe(this, state -> {
             switch (state.getStatus()) {
                 case LOADING:
@@ -183,7 +195,21 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
 
                 case SUCCESS:
                     loadingOverlay.setVisibility(View.GONE);
-                    showBoardingSuccess(state.getData().getMessage());
+
+                    // Show success message
+                    Toast.makeText(this, state.getData().getMessage(), Toast.LENGTH_SHORT).show();
+
+                    // Haptic feedback
+                    findViewById(android.R.id.content).performHapticFeedback(
+                        android.view.HapticFeedbackConstants.CONFIRM
+                    );
+
+                    // AUTO-LAUNCH DESTINATION SELECTION (Module 3 Part 3)
+                    launchDestinationSelection(
+                        state.getData().getJourneyId(),
+                        state.getData().getSeatNumber()
+                    );
+
                     // Dashboard will auto-refresh
                     break;
 
@@ -325,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
     }
 
     private void onSeatCardClicked(int seatNumber) {
-        // Get current seat status from state (Module 2 Part 4)
+        // Get current seat status from state (Module 2 Part 4, Module 4 Part 2)
         DashboardViewModel.DashboardState state = viewModel.getDashboardState().getValue();
         if (state == null || state.getData() == null || state.getData().getSeats() == null) {
             return;
@@ -344,11 +370,18 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
             return;
         }
 
-        // Only allow boarding on vacant seats
+        // Handle based on seat status
         if (seat.isVacant()) {
+            // Boarding flow (Module 2)
             confirmBoarding(seatNumber);
+        } else if (seat.isActive() || seat.isApproaching()) {
+            // Alighting flow (Module 4 Part 2)
+            showAlightingConfirmationDialog(seat);
+        } else if (seat.isAwaiting()) {
+            // Awaiting destination selection
+            Toast.makeText(this, R.string.awaiting_destination_selection, Toast.LENGTH_SHORT).show();
         } else {
-            // For non-vacant seats, you can show details dialog
+            // Other states
             Toast.makeText(this, "Seat " + seatNumber + " is " + seat.getStatus(),
                     Toast.LENGTH_SHORT).show();
         }
@@ -511,6 +544,17 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
         return String.format(Locale.getDefault(), "%,d", revenue);
     }
 
+    /**
+     * Launch destination selection activity (Module 3 Part 3)
+     */
+    private void launchDestinationSelection(long journeyId, int seatNumber) {
+        Intent intent = new Intent(this, com.cgana.trmsdriver.ui.destination.DestinationSelectionActivity.class);
+        intent.putExtra(com.cgana.trmsdriver.ui.destination.DestinationSelectionActivity.EXTRA_VEHICLE_ID, vehicleId);
+        intent.putExtra(com.cgana.trmsdriver.ui.destination.DestinationSelectionActivity.EXTRA_JOURNEY_ID, journeyId);
+        intent.putExtra(com.cgana.trmsdriver.ui.destination.DestinationSelectionActivity.EXTRA_SEAT_NUMBER, seatNumber);
+        startActivityForResult(intent, REQUEST_DESTINATION_SELECTION);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -532,6 +576,19 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
         moveTaskToBack(true);
     }
 
+    /**
+     * Handle result from destination selection (Module 3 Part 3)
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_DESTINATION_SELECTION && resultCode == RESULT_OK) {
+            // Destination was set successfully, refresh dashboard
+            viewModel.refreshNow();
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                           @NonNull int[] grantResults) {
@@ -544,6 +601,200 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
                 Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    // ==================== Module 4 Part 2: Alighting Methods ====================
+
+    /**
+     * Show alighting confirmation dialog (Module 4 Part 2)
+     */
+    private void showAlightingConfirmationDialog(SeatStatus seat) {
+        AlightingConfirmationDialog dialog = AlightingConfirmationDialog.newInstance(seat);
+        dialog.setListener(new AlightingConfirmationDialog.AlightingDialogListener() {
+            @Override
+            public void onConfirmAlighting(long journeyId, int seatNumber, boolean fareCollected) {
+                recordAlighting(journeyId, seatNumber, fareCollected, false);
+            }
+
+            @Override
+            public void onMissedStop(long journeyId, int seatNumber) {
+                showMissedStopDialog(journeyId, seatNumber);
+            }
+        });
+        dialog.show(getSupportFragmentManager(), "AlightingDialog");
+    }
+
+    /**
+     * Show missed stop dialog (Module 4 Part 2)
+     */
+    private void showMissedStopDialog(long journeyId, int seatNumber) {
+        MissedStopDialog dialog = MissedStopDialog.newInstance(journeyId, seatNumber);
+        dialog.setListener((jId, seatNum, notes) -> {
+            reportMissedStop(jId, seatNum, notes);
+        });
+        dialog.show(getSupportFragmentManager(), "MissedStopDialog");
+    }
+
+    /**
+     * Record passenger alighting (Module 4 Part 2)
+     */
+    private void recordAlighting(long journeyId, int seatNumber, boolean fareCollected, boolean missedStop) {
+        // Check location permission
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            getCurrentLocationAndRecordAlighting(journeyId, seatNumber, fareCollected, missedStop);
+        } else {
+            // Use default location
+            performAlighting(journeyId, seatNumber, fareCollected, missedStop, -15.7891, 35.0412);
+        }
+    }
+
+    /**
+     * Get location and record alighting (Module 4 Part 2)
+     */
+    private void getCurrentLocationAndRecordAlighting(long journeyId, int seatNumber,
+                                                     boolean fareCollected, boolean missedStop) {
+        loadingOverlay.setVisibility(View.VISIBLE);
+
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+            .addOnSuccessListener(this, location -> {
+                double latitude, longitude;
+                if (location != null) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                } else {
+                    latitude = -15.7891;
+                    longitude = 35.0412;
+                }
+                performAlighting(journeyId, seatNumber, fareCollected, missedStop, latitude, longitude);
+            })
+            .addOnFailureListener(this, e -> {
+                // Use default location on failure
+                performAlighting(journeyId, seatNumber, fareCollected, missedStop, -15.7891, 35.0412);
+            });
+    }
+
+    /**
+     * Perform alighting API call (Module 4 Part 2)
+     */
+    private void performAlighting(long journeyId, int seatNumber, boolean fareCollected,
+                                  boolean missedStop, double latitude, double longitude) {
+        loadingOverlay.setVisibility(View.VISIBLE);
+
+        LiveData<AlightingRepository.Result<AlightingResponse>> result =
+            alightingRepository.recordAlighting(vehicleId, journeyId, seatNumber,
+                                              latitude, longitude, fareCollected, missedStop);
+
+        result.observeForever(alightingResult -> {
+            loadingOverlay.setVisibility(View.GONE);
+
+            if (alightingResult != null && alightingResult.isSuccess()) {
+                showAlightingSuccess(alightingResult.getData());
+                // Refresh dashboard
+                viewModel.refreshNow();
+            } else {
+                String error = alightingResult != null ? alightingResult.getError() : "Unknown error";
+                showError(error);
+            }
+        });
+    }
+
+    /**
+     * Report missed stop (Module 4 Part 2)
+     */
+    private void reportMissedStop(long journeyId, int seatNumber, String notes) {
+        // Check location permission
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            getCurrentLocationAndReportMissed(journeyId, seatNumber, notes);
+        } else {
+            // Use default location
+            performReportMissed(journeyId, seatNumber, notes, -15.7891, 35.0412);
+        }
+    }
+
+    /**
+     * Get location and report missed stop (Module 4 Part 2)
+     */
+    private void getCurrentLocationAndReportMissed(long journeyId, int seatNumber, String notes) {
+        loadingOverlay.setVisibility(View.VISIBLE);
+
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+            .addOnSuccessListener(this, location -> {
+                double latitude, longitude;
+                if (location != null) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                } else {
+                    latitude = -15.7891;
+                    longitude = 35.0412;
+                }
+                performReportMissed(journeyId, seatNumber, notes, latitude, longitude);
+            })
+            .addOnFailureListener(this, e -> {
+                // Use default location on failure
+                performReportMissed(journeyId, seatNumber, notes, -15.7891, 35.0412);
+            });
+    }
+
+    /**
+     * Perform report missed stop API call (Module 4 Part 2)
+     */
+    private void performReportMissed(long journeyId, int seatNumber, String notes,
+                                    double latitude, double longitude) {
+        loadingOverlay.setVisibility(View.VISIBLE);
+
+        LiveData<AlightingRepository.Result<MissedStopResponse>> result =
+            alightingRepository.reportMissedStop(vehicleId, journeyId, seatNumber,
+                                               latitude, longitude, notes);
+
+        result.observeForever(missedResult -> {
+            loadingOverlay.setVisibility(View.GONE);
+
+            if (missedResult != null && missedResult.isSuccess()) {
+                showMissedStopSuccess(missedResult.getData().getMessage());
+                // Refresh dashboard
+                viewModel.refreshNow();
+            } else {
+                String error = missedResult != null ? missedResult.getError() : "Unknown error";
+                showError(error);
+            }
+        });
+    }
+
+    /**
+     * Show alighting success dialog (Module 4 Part 2)
+     */
+    private void showAlightingSuccess(AlightingResponse response) {
+        String message = response.getMessage();
+        if (response.getJourneySummary() != null) {
+            message += "\n\n" + response.getJourneySummary().getFormattedDuration() +
+                      " · " + response.getJourneySummary().getFormattedDistance();
+        }
+
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.journey_completed)
+            .setMessage(message)
+            .setIcon(R.drawable.ic_check_circle)
+            .setPositiveButton(R.string.ok, null)
+            .show();
+
+        // Haptic feedback
+        findViewById(android.R.id.content).performHapticFeedback(
+            android.view.HapticFeedbackConstants.CONFIRM
+        );
+    }
+
+    /**
+     * Show missed stop success (Module 4 Part 2)
+     */
+    private void showMissedStopSuccess(String message) {
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.missed_stop_reported)
+            .setMessage(message)
+            .setIcon(R.drawable.ic_alert)
+            .setPositiveButton(R.string.ok, null)
+            .show();
     }
 }
 

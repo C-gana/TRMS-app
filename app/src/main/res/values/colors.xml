@@ -51,4 +51,20 @@
     <!-- Legacy Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Module 3: Destination Selection Colors -->
+    <color name="destination_card_background">#FFFFFF</color>
+    <color name="destination_selected">#E3F2FD</color>
+    <color name="destination_selected_border">#2196F3</color>
+    <color name="fare_text">#4CAF50</color>
+    <color name="distance_text">#757575</color>
+    <color name="timeout_warning">#FF9800</color>
+    <color name="timeout_critical">#F44336</color>
+
+    <!-- Module 4: Alighting Colors -->
+    <color name="alighting_success">#4CAF50</color>
+    <color name="alighting_warning">#FF9800</color>
+    <color name="missed_stop">#F44336</color>
+    <color name="fare_collected">#4CAF50</color>
+    <color name="fare_not_collected">#FFC107</color>
 </resources>

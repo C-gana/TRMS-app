@@ -52,21 +52,32 @@ public class TRMSFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "Message received from: " + remoteMessage.getFrom());
 
         // Check if message contains data payload
-        if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data: " + remoteMessage.getData());
-            handleDataMessage(remoteMessage);
+        if (!remoteMessage.getData().isEmpty()) {
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+
+            Map<String, String> data = remoteMessage.getData();
+            String type = data.get("type");
+
+            // Handle different notification types (Module 4 Part 3)
+            if ("proximity_alert".equals(type)) {
+                handleProximityAlert(data);
+            } else if ("destination_reached".equals(type)) {
+                handleDestinationReached(data);
+            } else if ("missed_stop_alert".equals(type)) {
+                handleMissedStopAlert(data);
+            } else {
+                // Handle other message types
+                handleDataMessage(remoteMessage);
+            }
         }
 
         // Check if message contains notification payload
         if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Notification title: " + remoteMessage.getNotification().getTitle());
-            Log.d(TAG, "Notification body: " + remoteMessage.getNotification().getBody());
+            String title = remoteMessage.getNotification().getTitle();
+            String body = remoteMessage.getNotification().getBody();
+            Log.d(TAG, "Notification - Title: " + title + ", Body: " + body);
 
-            showNotification(
-                    remoteMessage.getNotification().getTitle(),
-                    remoteMessage.getNotification().getBody(),
-                    remoteMessage.getData()
-            );
+            showNotification(title, body, remoteMessage.getData());
         }
     }
 
@@ -204,6 +215,128 @@ public class TRMSFirebaseMessagingService extends FirebaseMessagingService {
         // Use unique notification ID based on current time
         int notificationId = (int) System.currentTimeMillis();
         notificationManager.notify(notificationId, notificationBuilder.build());
+    }
+
+    /**
+     * Handle proximity alert notification (Module 4 Part 3)
+     */
+    private void handleProximityAlert(Map<String, String> data) {
+        String seatNumber = data.get("seat_number");
+        String destination = data.get("destination");
+        String distanceMeters = data.get("distance_meters");
+
+        if (seatNumber == null || destination == null || distanceMeters == null) {
+            Log.w(TAG, "Incomplete proximity alert data");
+            return;
+        }
+
+        try {
+            int seat = Integer.parseInt(seatNumber);
+            float distance = Float.parseFloat(distanceMeters);
+
+            String title = getString(R.string.approaching_destination);
+            String message = getString(R.string.approaching_notification_text, seat, destination, distance);
+
+            sendProximityNotification(title, message);
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "Error parsing proximity alert data", e);
+        }
+    }
+
+    /**
+     * Handle destination reached notification (Module 4 Part 3)
+     */
+    private void handleDestinationReached(Map<String, String> data) {
+        String seatNumber = data.get("seat_number");
+        String destination = data.get("destination");
+
+        if (seatNumber == null || destination == null) {
+            return;
+        }
+
+        String title = "Destination Reached";
+        String message = "Seat " + seatNumber + " has reached " + destination;
+
+        sendProximityNotification(title, message);
+    }
+
+    /**
+     * Handle missed stop alert (Module 4 Part 3)
+     */
+    private void handleMissedStopAlert(Map<String, String> data) {
+        String seatNumber = data.get("seat_number");
+        String destination = data.get("destination");
+
+        if (seatNumber == null || destination == null) {
+            return;
+        }
+
+        String title = getString(R.string.missed_stop);
+        String message = "Seat " + seatNumber + " missed stop at " + destination;
+
+        showNotification(title, message, data);
+    }
+
+    /**
+     * Send proximity notification with high priority and alarm sound (Module 4 Part 3)
+     */
+    private void sendProximityNotification(String title, String message) {
+        // Create proximity notification channel
+        String channelId = "proximity_alerts";
+        createProximityNotificationChannel(channelId);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+            this, 0, intent, PendingIntent.FLAG_IMMUTABLE
+        );
+
+        // Use alarm sound for proximity alerts
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_location)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setAutoCancel(true)
+            .setSound(alarmSound)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVibrate(new long[]{0, 500, 200, 500, 200, 500})
+            .setContentIntent(pendingIntent)
+            .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
+
+        NotificationManager notificationManager =
+            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (notificationManager != null) {
+            int notificationId = (int) System.currentTimeMillis();
+            notificationManager.notify(notificationId, notificationBuilder.build());
+        }
+    }
+
+    /**
+     * Create notification channel for proximity alerts (Module 4 Part 3)
+     */
+    private void createProximityNotificationChannel(String channelId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                channelId,
+                getString(R.string.proximity_alert),
+                NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setDescription("Alerts when vehicle is approaching passenger destinations");
+            channel.enableVibration(true);
+            channel.setVibrationPattern(new long[]{0, 500, 200, 500, 200, 500});
+            channel.setShowBadge(true);
+
+            NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
     }
 
     private void sendTokenToServer(String token) {
