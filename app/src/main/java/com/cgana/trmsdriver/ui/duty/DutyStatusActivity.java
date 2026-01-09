@@ -574,13 +574,11 @@ public class DutyStatusActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // If ON DUTY, don't allow back - must use End Duty button
-        if (tokenManager.getDutyStatus()) {
-            Toast.makeText(this, R. string.use_end_duty_button, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // If OFF DUTY, move to background
-        moveTaskToBack(true);
+        // Navigate back to MainActivity regardless of duty status
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

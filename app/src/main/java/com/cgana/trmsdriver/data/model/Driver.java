@@ -5,10 +5,12 @@ public class Driver {
     private String full_name;
     private String phone_number;
     private String email;
+    private String role;          // From backend
     private String vehicle_id;
     private String vehicle_registration;
     private boolean on_duty;
     private String duty_started_at;
+    private String fcm_token;
 
     // Constructor
     public Driver() {}
@@ -35,6 +37,9 @@ public class Driver {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+
     public String getVehicleId() { return vehicle_id; }
     public void setVehicleId(String vehicle_id) { this.vehicle_id = vehicle_id; }
 
@@ -50,6 +55,9 @@ public class Driver {
     public void setDutyStartedAt(String duty_started_at) {
         this.duty_started_at = duty_started_at;
     }
+
+    public String getFcmToken() { return fcm_token; }
+    public void setFcmToken(String fcm_token) { this.fcm_token = fcm_token; }
 
     // Helper method to get driver initials for avatar
     public String getInitials() {

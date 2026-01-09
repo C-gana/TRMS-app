@@ -142,4 +142,15 @@
     <string name="boarding_success">Passenger boarded successfully</string>
     <string name="boarding_failed">Failed to record boarding</string>
     <string name="select_destination">Select destination</string>
+
+    <!-- Seat Card (Module 2 Part 3) -->
+    <string name="seat_number_format">SEAT %d</string>
+    <string name="timeout_format">⏱️ %ds</string>
+    <string name="seat_unknown">UNKNOWN</string>
+
+    <!-- Boarding Dialog (Module 2 Part 3) -->
+    <string name="board_passenger">Board Passenger</string>
+    <string name="board_passenger_title">Board Passenger - Seat %d</string>
+    <string name="board_passenger_message">Confirm boarding of passenger for this seat. Location will be captured automatically.</string>
+    <string name="confirm_boarding">Confirm Boarding</string>
 </resources>

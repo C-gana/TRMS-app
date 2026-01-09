@@ -1,18 +1,20 @@
 package com.cgana.trmsdriver.ui.dashboard;
 
-import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.cgana.trmsdriver.data.model.BoardingResponse;
 import com.cgana.trmsdriver.data.model.DashboardResponse;
 import com.cgana.trmsdriver.data.repository.DashboardRepository;
 
-public class DashboardViewModel extends AndroidViewModel {
+public class DashboardViewModel extends ViewModel {
+    private static final long REFRESH_INTERVAL_MS = 5000; // 5 seconds as per Module 2 Part 3
+
     private final DashboardRepository repository;
     private final MutableLiveData<DashboardResponse> dashboardData = new MutableLiveData<>();
     private final MutableLiveData<BoardingResponse> boardingResult = new MutableLiveData<>();
@@ -20,9 +22,14 @@ public class DashboardViewModel extends AndroidViewModel {
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MediatorLiveData<Long> lastUpdateTime = new MediatorLiveData<>();
 
-    public DashboardViewModel(@NonNull Application application) {
-        super(application);
-        this.repository = new DashboardRepository(application);
+    // Auto-refresh components
+    private Handler handler;
+    private Runnable refreshTask;
+    private String currentVehicleId;
+
+    public DashboardViewModel(DashboardRepository repository) {
+        this.repository = repository;
+        this.handler = new Handler(Looper.getMainLooper());
         lastUpdateTime.setValue(System.currentTimeMillis());
     }
 
@@ -42,6 +49,11 @@ public class DashboardViewModel extends AndroidViewModel {
             if (response != null) {
                 dashboardData.setValue(response);
                 lastUpdateTime.setValue(System.currentTimeMillis());
+
+                // Schedule next auto-refresh if auto-refresh is active
+                if (currentVehicleId != null) {
+                    scheduleRefresh();
+                }
             } else {
                 errorMessage.setValue("Failed to load dashboard data");
             }
@@ -106,5 +118,52 @@ public class DashboardViewModel extends AndroidViewModel {
     public void clearError() {
         errorMessage.setValue(null);
     }
-}
 
+    /**
+     * Start auto-refresh (Module 2 Part 3)
+     */
+    public void startAutoRefresh(String vehicleId) {
+        this.currentVehicleId = vehicleId;
+        scheduleRefresh();
+    }
+
+    /**
+     * Stop auto-refresh
+     */
+    public void stopAutoRefresh() {
+        if (refreshTask != null && handler != null) {
+            handler.removeCallbacks(refreshTask);
+            refreshTask = null;
+        }
+    }
+
+    /**
+     * Manual refresh (called by swipe-to-refresh)
+     */
+    public void refreshNow() {
+        if (currentVehicleId != null) {
+            loadDashboardData(currentVehicleId);
+        }
+    }
+
+    /**
+     * Schedule next auto-refresh
+     */
+    private void scheduleRefresh() {
+        stopAutoRefresh(); // Cancel any pending refresh
+
+        refreshTask = () -> {
+            if (currentVehicleId != null) {
+                loadDashboardData(currentVehicleId);
+            }
+        };
+
+        handler.postDelayed(refreshTask, REFRESH_INTERVAL_MS);
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        stopAutoRefresh(); // Clean up when ViewModel is destroyed
+    }
+}

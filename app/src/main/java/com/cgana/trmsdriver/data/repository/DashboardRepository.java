@@ -13,6 +13,8 @@ import com.cgana.trmsdriver.data.local.TokenManager;
 import com.cgana.trmsdriver.data.model.BoardingRequest;
 import com.cgana.trmsdriver.data.model.BoardingResponse;
 import com.cgana.trmsdriver.data.model.DashboardResponse;
+import com.cgana.trmsdriver.data.model.GenericResponse;
+import com.cgana.trmsdriver.data.model.Location;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -105,5 +107,77 @@ public class DashboardRepository {
 
         return result;
     }
-}
 
+    /**
+     * Board passenger with location (Module 2 Part 3)
+     */
+    public LiveData<Result<GenericResponse>> boardPassenger(String vehicleId, int seatNumber, Location boardingLocation) {
+        MutableLiveData<Result<GenericResponse>> result = new MutableLiveData<>();
+
+        String token = tokenManager.getToken();
+        if (token == null || token.isEmpty()) {
+            result.setValue(Result.error("Authentication required"));
+            return result;
+        }
+
+        String authHeader = "Bearer " + token;
+
+        // Create BoardingRequest with location
+        BoardingRequest request = new BoardingRequest(vehicleId, seatNumber,
+                boardingLocation.getLatitude(), boardingLocation.getLongitude());
+
+        apiService.recordBoarding(request, authHeader).enqueue(new Callback<BoardingResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<BoardingResponse> call, @NonNull Response<BoardingResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    BoardingResponse boardingResp = response.body();
+
+                    // Convert BoardingResponse to GenericResponse
+                    GenericResponse genericResp = new GenericResponse();
+                    genericResp.setSuccess(boardingResp.isSuccess());
+                    genericResp.setMessage(boardingResp.getMessage());
+                    genericResp.setData(boardingResp);
+
+                    result.setValue(Result.success(genericResp));
+                } else {
+                    result.setValue(Result.error("Boarding failed"));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<BoardingResponse> call, @NonNull Throwable t) {
+                Log.e(TAG, "Network error recording boarding", t);
+                result.setValue(Result.error(t.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * Generic result wrapper (Module 2 Part 3)
+     */
+    public static class Result<T> {
+        private T data;
+        private String error;
+        private boolean success;
+
+        private Result(T data, String error, boolean success) {
+            this.data = data;
+            this.error = error;
+            this.success = success;
+        }
+
+        public static <T> Result<T> success(T data) {
+            return new Result<>(data, null, true);
+        }
+
+        public static <T> Result<T> error(String error) {
+            return new Result<>(null, error, false);
+        }
+
+        public T getData() { return data; }
+        public String getError() { return error; }
+        public boolean isSuccess() { return success; }
+    }
+}

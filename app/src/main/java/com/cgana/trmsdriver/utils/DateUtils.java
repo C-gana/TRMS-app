@@ -7,80 +7,80 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Utility class for date and time operations
+ * Utility class for date and time operations (Module 2 Part 3)
  */
 public class DateUtils {
 
-    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+    private static final SimpleDateFormat ISO_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    private static final SimpleDateFormat DISPLAY_FORMAT = new SimpleDateFormat("h:mm a", Locale.US);
 
     /**
-     * Format time from timestamp string
+     * Calculate duration from a start time to now
+     * Returns formatted string like "2h 30m"
      */
-    public static String formatTime(String timestamp) {
-        if (timestamp == null || timestamp.isEmpty()) {
-            return "--:--";
-        }
-        try {
-            Date date = DATE_TIME_FORMAT.parse(timestamp);
-            if (date != null) {
-                return TIME_FORMAT.format(date);
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return "--:--";
-    }
-
-    /**
-     * Calculate duration from start time to now
-     */
-    public static String calculateDuration(String startTimeStr) {
-        if (startTimeStr == null || startTimeStr.isEmpty()) {
-            return "0h 0m";
+    public static String calculateDuration(String startTimeISO) {
+        if (startTimeISO == null || startTimeISO.isEmpty()) {
+            return "0m";
         }
 
         try {
-            Date startTime = DATE_TIME_FORMAT.parse(startTimeStr);
-            if (startTime == null) {
-                return "0h 0m";
+            Date startDate = ISO_FORMAT.parse(startTimeISO);
+            if (startDate == null) return "0m";
+
+            long durationMs = System.currentTimeMillis() - startDate.getTime();
+            long hours = TimeUnit.MILLISECONDS.toHours(durationMs);
+            long minutes = TimeUnit.MILLISECONDS.toMinutes(durationMs) % 60;
+
+            if (hours > 0) {
+                return String.format(Locale.US, "%dh %dm", hours, minutes);
+            } else {
+                return String.format(Locale.US, "%dm", minutes);
             }
-
-            long durationMillis = System.currentTimeMillis() - startTime.getTime();
-            long hours = TimeUnit.MILLISECONDS.toHours(durationMillis);
-            long minutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis) % 60;
-
-            return String.format(Locale.getDefault(), "%dh %dm", hours, minutes);
         } catch (ParseException e) {
-            e.printStackTrace();
-            return "0h 0m";
+            return "0m";
         }
     }
 
     /**
-     * Get current timestamp as string
+     * Format ISO time to display format
      */
-    public static String getCurrentTimestamp() {
-        return DATE_TIME_FORMAT.format(new Date());
-    }
-
-    /**
-     * Format date and time for display
-     */
-    public static String formatDateTime(String timestamp) {
-        if (timestamp == null || timestamp.isEmpty()) {
+    public static String formatTime(String isoTime) {
+        if (isoTime == null || isoTime.isEmpty()) {
             return "";
         }
+
         try {
-            Date date = DATE_TIME_FORMAT.parse(timestamp);
-            if (date != null) {
-                SimpleDateFormat displayFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
-                return displayFormat.format(date);
-            }
+            Date date = ISO_FORMAT.parse(isoTime);
+            return date != null ? DISPLAY_FORMAT.format(date) : "";
         } catch (ParseException e) {
-            e.printStackTrace();
+            return "";
         }
-        return timestamp;
+    }
+
+    /**
+     * Get relative time string (e.g., "2 minutes ago")
+     */
+    public static String getRelativeTime(long timestamp) {
+        long now = System.currentTimeMillis();
+        long diff = now - timestamp;
+
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(diff);
+        if (seconds < 60) {
+            return "Just now";
+        }
+
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(diff);
+        if (minutes < 60) {
+            return minutes + " minute" + (minutes > 1 ? "s" : "") + " ago";
+        }
+
+        long hours = TimeUnit.MILLISECONDS.toHours(diff);
+        if (hours < 24) {
+            return hours + " hour" + (hours > 1 ? "s" : "") + " ago";
+        }
+
+        long days = TimeUnit.MILLISECONDS.toDays(diff);
+        return days + " day" + (days > 1 ? "s" : "") + " ago";
     }
 }
 

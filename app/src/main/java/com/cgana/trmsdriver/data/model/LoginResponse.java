@@ -1,9 +1,12 @@
 package com.cgana.trmsdriver.data.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class LoginResponse {
     private boolean success;
     private String token;
     private Driver driver;
+
     private String message;
 
     // Constructor

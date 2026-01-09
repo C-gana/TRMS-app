@@ -4,8 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.GridLayout;
@@ -23,7 +21,9 @@ import com.cgana.trmsdriver.data.local.TokenManager;
 import com.cgana.trmsdriver.data.model.DashboardResponse;
 import com.cgana.trmsdriver.data.model.SeatStatus;
 import com.cgana.trmsdriver.ui.auth.LoginActivity;
+import com.cgana.trmsdriver.ui.dashboard.BoardingDialogFragment;
 import com.cgana.trmsdriver.ui.dashboard.DashboardViewModel;
+import com.cgana.trmsdriver.data.repository.DashboardRepository;
 import com.cgana.trmsdriver.ui.dashboard.DashboardViewModelFactory;
 import com.cgana.trmsdriver.ui.dashboard.SeatCardBinder;
 import com.cgana.trmsdriver.ui.duty.DutyStatusActivity;
@@ -42,9 +42,8 @@ import java.util.Map;
  * MainActivity - Real-Time Dashboard with 4-Seat Grid (Module 2)
  * Displays live seat status, handles boarding, and auto-refreshes every 5 seconds
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BoardingDialogFragment.BoardingConfirmListener {
 
-    private static final int AUTO_REFRESH_INTERVAL_MS = 5000; // 5 seconds
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
     // UI Components
@@ -65,10 +64,6 @@ public class MainActivity extends AppCompatActivity {
     private DashboardViewModel viewModel;
     private TokenManager tokenManager;
     private FusedLocationProviderClient fusedLocationClient;
-
-    // Auto-refresh handler
-    private final Handler autoRefreshHandler = new Handler(Looper.getMainLooper());
-    private Runnable autoRefreshRunnable;
 
     // Seat card views cache
     private final Map<Integer, View> seatCardViews = new HashMap<>();
@@ -110,8 +105,9 @@ public class MainActivity extends AppCompatActivity {
         // Initialize views
         initializeViews();
 
-        // Initialize ViewModel
-        DashboardViewModelFactory factory = new DashboardViewModelFactory(getApplication());
+        // Initialize ViewModel (Module 2 Part 3)
+        DashboardRepository repository = new DashboardRepository(this);
+        DashboardViewModelFactory factory = new DashboardViewModelFactory(repository);
         viewModel = new ViewModelProvider(this, factory).get(DashboardViewModel.class);
 
         // Setup observers
@@ -126,11 +122,9 @@ public class MainActivity extends AppCompatActivity {
         // Initialize seat cards
         initializeSeatCards();
 
-        // Load initial data
-        loadDashboardData();
-
-        // Start auto-refresh
-        startAutoRefresh();
+        // Load initial data and start auto-refresh (Module 2 Part 3)
+        viewModel.loadDashboardData(vehicleId);
+        viewModel.startAutoRefresh(vehicleId);
     }
 
     private void initializeViews() {
@@ -207,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupSwipeRefresh() {
         swipeRefresh.setColorSchemeResources(R.color.primary);
-        swipeRefresh.setOnRefreshListener(this::loadDashboardData);
+        swipeRefresh.setOnRefreshListener(() -> viewModel.refreshNow()); // Module 2 Part 3
     }
 
     private void initializeSeatCards() {
@@ -293,12 +287,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateDutyDuration() {
-        // Get duty start time from TokenManager (if available)
+        // Get duty start time from TokenManager (Module 2 Part 3)
         String dutyStartTime = tokenManager.getDutyStartedAt();
         if (dutyStartTime != null && !dutyStartTime.isEmpty()) {
-            tvDutyDuration.setText(getString(R.string.duty_since, dutyStartTime));
+            String duration = com.cgana.trmsdriver.utils.DateUtils.calculateDuration(dutyStartTime);
+            tvDutyDuration.setText(getString(R.string.duration_format, duration));
         } else {
-            tvDutyDuration.setText(getString(R.string.duty_since, getCurrentTime()));
+            tvDutyDuration.setText(getString(R.string.duration_format, "0m"));
         }
     }
 
@@ -349,12 +344,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void confirmBoarding(int seatNumber) {
-        new AlertDialog.Builder(this)
-                .setTitle("Board Passenger")
-                .setMessage("Record boarding for Seat " + seatNumber + "?")
-                .setPositiveButton("Yes", (dialog, which) -> recordBoarding(seatNumber))
-                .setNegativeButton("Cancel", null)
-                .show();
+        // Get seat object for the dialog
+        DashboardResponse dashboard = viewModel.getDashboardData().getValue();
+        if (dashboard == null || dashboard.getSeats() == null) {
+            return;
+        }
+
+        SeatStatus seat = null;
+        for (SeatStatus s : dashboard.getSeats()) {
+            if (s.getSeatNumber() == seatNumber) {
+                seat = s;
+                break;
+            }
+        }
+
+        if (seat == null) return;
+
+        // Show professional Material dialog (Module 2 Part 3)
+        // Convert SeatStatus to Seat for dialog (they should be compatible)
+        com.cgana.trmsdriver.data.model.Seat dialogSeat = new com.cgana.trmsdriver.data.model.Seat();
+        dialogSeat.setSeat_number(seat.getSeatNumber());
+        dialogSeat.setStatus(seat.getStatus());
+
+        BoardingDialogFragment dialog = BoardingDialogFragment.newInstance(dialogSeat);
+        dialog.show(getSupportFragmentManager(), "BoardingDialog");
+    }
+
+    /**
+     * Implementation of BoardingConfirmListener (Module 2 Part 3)
+     * Called when user confirms boarding in the dialog
+     */
+    @Override
+    public void onConfirmBoarding(int seatNumber) {
+        recordBoarding(seatNumber);
     }
 
     private void recordBoarding(int seatNumber) {
@@ -386,22 +408,8 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void startAutoRefresh() {
-        autoRefreshRunnable = new Runnable() {
-            @Override
-            public void run() {
-                loadDashboardData();
-                autoRefreshHandler.postDelayed(this, AUTO_REFRESH_INTERVAL_MS);
-            }
-        };
-        autoRefreshHandler.postDelayed(autoRefreshRunnable, AUTO_REFRESH_INTERVAL_MS);
-    }
-
-    private void stopAutoRefresh() {
-        if (autoRefreshRunnable != null) {
-            autoRefreshHandler.removeCallbacks(autoRefreshRunnable);
-        }
-    }
+    // Auto-refresh now handled by ViewModel (Module 2 Part 3)
+    // See onResume() and onPause() methods
 
     private void showEndDutyDialog() {
         new AlertDialog.Builder(this)
@@ -452,14 +460,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        loadDashboardData();
-        startAutoRefresh();
+        // Start ViewModel auto-refresh (Module 2 Part 3)
+        viewModel.startAutoRefresh(vehicleId);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        stopAutoRefresh();
+        // Stop ViewModel auto-refresh to save battery and network
+        viewModel.stopAutoRefresh();
     }
 
     @Override
