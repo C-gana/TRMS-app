@@ -21,6 +21,9 @@
         <item name="cardBackgroundColor">@color/surface</item>
         <!-- Navigation bar color -->
         <item name="android:navigationBarColor">@color/surface</item>
+        <!-- Custom attributes -->
+        <item name="colorBackground">@color/background</item>
+        <item name="colorDivider">@color/divider</item>
     </style>
 </resources>
 

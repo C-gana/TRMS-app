@@ -90,7 +90,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void loadProfileData() {
         // Load driver data from TokenManager
         if (tokenManager.getDriver() != null) {
-            String driverName = tokenManager.getDriver().getName();
+            String driverName = tokenManager.getDriver().getFullName();
             String phoneNumber = tokenManager.getDriver().getPhoneNumber();
 
             tvProfileName.setText(driverName != null ? driverName : "Driver");
@@ -231,7 +231,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void performLogout() {
         // Clear token and navigate to login
-        tokenManager.clearToken();
+        tokenManager.clearAuth();
 
         Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

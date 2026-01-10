@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -845,7 +847,7 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
             .setTitle(R.string.logout)
             .setMessage(R.string.logout_confirmation)
             .setPositiveButton(R.string.yes, (dialog, which) -> {
-                tokenManager.clearToken();
+                tokenManager.clearAuth();
                 navigateToLogin();
             })
             .setNegativeButton(R.string.no, null)

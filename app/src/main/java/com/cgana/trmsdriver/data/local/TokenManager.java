@@ -283,7 +283,10 @@ public class TokenManager {
 
     // Get duty status
     public boolean getDutyStatus() {
-        return sharedPreferences.getBoolean(KEY_DUTY_STATUS, false);
+        // Get from shared preferences with false as default (not from driver object)
+        boolean status = sharedPreferences.getBoolean(KEY_DUTY_STATUS, false);
+        android.util.Log.d("TokenManager", "getDutyStatus() returning: " + status);
+        return status;
     }
 
     // Save duty started time

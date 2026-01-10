@@ -172,22 +172,35 @@ public class DutyStatusActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        btnToggleDuty.setOnClickListener(v -> toggleDutyStatus());
+        btnToggleDuty.setOnClickListener(v -> {
+            android.util.Log.d("DutyStatusActivity", "===== TOGGLE BUTTON CLICKED =====");
+            toggleDutyStatus();
+        });
     }
 
     private void observeViewModel() {
         viewModel.getDutyState().observe(this, state -> {
+            android.util.Log.d("DutyStatusActivity", "===== STATE CHANGE OBSERVED =====");
+            android.util.Log.d("DutyStatusActivity", "State status: " + state.getStatus());
+
             switch (state.getStatus()) {
                 case LOADING:
+                    android.util.Log.d("DutyStatusActivity", "State: LOADING");
                     showLoading(true, getString(R.string.updating_status));
                     break;
 
                 case SUCCESS:
+                    android.util.Log.d("DutyStatusActivity", "State: SUCCESS");
                     showLoading(false, null);
 
                     // Update UI based on new duty status
                     boolean isOnDuty = state.getData().isOnDuty();
-                    updateDutyUI(isOnDuty, state.getData().getDutyStartedAt());
+                    String dutyStartedAt = state.getData().getDutyStartedAt();
+
+                    android.util.Log.d("DutyStatusActivity", "Success - isOnDuty: " + isOnDuty);
+                    android.util.Log.d("DutyStatusActivity", "Success - dutyStartedAt: " + dutyStartedAt);
+
+                    updateDutyUI(isOnDuty, dutyStartedAt);
 
                     // Show success message
                     String message = isOnDuty ?
@@ -196,23 +209,26 @@ public class DutyStatusActivity extends AppCompatActivity {
                     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 
                     // Haptic feedback
-                    btnToggleDuty.performHapticFeedback(android.view.HapticFeedbackConstants.CONFIRM);
+                    btnToggleDuty.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
 
                     // Navigate to dashboard if going ON DUTY
                     if (isOnDuty) {
+                        android.util.Log.d("DutyStatusActivity", "Navigating to dashboard...");
                         navigateToDashboard();
                     }
                     break;
 
                 case ERROR:
+                    android.util.Log.e("DutyStatusActivity", "State: ERROR - " + state.getError());
                     showLoading(false, null);
                     showErrorDialog(state.getError());
 
                     // Haptic feedback
-                    btnToggleDuty.performHapticFeedback(android.view.HapticFeedbackConstants.REJECT);
+                    btnToggleDuty.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
                     break;
 
                 case IDLE:
+                    android.util.Log.d("DutyStatusActivity", "State: IDLE");
                     showLoading(false, null);
                     break;
             }
@@ -223,11 +239,20 @@ public class DutyStatusActivity extends AppCompatActivity {
         boolean isOnDuty = tokenManager.getDutyStatus();
         String dutyStartedAt = tokenManager.getDutyStartedAt();
 
+        android.util.Log.d("DutyStatusActivity", "===== LOAD CURRENT DUTY STATUS =====");
+        android.util.Log.d("DutyStatusActivity", "isOnDuty from TokenManager: " + isOnDuty);
+        android.util.Log.d("DutyStatusActivity", "dutyStartedAt from TokenManager: " + dutyStartedAt);
+
         updateDutyUI(isOnDuty, dutyStartedAt);
     }
 
     private void updateDutyUI(boolean isOnDuty, String dutyStartedAt) {
+        android.util.Log.d("DutyStatusActivity", "===== UPDATE DUTY UI =====");
+        android.util.Log.d("DutyStatusActivity", "isOnDuty: " + isOnDuty);
+        android.util.Log.d("DutyStatusActivity", "dutyStartedAt: " + dutyStartedAt);
+
         if (isOnDuty) {
+            android.util.Log.d("DutyStatusActivity", "Showing ON DUTY state");
             // Show ON DUTY state
             offDutyContainer.setVisibility(View.GONE);
             onDutyContainer.setVisibility(View. VISIBLE);
@@ -254,6 +279,7 @@ public class DutyStatusActivity extends AppCompatActivity {
             loadTodaySummary();
 
         } else {
+            android.util.Log.d("DutyStatusActivity", "Showing OFF DUTY state");
             // Show OFF DUTY state
             offDutyContainer.setVisibility(View.VISIBLE);
             onDutyContainer.setVisibility(View.GONE);
@@ -270,16 +296,25 @@ public class DutyStatusActivity extends AppCompatActivity {
             // Stop pulse animation
             stopPulseAnimation();
         }
+
+        android.util.Log.d("DutyStatusActivity", "UI update complete");
     }
 
     private void toggleDutyStatus() {
         boolean currentStatus = tokenManager.getDutyStatus();
 
+        android.util.Log.d("DutyStatusActivity", "===== TOGGLE DUTY STATUS =====");
+        android.util.Log.d("DutyStatusActivity", "Current duty status: " + currentStatus);
+        android.util.Log.d("DutyStatusActivity", "Driver ID: " + (driver != null ? driver.getDriverId() : "NULL"));
+        android.util.Log.d("DutyStatusActivity", "Vehicle ID: " + (driver != null ? driver.getVehicleId() : "NULL"));
+
         if (currentStatus) {
             // Going OFF DUTY - show confirmation
+            android.util.Log.d("DutyStatusActivity", "Going OFF DUTY - showing confirmation dialog");
             showEndDutyConfirmation();
         } else {
             // Going ON DUTY - check location permission
+            android.util.Log.d("DutyStatusActivity", "Going ON DUTY - checking location permission");
             checkLocationPermissionAndStartDuty();
         }
     }
@@ -335,9 +370,13 @@ public class DutyStatusActivity extends AppCompatActivity {
     }
 
     private void getCurrentLocationAndUpdateStatus(boolean goingOnDuty) {
+        android.util.Log.d("DutyStatusActivity", "===== GET LOCATION AND UPDATE STATUS =====");
+        android.util.Log.d("DutyStatusActivity", "Going on duty: " + goingOnDuty);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission. ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
+            android.util.Log.d("DutyStatusActivity", "No location permission, using default location");
             // No permission, use default location
             updateDutyStatus(goingOnDuty, null);
             return;
@@ -348,6 +387,9 @@ public class DutyStatusActivity extends AppCompatActivity {
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
                 .addOnSuccessListener(this, location -> {
                     currentLocation = location;
+
+                    android.util.Log.d("DutyStatusActivity", "Location obtained: " +
+                        (location != null ? location.getLatitude() + ", " + location.getLongitude() : "NULL"));
 
                     com.cgana.trmsdriver.data. model.Location loc = null;
                     if (location != null) {
@@ -361,6 +403,7 @@ public class DutyStatusActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(this, e -> {
                     // Failed to get location, proceed anyway
+                    android.util.Log.e("DutyStatusActivity", "Failed to get location: " + e.getMessage());
                     showLoading(false, null);
                     Toast.makeText(this, R.string.location_unavailable, Toast.LENGTH_SHORT).show();
                     updateDutyStatus(goingOnDuty, null);
@@ -370,11 +413,19 @@ public class DutyStatusActivity extends AppCompatActivity {
     private void updateDutyStatus(boolean onDuty, com.cgana.trmsdriver.data. model.Location location) {
         String vehicleId = driver.getVehicleId();
 
+        android.util.Log.d("DutyStatusActivity", "===== UPDATE DUTY STATUS =====");
+        android.util.Log.d("DutyStatusActivity", "Vehicle ID: " + vehicleId);
+        android.util.Log.d("DutyStatusActivity", "On Duty: " + onDuty);
+        android.util.Log.d("DutyStatusActivity", "Location: " + (location != null ?
+            location.getLatitude() + ", " + location.getLongitude() : "NULL"));
+
         // If location is null, use default (0,0)
         if (location == null) {
             location = new com.cgana.trmsdriver.data.model.Location(0.0, 0.0);
+            android.util.Log.d("DutyStatusActivity", "Using default location (0,0)");
         }
 
+        android.util.Log.d("DutyStatusActivity", "Calling viewModel.updateDutyStatus()");
         viewModel.updateDutyStatus(vehicleId, onDuty, location);
     }
 

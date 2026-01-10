@@ -124,41 +124,115 @@ public class AuthRepository {
     public LiveData<Result<DutyStatusResponse>> updateDutyStatus(String vehicleId,
                                                                  boolean onDuty,
                                                                  Location location) {
+        android.util.Log.d("AuthRepository", "===== UPDATE DUTY STATUS =====");
+        android.util.Log.d("AuthRepository", "Vehicle ID: " + vehicleId);
+        android.util.Log.d("AuthRepository", "On Duty: " + onDuty);
+        android.util.Log.d("AuthRepository", "Location: " + (location != null ?
+            location.getLatitude() + ", " + location.getLongitude() : "NULL"));
+
         MutableLiveData<Result<DutyStatusResponse>> result = new MutableLiveData<>();
 
         String token = tokenManager.getToken();
+        android.util.Log.d("AuthRepository", "Token: " + (token != null ? "EXISTS" : "NULL"));
+
         if (token == null) {
+            android.util.Log.e("AuthRepository", "Token is NULL! Cannot update duty status");
             result.setValue(Result.error("Not authenticated"));
             return result;
         }
 
         DutyStatusRequest request = new DutyStatusRequest(vehicleId, onDuty, location);
+        android.util.Log.d("AuthRepository", "Request created, making API call...");
 
         apiService.updateDutyStatus(request, "Bearer " + token)
                 .enqueue(new Callback<DutyStatusResponse>() {
                     @Override
                     public void onResponse(Call<DutyStatusResponse> call, Response<DutyStatusResponse> response) {
+                        android.util.Log.d("AuthRepository", "===== API RESPONSE RECEIVED =====");
+                        android.util.Log.d("AuthRepository", "Response code: " + response.code());
+                        android.util.Log.d("AuthRepository", "Is successful: " + response.isSuccessful());
+                        android.util.Log.d("AuthRepository", "Body: " + (response.body() != null ? "NOT NULL" : "NULL"));
+
+                        // Log raw response if available
+                        try {
+                            android.util.Log.d("AuthRepository", "Request URL: " + call.request().url());
+                            android.util.Log.d("AuthRepository", "Request body sent: vehicleId=" +
+                                (request != null ? request.getVehicleId() : "null") + ", onDuty=" + onDuty);
+                        } catch (Exception e) {
+                            android.util.Log.e("AuthRepository", "Error logging request details: " + e.getMessage());
+                        }
+
                         if (response.isSuccessful() && response.body() != null) {
                             DutyStatusResponse dutyResponse = response.body();
+                            android.util.Log.d("AuthRepository", "Response success: " + dutyResponse.isSuccess());
+                            android.util.Log.d("AuthRepository", "Response onDuty: " + dutyResponse.isOnDuty());
+                            android.util.Log.d("AuthRepository", "Response message: " + dutyResponse.getMessage());
+                            android.util.Log.d("AuthRepository", "Response dutyStartedAt: " + dutyResponse.getDutyStartedAt());
+
+                            android.util.Log.d("AuthRepository", "⚠️ MISMATCH CHECK:");
+                            android.util.Log.d("AuthRepository", "  - We sent onDuty: " + onDuty);
+                            android.util.Log.d("AuthRepository", "  - API returned onDuty: " + dutyResponse.isOnDuty());
+                            android.util.Log.d("AuthRepository", "  - Message says: " + dutyResponse.getMessage());
 
                             if (dutyResponse.isSuccess()) {
-                                // Update local storage
-                                tokenManager.saveDutyStatus(dutyResponse.isOnDuty());
+                                // WORKAROUND: If API returns wrong on_duty value, fix it based on message
+                                boolean actualOnDuty = dutyResponse.isOnDuty();
+                                String message = dutyResponse.getMessage();
+
+                                // Check if message contradicts the on_duty value
+                                if (message != null) {
+                                    boolean messageIndicatesOnDuty = message.toLowerCase().contains("on duty")
+                                                                    || message.toLowerCase().contains("started");
+                                    boolean messageIndicatesOffDuty = message.toLowerCase().contains("off duty")
+                                                                     || message.toLowerCase().contains("ended");
+
+                                    // If there's a mismatch, trust the message
+                                    if (messageIndicatesOnDuty && !actualOnDuty) {
+                                        android.util.Log.w("AuthRepository", "⚠️ API BUG DETECTED: Message says ON but field is false. Fixing to true.");
+                                        dutyResponse.setOnDuty(true);
+                                        actualOnDuty = true;
+                                    } else if (messageIndicatesOffDuty && actualOnDuty) {
+                                        android.util.Log.w("AuthRepository", "⚠️ API BUG DETECTED: Message says OFF but field is true. Fixing to false.");
+                                        dutyResponse.setOnDuty(false);
+                                        actualOnDuty = false;
+                                    }
+                                }
+
+                                android.util.Log.d("AuthRepository", "Final onDuty value after workaround: " + actualOnDuty);
+
+                                // Update local storage with corrected value
+                                android.util.Log.d("AuthRepository", "Saving duty status to TokenManager: " + actualOnDuty);
+                                tokenManager.saveDutyStatus(actualOnDuty);
+
                                 if (dutyResponse.getDutyStartedAt() != null) {
+                                    android.util.Log.d("AuthRepository", "Saving duty started at: " + dutyResponse.getDutyStartedAt());
                                     tokenManager.saveDutyStartedAt(dutyResponse.getDutyStartedAt());
                                 }
 
                                 result.setValue(Result.success(dutyResponse));
+                                android.util.Log.d("AuthRepository", "Result set to SUCCESS");
                             } else {
+                                android.util.Log.e("AuthRepository", "API returned success=false: " + dutyResponse.getMessage());
                                 result.setValue(Result.error(dutyResponse.getMessage()));
                             }
                         } else {
+                            android.util.Log.e("AuthRepository", "Response not successful or body is null");
+                            try {
+                                String errorBody = response.errorBody() != null ? response.errorBody().string() : "No error body";
+                                android.util.Log.e("AuthRepository", "Error body: " + errorBody);
+                            } catch (Exception e) {
+                                android.util.Log.e("AuthRepository", "Failed to read error body: " + e.getMessage());
+                            }
                             result.setValue(Result.error("Failed to update duty status"));
                         }
                     }
 
                     @Override
                     public void onFailure(Call<DutyStatusResponse> call, Throwable t) {
+                        android.util.Log.e("AuthRepository", "===== API CALL FAILED =====");
+                        android.util.Log.e("AuthRepository", "Error: " + t.getMessage());
+                        android.util.Log.e("AuthRepository", "Error class: " + t.getClass().getName());
+                        t.printStackTrace();
                         result.setValue(Result.error("Network error: " + t.getMessage()));
                     }
                 });

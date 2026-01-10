@@ -1,9 +1,16 @@
 package com.cgana.trmsdriver.data.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class DutyStatusResponse {
     private boolean success;
     private String message;
+
+    // Support both snake_case (on_duty) and camelCase (onDuty)
+    @SerializedName(value = "on_duty", alternate = {"onDuty"})
     private boolean on_duty;
+
+    @SerializedName(value = "duty_started_at", alternate = {"dutyStartedAt"})
     private String duty_started_at;
 
     // Constructor

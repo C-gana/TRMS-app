@@ -194,8 +194,7 @@
     <string name="alert_icon">Alert icon</string>
 
     <!-- Module 3: Destination Selection -->
-    <string name="select_destination">Select Destination</string>
-    <string name="search_destinations">Search destinations...</string>
+    <string name="search_destinations">Search destinations…</string>
     <string name="no_destinations_found">No destinations found</string>
     <string name="confirm_destination">Confirm Destination</string>
     <string name="seat_label">Seat</string>
@@ -261,7 +260,6 @@
     <string name="fare_not_collected_label">Fare Not Collected</string>
     <string name="journey_duration">Journey Duration</string>
     <string name="total_distance">Total Distance</string>
-    <string name="info_icon">Info icon</string>
 
     <!-- Alighting Errors -->
     <string name="journey_already_completed">Journey already completed</string>
@@ -300,7 +298,6 @@
     <string name="filter_fare_not_collected">Fare Not Collected</string>
 
     <!-- Module 7: Settings & Profile -->
-    <string name="settings">Settings</string>
     <string name="view_profile">View Profile</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="preferences">Preferences</string>
@@ -322,7 +319,6 @@
     <string name="help_support">Help &amp; Support</string>
     <string name="contact_faq">Contact us or view FAQs</string>
     <string name="help_icon">Help icon</string>
-    <string name="about">About</string>
     <string name="info_icon">Info icon</string>
     <string name="navigate_icon">Navigate icon</string>
 
