@@ -13,7 +13,7 @@
         android:layout_height="64dp"
         android:layout_gravity="center"
         android:src="@drawable/ic_missed_stop"
-        android:tint="@color/missed_stop"
+        app:tint="@color/missed_stop"
         android:contentDescription="@string/missed_stop_icon" />
 
     <!-- Title -->
@@ -81,7 +81,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_alert"
-                android:tint="@color/warning"
+                app:tint="@color/warning"
                 android:contentDescription="@string/info_icon" />
 
             <TextView

@@ -148,7 +148,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_theme"
-                    android:tint="?attr/colorOnSurface"
+                    app:tint="?attr/colorOnSurface"
                     android:contentDescription="@string/theme_icon" />
 
                 <LinearLayout
@@ -180,7 +180,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    android:tint="?attr/colorOnSurfaceVariant"
+                    app:tint="?attr/colorOnSurfaceVariant"
                     android:contentDescription="@string/navigate_icon" />
 
             </LinearLayout>
@@ -207,7 +207,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_notifications"
-                    android:tint="?attr/colorOnSurface"
+                    app:tint="?attr/colorOnSurface"
                     android:contentDescription="@string/notifications_icon" />
 
                 <LinearLayout
@@ -238,7 +238,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    android:tint="?attr/colorOnSurfaceVariant"
+                    app:tint="?attr/colorOnSurfaceVariant"
                     android:contentDescription="@string/navigate_icon" />
 
             </LinearLayout>
@@ -272,7 +272,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_lock"
-                    android:tint="?attr/colorOnSurface"
+                    app:tint="?attr/colorOnSurface"
                     android:contentDescription="@string/lock_icon" />
 
                 <LinearLayout
@@ -303,7 +303,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    android:tint="?attr/colorOnSurfaceVariant"
+                    app:tint="?attr/colorOnSurfaceVariant"
                     android:contentDescription="@string/navigate_icon" />
 
             </LinearLayout>
@@ -330,7 +330,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_logout"
-                    android:tint="@color/danger"
+                    app:tint="@color/danger"
                     android:contentDescription="@string/logout_icon" />
 
                 <LinearLayout
@@ -361,7 +361,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    android:tint="?attr/colorOnSurfaceVariant"
+                    app:tint="?attr/colorOnSurfaceVariant"
                     android:contentDescription="@string/navigate_icon" />
 
             </LinearLayout>
@@ -395,7 +395,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_help"
-                    android:tint="?attr/colorOnSurface"
+                    app:tint="?attr/colorOnSurface"
                     android:contentDescription="@string/help_icon" />
 
                 <LinearLayout
@@ -426,7 +426,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    android:tint="?attr/colorOnSurfaceVariant"
+                    app:tint="?attr/colorOnSurfaceVariant"
                     android:contentDescription="@string/navigate_icon" />
 
             </LinearLayout>
@@ -453,7 +453,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_info"
-                    android:tint="?attr/colorOnSurface"
+                    app:tint="?attr/colorOnSurface"
                     android:contentDescription="@string/info_icon" />
 
                 <LinearLayout
@@ -485,7 +485,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    android:tint="?attr/colorOnSurfaceVariant"
+                    app:tint="?attr/colorOnSurfaceVariant"
                     android:contentDescription="@string/navigate_icon" />
 
             </LinearLayout>

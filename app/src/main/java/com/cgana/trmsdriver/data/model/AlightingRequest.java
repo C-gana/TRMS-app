@@ -7,44 +7,18 @@ public class AlightingRequest {
     private String vehicle_id;
     private long journey_id;
     private int seat_number;
-    private AlightingLocation alighting_location;
+    private Location alighting_location;
     private boolean fare_collected;
     private boolean missed_stop;
 
-    public static class AlightingLocation {
-        private double latitude;
-        private double longitude;
-
-        public AlightingLocation(double latitude, double longitude) {
-            this.latitude = latitude;
-            this.longitude = longitude;
-        }
-
-        public double getLatitude() {
-            return latitude;
-        }
-
-        public void setLatitude(double latitude) {
-            this.latitude = latitude;
-        }
-
-        public double getLongitude() {
-            return longitude;
-        }
-
-        public void setLongitude(double longitude) {
-            this.longitude = longitude;
-        }
-    }
-
     // Constructor
     public AlightingRequest(String vehicle_id, long journey_id, int seat_number,
-                           double latitude, double longitude, boolean fare_collected,
+                           Location alighting_location, boolean fare_collected,
                            boolean missed_stop) {
         this.vehicle_id = vehicle_id;
         this.journey_id = journey_id;
         this.seat_number = seat_number;
-        this.alighting_location = new AlightingLocation(latitude, longitude);
+        this.alighting_location = alighting_location;
         this.fare_collected = fare_collected;
         this.missed_stop = missed_stop;
     }
@@ -74,11 +48,11 @@ public class AlightingRequest {
         this.seat_number = seat_number;
     }
 
-    public AlightingLocation getAlightingLocation() {
+    public Location getAlightingLocation() {
         return alighting_location;
     }
 
-    public void setAlightingLocation(AlightingLocation alighting_location) {
+    public void setAlightingLocation(Location alighting_location) {
         this.alighting_location = alighting_location;
     }
 

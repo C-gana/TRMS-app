@@ -34,6 +34,7 @@ public class DashboardRepository {
      * Fetch dashboard status from backend (Enhanced with error handling - Module 2 Part 4)
      */
     public LiveData<Result<DashboardResponse>> getDashboardStatus(String vehicleId) {
+        Log.d(TAG, "getDashboardStatus called for vehicleId: " + vehicleId);
         MutableLiveData<Result<DashboardResponse>> result = new MutableLiveData<>();
 
         String token = tokenManager.getToken();
@@ -43,14 +44,20 @@ public class DashboardRepository {
             return result;
         }
 
+        Log.d(TAG, "Token available, making API call");
         String authHeader = "Bearer " + token;
 
         apiService.getDashboardStatus(vehicleId, authHeader).enqueue(new Callback<DashboardResponse>() {
             @Override
             public void onResponse(@NonNull Call<DashboardResponse> call,
                                    @NonNull Response<DashboardResponse> response) {
+                Log.d(TAG, "API response received, code: " + response.code());
+
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "Dashboard status fetched successfully");
+                    DashboardResponse data = response.body();
+                    Log.d(TAG, "Response body - vehicleId: " + data.getVehicleId() +
+                        ", seats: " + (data.getSeats() != null ? data.getSeats().size() : "null"));
                     result.setValue(Result.success(response.body()));
                 } else {
                     String error = "Failed to load dashboard";
@@ -61,7 +68,7 @@ public class DashboardRepository {
                     } else if (response.code() >= 500) {
                         error = "Server error. Please try again.";
                     }
-                    Log.e(TAG, "Failed to fetch dashboard: " + response.code());
+                    Log.e(TAG, "Failed to fetch dashboard: " + response.code() + ", error: " + error);
                     result.setValue(Result.error(error));
                 }
             }
@@ -78,11 +85,12 @@ public class DashboardRepository {
                         error = t.getMessage();
                     }
                 }
-                Log.e(TAG, "Network error fetching dashboard", t);
+                Log.e(TAG, "Network error fetching dashboard: " + error, t);
                 result.setValue(Result.error(error));
             }
         });
 
+        Log.d(TAG, "Returning LiveData result");
         return result;
     }
 
@@ -109,10 +117,16 @@ public class DashboardRepository {
                                    @NonNull Response<BoardingResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     BoardingResponse boardingResponse = response.body();
+                    Log.d(TAG, "Boarding API response - success: " + boardingResponse.isSuccess() +
+                        ", journeyId: " + boardingResponse.getJourneyId() +
+                        ", seatNumber: " + boardingResponse.getSeatNumber() +
+                        ", message: " + boardingResponse.getMessage());
+
                     if (boardingResponse.isSuccess()) {
                         Log.d(TAG, "Boarding recorded successfully");
                         result.setValue(Result.success(boardingResponse));
                     } else {
+                        Log.e(TAG, "Boarding API returned success=false");
                         result.setValue(Result.error(boardingResponse.getMessage()));
                     }
                 } else {

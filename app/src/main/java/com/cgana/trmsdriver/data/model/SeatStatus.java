@@ -113,5 +113,14 @@ public class SeatStatus {
     public boolean hasAlert() {
         return alert != null && alert;
     }
+
+    // Static validation method
+    public static boolean isValidStatus(String status) {
+        if (status == null) return false;
+        return status.equals("vacant") ||
+               status.equals("awaiting_destination") ||
+               status.equals("active_journey") ||
+               status.equals("approaching_destination");
+    }
 }
 

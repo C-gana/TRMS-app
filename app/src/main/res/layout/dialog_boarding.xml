@@ -13,7 +13,7 @@
         android:layout_height="64dp"
         android:layout_gravity="center"
         android:src="@drawable/ic_boarding"
-        android:tint="@color/primary"
+        app:tint="@color/primary"
         android:contentDescription="@string/boarding_icon" />
 
     <!-- Title -->

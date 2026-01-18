@@ -13,7 +13,7 @@
         android:layout_height="80dp"
         android:layout_gravity="center"
         android:src="@drawable/ic_destination"
-        android:tint="@color/primary"
+        app:tint="@color/primary"
         android:contentDescription="@string/destination_icon" />
 
     <!-- Title -->

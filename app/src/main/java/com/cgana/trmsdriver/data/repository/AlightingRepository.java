@@ -10,6 +10,7 @@ import com.cgana.trmsdriver.data.api.RetrofitClient;
 import com.cgana.trmsdriver.data.local.TokenManager;
 import com.cgana.trmsdriver.data.model.AlightingRequest;
 import com.cgana.trmsdriver.data.model.AlightingResponse;
+import com.cgana.trmsdriver.data.model.Location;
 import com.cgana.trmsdriver.data.model.MissedStopRequest;
 import com.cgana.trmsdriver.data.model.MissedStopResponse;
 
@@ -38,7 +39,7 @@ public class AlightingRepository {
      */
     public LiveData<Result<AlightingResponse>> recordAlighting(
             String vehicleId, long journeyId, int seatNumber,
-            double latitude, double longitude, boolean fareCollected, boolean missedStop) {
+            Location alighting_location, boolean fareCollected, boolean missedStop) {
 
         MutableLiveData<Result<AlightingResponse>> result = new MutableLiveData<>();
 
@@ -51,7 +52,7 @@ public class AlightingRepository {
 
         String authHeader = "Bearer " + token;
         AlightingRequest request = new AlightingRequest(
-            vehicleId, journeyId, seatNumber, latitude, longitude, fareCollected, missedStop
+            vehicleId, journeyId, seatNumber, alighting_location, fareCollected, missedStop
         );
 
         apiService.recordAlighting(request, authHeader)
@@ -110,7 +111,7 @@ public class AlightingRepository {
      */
     public LiveData<Result<MissedStopResponse>> reportMissedStop(
             String vehicleId, long journeyId, int seatNumber,
-            double latitude, double longitude, String notes) {
+            Location missed_location, String notes) {
 
         MutableLiveData<Result<MissedStopResponse>> result = new MutableLiveData<>();
 
@@ -123,7 +124,7 @@ public class AlightingRepository {
 
         String authHeader = "Bearer " + token;
         MissedStopRequest request = new MissedStopRequest(
-            vehicleId, journeyId, seatNumber, latitude, longitude, notes
+            vehicleId, journeyId, seatNumber, missed_location, notes
         );
 
         apiService.reportMissedStop(request, authHeader)

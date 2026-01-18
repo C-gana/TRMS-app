@@ -3,7 +3,6 @@ package com.cgana.trmsdriver;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,7 +22,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.cgana.trmsdriver.data.local.TokenManager;
 import com.cgana.trmsdriver.data.model.AlightingResponse;
+import com.cgana.trmsdriver.data.model.BoardingResponse;
 import com.cgana.trmsdriver.data.model.DashboardResponse;
+import com.cgana.trmsdriver.data.model.Location;
 import com.cgana.trmsdriver.data.model.MissedStopResponse;
 import com.cgana.trmsdriver.data.model.SeatStatus;
 import com.cgana.trmsdriver.data.repository.AlightingRepository;
@@ -139,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
         initializeSeatCards();
 
         // Load initial data and start auto-refresh (Module 2 Part 3)
+        android.util.Log.d("MainActivity", "onCreate: Loading dashboard data for vehicleId: " + vehicleId);
         viewModel.loadDashboardData(vehicleId);
         viewModel.startAutoRefresh(vehicleId);
     }
@@ -163,14 +165,21 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
     private void setupObservers() {
         // Dashboard state observer (Module 2 Part 4 - Enhanced with state management)
         viewModel.getDashboardState().observe(this, state -> {
+            android.util.Log.d("MainActivity", "Dashboard state: " + state.getStatus());
+
             switch (state.getStatus()) {
                 case LOADING:
                     // Don't show loading overlay for refresh (SwipeRefresh handles it)
+                    android.util.Log.d("MainActivity", "Loading dashboard...");
                     break;
 
                 case SUCCESS:
                     loadingOverlay.setVisibility(View.GONE);
                     swipeRefresh.setRefreshing(false);
+                    android.util.Log.d("MainActivity", "Dashboard loaded successfully");
+                    if (state.getData() != null && state.getData().getSeats() != null) {
+                        android.util.Log.d("MainActivity", "Seats count: " + state.getData().getSeats().size());
+                    }
                     updateDashboard(state.getData());
                     tvLastUpdated.setText(getString(R.string.just_now));
                     break;
@@ -178,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
                 case ERROR:
                     loadingOverlay.setVisibility(View.GONE);
                     swipeRefresh.setRefreshing(false);
+                    android.util.Log.e("MainActivity", "Dashboard error: " + state.getError());
                     showError(state.getError());
                     break;
 
@@ -185,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
                 default:
                     loadingOverlay.setVisibility(View.GONE);
                     swipeRefresh.setRefreshing(false);
+                    android.util.Log.d("MainActivity", "Dashboard idle");
                     break;
             }
         });
@@ -192,16 +203,32 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
         // Boarding state observer (Module 2 Part 4 - Enhanced with state management)
         // Module 3 Part 3: Auto-launch destination selection after boarding
         viewModel.getBoardingState().observe(this, state -> {
+            android.util.Log.d("MainActivity", "Boarding state changed: " + state.getStatus());
+
             switch (state.getStatus()) {
                 case LOADING:
+                    android.util.Log.d("MainActivity", "Boarding: LOADING");
                     loadingOverlay.setVisibility(View.VISIBLE);
                     break;
 
                 case SUCCESS:
+                    android.util.Log.d("MainActivity", "Boarding: SUCCESS");
                     loadingOverlay.setVisibility(View.GONE);
 
+                    BoardingResponse response = state.getData();
+
+                    if (response == null) {
+                        android.util.Log.e("MainActivity", "BoardingResponse is NULL!");
+                        Toast.makeText(this, "Boarding response is null", Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+
+                    android.util.Log.d("MainActivity", "BoardingResponse - journeyId: " + response.getJourneyId() +
+                        ", seatNumber: " + response.getSeatNumber() +
+                        ", message: " + response.getMessage());
+
                     // Show success message
-                    Toast.makeText(this, state.getData().getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, response.getMessage(), Toast.LENGTH_SHORT).show();
 
                     // Haptic feedback
                     findViewById(android.R.id.content).performHapticFeedback(
@@ -209,21 +236,32 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
                     );
 
                     // AUTO-LAUNCH DESTINATION SELECTION (Module 3 Part 3)
-                    launchDestinationSelection(
-                        state.getData().getJourneyId(),
-                        state.getData().getSeatNumber()
-                    );
+                    // Check if journey_id is present before launching
+                    if (response.getJourneyId() != null && response.getJourneyId() > 0) {
+                        android.util.Log.d("MainActivity", "Launching destination selection activity...");
+                        launchDestinationSelection(
+                            response.getJourneyId(),
+                            response.getSeatNumber()
+                        );
+                    } else {
+                        android.util.Log.e("MainActivity", "Journey ID is null in boarding response! Cannot launch destination selection.");
+                        Toast.makeText(this, "Boarding successful but journey ID missing. Please tap the seat again to select destination.", Toast.LENGTH_LONG).show();
+                        // Refresh dashboard to show the awaiting state
+                        viewModel.refreshNow();
+                    }
 
                     // Dashboard will auto-refresh
                     break;
 
                 case ERROR:
+                    android.util.Log.e("MainActivity", "Boarding: ERROR - " + state.getError());
                     loadingOverlay.setVisibility(View.GONE);
                     showBoardingError(state.getError());
                     break;
 
                 case IDLE:
                 default:
+                    android.util.Log.d("MainActivity", "Boarding: IDLE");
                     loadingOverlay.setVisibility(View.GONE);
                     break;
             }
@@ -286,7 +324,11 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
 
             // Set click listener
             final int finalSeatNumber = seatNumber;
-            seatCard.setOnClickListener(v -> onSeatCardClicked(finalSeatNumber));
+            seatCard.setOnClickListener(v -> {
+                android.util.Log.d("MainActivity", "Seat card clicked: " + finalSeatNumber);
+                Toast.makeText(MainActivity.this, "Seat " + finalSeatNumber + " clicked!", Toast.LENGTH_SHORT).show();
+                onSeatCardClicked(finalSeatNumber);
+            });
 
             // Add to grid and cache
             seatsGrid.addView(seatCard);
@@ -356,8 +398,24 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
 
     private void onSeatCardClicked(int seatNumber) {
         // Get current seat status from state (Module 2 Part 4, Module 4 Part 2)
+        android.util.Log.d("MainActivity", "Seat " + seatNumber + " clicked");
+
         DashboardViewModel.DashboardState state = viewModel.getDashboardState().getValue();
-        if (state == null || state.getData() == null || state.getData().getSeats() == null) {
+        if (state == null) {
+            android.util.Log.e("MainActivity", "State is null");
+            Toast.makeText(this, "Dashboard data not loaded yet", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (state.getData() == null) {
+            android.util.Log.e("MainActivity", "Dashboard data is null");
+            Toast.makeText(this, "Dashboard data not available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (state.getData().getSeats() == null) {
+            android.util.Log.e("MainActivity", "Seats data is null");
+            Toast.makeText(this, "Seats data not available", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -371,20 +429,34 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
         }
 
         if (seat == null) {
+            android.util.Log.e("MainActivity", "Seat " + seatNumber + " not found in seats list");
+            Toast.makeText(this, "Seat " + seatNumber + " data not found", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        android.util.Log.d("MainActivity", "Seat " + seatNumber + " status: " + seat.getStatus());
+
         // Handle based on seat status
         if (seat.isVacant()) {
+            android.util.Log.d("MainActivity", "Showing boarding dialog for seat " + seatNumber);
             // Boarding flow (Module 2)
             confirmBoarding(seatNumber);
         } else if (seat.isActive() || seat.isApproaching()) {
+            android.util.Log.d("MainActivity", "Showing alighting dialog for seat " + seatNumber);
             // Alighting flow (Module 4 Part 2)
             showAlightingConfirmationDialog(seat);
         } else if (seat.isAwaiting()) {
-            // Awaiting destination selection
-            Toast.makeText(this, R.string.awaiting_destination_selection, Toast.LENGTH_SHORT).show();
+            android.util.Log.d("MainActivity", "Seat " + seatNumber + " is awaiting destination - launching destination selection");
+            // Awaiting destination selection - allow manual launch
+            if (seat.getJourneyId() != null && seat.getJourneyId() > 0) {
+                android.util.Log.d("MainActivity", "Launching destination selection for journey: " + seat.getJourneyId());
+                launchDestinationSelection(seat.getJourneyId(), seatNumber);
+            } else {
+                android.util.Log.e("MainActivity", "Journey ID not available for awaiting seat");
+                Toast.makeText(this, "Journey data not available. Please try boarding again.", Toast.LENGTH_SHORT).show();
+            }
         } else {
+            android.util.Log.d("MainActivity", "Seat " + seatNumber + " unknown status: " + seat.getStatus());
             // Other states
             Toast.makeText(this, "Seat " + seatNumber + " is " + seat.getStatus(),
                     Toast.LENGTH_SHORT).show();
@@ -392,6 +464,9 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
     }
 
     private void confirmBoarding(int seatNumber) {
+        android.util.Log.d("MainActivity", "confirmBoarding called for seat " + seatNumber);
+        Toast.makeText(this, "Opening boarding dialog for seat " + seatNumber, Toast.LENGTH_SHORT).show();
+
         // Show professional Material dialog (Module 2 Part 4)
         BoardingDialog dialog = BoardingDialog.newInstance(seatNumber);
         dialog.show(getSupportFragmentManager(), "BoardingDialog");
@@ -552,11 +627,24 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
      * Launch destination selection activity (Module 3 Part 3)
      */
     private void launchDestinationSelection(long journeyId, int seatNumber) {
-        Intent intent = new Intent(this, com.cgana.trmsdriver.ui.destination.DestinationSelectionActivity.class);
-        intent.putExtra(com.cgana.trmsdriver.ui.destination.DestinationSelectionActivity.EXTRA_VEHICLE_ID, vehicleId);
-        intent.putExtra(com.cgana.trmsdriver.ui.destination.DestinationSelectionActivity.EXTRA_JOURNEY_ID, journeyId);
-        intent.putExtra(com.cgana.trmsdriver.ui.destination.DestinationSelectionActivity.EXTRA_SEAT_NUMBER, seatNumber);
-        startActivityForResult(intent, REQUEST_DESTINATION_SELECTION);
+        android.util.Log.d("MainActivity", "launchDestinationSelection called");
+        android.util.Log.d("MainActivity", "  - journeyId: " + journeyId);
+        android.util.Log.d("MainActivity", "  - seatNumber: " + seatNumber);
+        android.util.Log.d("MainActivity", "  - vehicleId: " + vehicleId);
+
+        try {
+            Intent intent = new Intent(this, com.cgana.trmsdriver.ui.destination.DestinationSelectionActivity.class);
+            intent.putExtra(com.cgana.trmsdriver.ui.destination.DestinationSelectionActivity.EXTRA_VEHICLE_ID, vehicleId);
+            intent.putExtra(com.cgana.trmsdriver.ui.destination.DestinationSelectionActivity.EXTRA_JOURNEY_ID, journeyId);
+            intent.putExtra(com.cgana.trmsdriver.ui.destination.DestinationSelectionActivity.EXTRA_SEAT_NUMBER, seatNumber);
+
+            android.util.Log.d("MainActivity", "Starting DestinationSelectionActivity...");
+            startActivityForResult(intent, REQUEST_DESTINATION_SELECTION);
+            android.util.Log.d("MainActivity", "Activity started successfully");
+        } catch (Exception e) {
+            android.util.Log.e("MainActivity", "Error launching destination selection", e);
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -685,9 +773,11 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
                                   boolean missedStop, double latitude, double longitude) {
         loadingOverlay.setVisibility(View.VISIBLE);
 
+        Location alightingLocation = new Location(latitude, longitude);
+
         LiveData<AlightingRepository.Result<AlightingResponse>> result =
             alightingRepository.recordAlighting(vehicleId, journeyId, seatNumber,
-                                              latitude, longitude, fareCollected, missedStop);
+                                              alightingLocation, fareCollected, missedStop);
 
         result.observeForever(alightingResult -> {
             loadingOverlay.setVisibility(View.GONE);
@@ -748,9 +838,11 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
                                     double latitude, double longitude) {
         loadingOverlay.setVisibility(View.VISIBLE);
 
+        Location missedLocation = new Location(latitude, longitude);
+
         LiveData<AlightingRepository.Result<MissedStopResponse>> result =
             alightingRepository.reportMissedStop(vehicleId, journeyId, seatNumber,
-                                               latitude, longitude, notes);
+                                               missedLocation, notes);
 
         result.observeForever(missedResult -> {
             loadingOverlay.setVisibility(View.GONE);

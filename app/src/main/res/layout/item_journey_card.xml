@@ -115,7 +115,7 @@
                     android:layout_height="20dp"
                     android:layout_marginStart="@dimen/spacing_xs"
                     android:src="@drawable/ic_check_circle"
-                    android:tint="@color/fare_collected"
+                    app:tint="@color/fare_collected"
                     android:contentDescription="@string/fare_collected_icon" />
 
             </LinearLayout>

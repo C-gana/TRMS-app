@@ -50,25 +50,50 @@ public class DashboardViewModel extends ViewModel {
     }
 
     private void fetchDashboard(boolean isRefresh) {
+        android.util.Log.d("DashboardViewModel", "fetchDashboard called, isRefresh: " + isRefresh + ", vehicleId: " + currentVehicleId);
+
         if (!isRefresh) {
+            android.util.Log.d("DashboardViewModel", "Setting state to LOADING");
             dashboardState.setValue(DashboardState.loading());
         }
 
+        if (currentVehicleId == null || currentVehicleId.isEmpty()) {
+            android.util.Log.e("DashboardViewModel", "Vehicle ID is null or empty!");
+            dashboardState.setValue(DashboardState.error("Vehicle ID not set"));
+            return;
+        }
+
+        android.util.Log.d("DashboardViewModel", "Calling repository.getDashboardStatus()");
         LiveData<DashboardRepository.Result<DashboardResponse>> result =
             repository.getDashboardStatus(currentVehicleId);
 
-        // Use MediatorLiveData to observe the repository result
-        MediatorLiveData<DashboardRepository.Result<DashboardResponse>> mediator = new MediatorLiveData<>();
-        mediator.addSource(result, dashboardResult -> {
+        // Observe forever since this is being called from ViewModel
+        result.observeForever(dashboardResult -> {
+            android.util.Log.d("DashboardViewModel", "Repository result received");
+
+            if (dashboardResult == null) {
+                android.util.Log.e("DashboardViewModel", "Dashboard result is null!");
+                dashboardState.setValue(DashboardState.error("No response from server"));
+                return;
+            }
+
             if (dashboardResult.isSuccess()) {
+                android.util.Log.d("DashboardViewModel", "Dashboard fetch successful");
+                DashboardResponse data = dashboardResult.getData();
+                if (data != null) {
+                    android.util.Log.d("DashboardViewModel", "Dashboard data not null, seats: " +
+                        (data.getSeats() != null ? data.getSeats().size() : "null"));
+                } else {
+                    android.util.Log.e("DashboardViewModel", "Dashboard data is null!");
+                }
                 dashboardState.setValue(DashboardState.success(dashboardResult.getData()));
                 scheduleRefresh();
             } else {
+                android.util.Log.e("DashboardViewModel", "Dashboard fetch failed: " + dashboardResult.getError());
                 dashboardState.setValue(DashboardState.error(dashboardResult.getError()));
                 // Retry after error
                 scheduleRefresh();
             }
-            mediator.removeSource(result);
         });
     }
 
@@ -81,8 +106,7 @@ public class DashboardViewModel extends ViewModel {
         LiveData<DashboardRepository.Result<BoardingResponse>> result =
             repository.recordBoarding(currentVehicleId, seatNumber, latitude, longitude);
 
-        MediatorLiveData<DashboardRepository.Result<BoardingResponse>> mediator = new MediatorLiveData<>();
-        mediator.addSource(result, boardingResult -> {
+        result.observeForever(boardingResult -> {
             if (boardingResult.isSuccess()) {
                 boardingState.setValue(BoardingState.success(boardingResult.getData()));
                 // Refresh dashboard immediately after successful boarding
@@ -90,7 +114,6 @@ public class DashboardViewModel extends ViewModel {
             } else {
                 boardingState.setValue(BoardingState.error(boardingResult.getError()));
             }
-            mediator.removeSource(result);
         });
     }
 

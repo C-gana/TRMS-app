@@ -44,6 +44,19 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+    // Testing dependencies
+    testImplementation("org.mockito:mockito-core:5.3.1")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
+
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+    androidTestImplementation("org.mockito:mockito-android:5.3.1")
+
     // Lifecycle & ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel:2.6.1")
     implementation("androidx.lifecycle:lifecycle-livedata:2.6.1")
