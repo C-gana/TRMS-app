@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.TextView;
@@ -159,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
         tvLastUpdated = findViewById(R.id.tvLastUpdated);
         loadingOverlay = findViewById(R.id.loadingOverlay);
 
-        setSupportActionBar(toolbar);
+        // Note: Not using setSupportActionBar() because we inflate menu directly on toolbar
     }
 
     private void setupObservers() {
@@ -273,7 +271,12 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
         toolbar.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
 
-            if (itemId == R.id.action_refresh) {
+            if (itemId == R.id.action_journey_history) {
+                // Navigate to Journey History (Module 5)
+                Intent intent = new Intent(this, com.cgana.trmsdriver.ui.history.JourneyHistoryActivity.class);
+                startActivity(intent);
+                return true;
+            } else if (itemId == R.id.action_refresh) {
                 viewModel.refreshNow();
                 return true;
             } else if (itemId == R.id.action_end_duty) {
@@ -560,10 +563,11 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
     }
 
     /**
-     * Settings placeholder (Module 2 Part 5)
+     * Open Settings Activity (Module 7)
      */
     private void showSettingsPlaceholder() {
-        Toast.makeText(this, "Settings - Coming in future update", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, com.cgana.trmsdriver.ui.settings.SettingsActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -894,56 +898,7 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
     }
 
     // ==================== Module 5: Menu & Navigation ====================
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_journey_history) {
-            // Navigate to Journey History (Module 5)
-            Intent intent = new Intent(this, com.cgana.trmsdriver.ui.history.JourneyHistoryActivity.class);
-            startActivity(intent);
-            return true;
-        } else if (id == R.id.action_refresh) {
-            // Refresh dashboard
-            viewModel.refreshNow();
-            return true;
-        } else if (id == R.id.action_settings) {
-            // Navigate to Settings (Module 7)
-            Intent intent = new Intent(this, com.cgana.trmsdriver.ui.settings.SettingsActivity.class);
-            startActivity(intent);
-            return true;
-        } else if (id == R.id.action_end_duty) {
-            // End duty - navigate to duty status
-            Intent intent = new Intent(this, DutyStatusActivity.class);
-            intent.putExtra("end_duty", true);
-            startActivity(intent);
-            return true;
-        } else if (id == R.id.action_logout) {
-            // Logout confirmation
-            showLogoutConfirmation();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void showLogoutConfirmation() {
-        new AlertDialog.Builder(this)
-            .setTitle(R.string.logout)
-            .setMessage(R.string.logout_confirmation)
-            .setPositiveButton(R.string.yes, (dialog, which) -> {
-                tokenManager.clearAuth();
-                navigateToLogin();
-            })
-            .setNegativeButton(R.string.no, null)
-            .show();
-    }
+    // Menu handling is done in setupToolbarMenu() method above
+    // No need for onCreateOptionsMenu() since toolbar.inflateMenu() is used directly
 }
 

@@ -35,6 +35,7 @@ import com.cgana.trmsdriver.R;
 import com.cgana.trmsdriver.data.local.TokenManager;
 import com.cgana.trmsdriver.data.model.Driver;
 import com.cgana.trmsdriver.data.repository.AuthRepository;
+import com.cgana.trmsdriver.service.LocationTrackingService;
 import com.cgana.trmsdriver.ui.auth.LoginActivity;
 import com.cgana.trmsdriver.utils.DateUtils;
 import java.text.SimpleDateFormat;
@@ -201,6 +202,15 @@ public class DutyStatusActivity extends AppCompatActivity {
                     android.util.Log.d("DutyStatusActivity", "Success - dutyStartedAt: " + dutyStartedAt);
 
                     updateDutyUI(isOnDuty, dutyStartedAt);
+
+                    // Start or stop location tracking service (Module 6)
+                    if (isOnDuty) {
+                        android.util.Log.d("DutyStatusActivity", "Starting location tracking service");
+                        LocationTrackingService.startTracking(this, driver.getVehicleId());
+                    } else {
+                        android.util.Log.d("DutyStatusActivity", "Stopping location tracking service");
+                        LocationTrackingService.stopTracking(this);
+                    }
 
                     // Show success message
                     String message = isOnDuty ?

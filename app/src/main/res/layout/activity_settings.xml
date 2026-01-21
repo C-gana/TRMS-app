@@ -90,7 +90,7 @@
                             android:text="John Doe"
                             android:textSize="@dimen/text_body_large"
                             android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurface" />
+                            android:textColor="@color/text_primary" />
 
                         <TextView
                             android:id="@+id/tvProfilePhone"
@@ -98,7 +98,7 @@
                             android:layout_height="wrap_content"
                             android:text="+265991234567"
                             android:textSize="@dimen/text_label"
-                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textColor="@color/text_secondary"
                             android:layout_marginTop="2dp" />
 
                         <TextView
@@ -148,7 +148,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_theme"
-                    app:tint="?attr/colorOnSurface"
+                    app:tint="@color/text_primary"
                     android:contentDescription="@string/theme_icon" />
 
                 <LinearLayout
@@ -163,7 +163,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/appearance"
                         android:textSize="@dimen/text_setting_title"
-                        android:textColor="?attr/colorOnSurface" />
+                        android:textColor="@color/text_primary" />
 
                     <TextView
                         android:id="@+id/tvCurrentTheme"
@@ -171,7 +171,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/light_theme"
                         android:textSize="@dimen/text_setting_subtitle"
-                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textColor="@color/text_secondary"
                         android:layout_marginTop="2dp" />
 
                 </LinearLayout>
@@ -180,7 +180,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    app:tint="?attr/colorOnSurfaceVariant"
+                    app:tint="@color/text_secondary"
                     android:contentDescription="@string/navigate_icon" />
 
             </LinearLayout>
@@ -188,7 +188,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="?attr/colorDivider"
+                android:background="@color/divider"
                 android:layout_marginStart="52dp" />
 
             <!-- Notifications Setting -->
@@ -207,7 +207,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_notifications"
-                    app:tint="?attr/colorOnSurface"
+                    app:tint="@color/text_primary"
                     android:contentDescription="@string/notifications_icon" />
 
                 <LinearLayout
@@ -222,14 +222,14 @@
                         android:layout_height="wrap_content"
                         android:text="@string/notifications"
                         android:textSize="@dimen/text_setting_title"
-                        android:textColor="?attr/colorOnSurface" />
+                        android:textColor="@color/text_primary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/notification_preferences"
                         android:textSize="@dimen/text_setting_subtitle"
-                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textColor="@color/text_secondary"
                         android:layout_marginTop="2dp" />
 
                 </LinearLayout>
@@ -238,7 +238,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    app:tint="?attr/colorOnSurfaceVariant"
+                    app:tint="@color/text_secondary"
                     android:contentDescription="@string/navigate_icon" />
 
             </LinearLayout>
@@ -272,7 +272,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_lock"
-                    app:tint="?attr/colorOnSurface"
+                    app:tint="@color/text_primary"
                     android:contentDescription="@string/lock_icon" />
 
                 <LinearLayout
@@ -287,14 +287,14 @@
                         android:layout_height="wrap_content"
                         android:text="@string/change_password"
                         android:textSize="@dimen/text_setting_title"
-                        android:textColor="?attr/colorOnSurface" />
+                        android:textColor="@color/text_primary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/update_password"
                         android:textSize="@dimen/text_setting_subtitle"
-                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textColor="@color/text_secondary"
                         android:layout_marginTop="2dp" />
 
                 </LinearLayout>
@@ -303,7 +303,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    app:tint="?attr/colorOnSurfaceVariant"
+                    app:tint="@color/text_secondary"
                     android:contentDescription="@string/navigate_icon" />
 
             </LinearLayout>
@@ -311,7 +311,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="?attr/colorDivider"
+                android:background="@color/divider"
                 android:layout_marginStart="52dp" />
 
             <!-- Logout -->
@@ -352,7 +352,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/sign_out_account"
                         android:textSize="@dimen/text_setting_subtitle"
-                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textColor="@color/text_secondary"
                         android:layout_marginTop="2dp" />
 
                 </LinearLayout>
@@ -361,7 +361,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    app:tint="?attr/colorOnSurfaceVariant"
+                    app:tint="@color/text_secondary"
                     android:contentDescription="@string/navigate_icon" />
 
             </LinearLayout>
@@ -395,7 +395,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_help"
-                    app:tint="?attr/colorOnSurface"
+                    app:tint="@color/text_primary"
                     android:contentDescription="@string/help_icon" />
 
                 <LinearLayout
@@ -410,14 +410,14 @@
                         android:layout_height="wrap_content"
                         android:text="@string/help_support"
                         android:textSize="@dimen/text_setting_title"
-                        android:textColor="?attr/colorOnSurface" />
+                        android:textColor="@color/text_primary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/contact_faq"
                         android:textSize="@dimen/text_setting_subtitle"
-                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textColor="@color/text_secondary"
                         android:layout_marginTop="2dp" />
 
                 </LinearLayout>
@@ -426,7 +426,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    app:tint="?attr/colorOnSurfaceVariant"
+                    app:tint="@color/text_secondary"
                     android:contentDescription="@string/navigate_icon" />
 
             </LinearLayout>
@@ -434,7 +434,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="?attr/colorDivider"
+                android:background="@color/divider"
                 android:layout_marginStart="52dp" />
 
             <!-- About -->
@@ -453,7 +453,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_info"
-                    app:tint="?attr/colorOnSurface"
+                    app:tint="@color/text_primary"
                     android:contentDescription="@string/info_icon" />
 
                 <LinearLayout
@@ -468,7 +468,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/about"
                         android:textSize="@dimen/text_setting_title"
-                        android:textColor="?attr/colorOnSurface" />
+                        android:textColor="@color/text_primary" />
 
                     <TextView
                         android:id="@+id/tvAppVersion"
@@ -476,7 +476,7 @@
                         android:layout_height="wrap_content"
                         android:text="Version 1.0.0"
                         android:textSize="@dimen/text_setting_subtitle"
-                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textColor="@color/text_secondary"
                         android:layout_marginTop="2dp" />
 
                 </LinearLayout>
@@ -485,7 +485,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    app:tint="?attr/colorOnSurfaceVariant"
+                    app:tint="@color/text_secondary"
                     android:contentDescription="@string/navigate_icon" />
 
             </LinearLayout>

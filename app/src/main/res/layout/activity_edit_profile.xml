@@ -182,7 +182,7 @@
                         android:text="@string/vehicle_information"
                         android:textSize="@dimen/text_body"
                         android:textStyle="bold"
-                        android:textColor="?attr/colorOnSurface"
+                        android:textColor="@color/text_primary"
                         android:layout_marginBottom="@dimen/spacing_sm" />
 
                     <!-- Vehicle ID -->
@@ -199,7 +199,7 @@
                             android:layout_weight="1"
                             android:text="@string/vehicle_id"
                             android:textSize="@dimen/text_label"
-                            android:textColor="?attr/colorOnSurfaceVariant" />
+                            android:textColor="@color/text_secondary" />
 
                         <TextView
                             android:id="@+id/tvVehicleId"
@@ -208,7 +208,7 @@
                             android:text="TRM-BT-001"
                             android:textSize="@dimen/text_body"
                             android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurface" />
+                            android:textColor="@color/text_primary" />
 
                     </LinearLayout>
 
@@ -231,7 +231,7 @@
                             android:layout_weight="1"
                             android:text="@string/registration_number"
                             android:textSize="@dimen/text_label"
-                            android:textColor="?attr/colorOnSurfaceVariant" />
+                            android:textColor="@color/text_secondary" />
 
                         <TextView
                             android:id="@+id/tvRegistrationNumber"
@@ -240,7 +240,7 @@
                             android:text="BT-1234"
                             android:textSize="@dimen/text_body"
                             android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurface" />
+                            android:textColor="@color/text_primary" />
 
                     </LinearLayout>
 

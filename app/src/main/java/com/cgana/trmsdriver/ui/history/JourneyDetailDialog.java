@@ -57,7 +57,7 @@ public class JourneyDetailDialog extends DialogFragment {
             journey.setDurationMinutes(getArguments().getInt("duration_minutes"));
             journey.setDistanceKm(getArguments().getDouble("distance_km"));
             journey.setFare(getArguments().getInt("fare"));
-            journey.setFareCollected(getArguments().getBoolean("fare_collected"));
+            journey.setFareCollected(getArguments().getInt("fare_collected"));
         }
 
         // Inflate layout

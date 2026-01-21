@@ -8,6 +8,8 @@ import com.cgana.trmsdriver.data.model.DashboardResponse;
 import com.cgana.trmsdriver.data.model.DestinationResponse;
 import com.cgana.trmsdriver.data.model.JourneyDetailResponse;
 import com.cgana.trmsdriver.data.model.JourneyHistoryResponse;
+import com.cgana.trmsdriver.data.model.LocationUpdateRequest;
+import com.cgana.trmsdriver.data.model.LocationUpdateResponse;
 import com.cgana.trmsdriver.data.model.MissedStopRequest;
 import com.cgana.trmsdriver.data.model.MissedStopResponse;
 import com.cgana.trmsdriver.data.model.SetDestinationRequest;
@@ -83,6 +85,13 @@ public interface DashboardApiService {
             @Query("vehicle_id") String vehicleId,
             @Query("period") String period,
             @Header("Authorization") String token
+    );
+
+    // Module 6: Live Location Tracking Endpoint
+    @POST("api/mobile/driver/location")
+    Call<LocationUpdateResponse> sendLocationUpdate(
+            @Header("Authorization") String token,
+            @Body LocationUpdateRequest request
     );
 }
 

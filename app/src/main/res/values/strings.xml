@@ -288,6 +288,10 @@
     <string name="alighting_time">Alighting Time</string>
     <string name="fare_status">Fare Status</string>
     <string name="fare_collected_icon">Fare collected icon</string>
+    <string name="journey_statistics">Journey Statistics</string>
+    <string name="journey_route">Journey Route</string>
+    <string name="boarding_location">Boarding Location</string>
+    <string name="alighting_location">Alighting Location</string>
 
     <!-- Filter Options -->
     <string name="filter_all">All Journeys</string>
@@ -336,4 +340,60 @@
     <string name="profile_update_failed">Failed to update profile</string>
     <string name="name_required">Name is required</string>
     <string name="app_version_format">Version %s</string>
+
+    <!-- Notification Settings -->
+    <string name="enable_notifications">Enable All Notifications</string>
+    <string name="enable_all_notifications_subtitle">Master switch for all notifications</string>
+    <string name="notification_types">NOTIFICATION TYPES</string>
+    <string name="proximity_alerts">Proximity Alerts</string>
+    <string name="proximity_alerts_subtitle">Notify when approaching destination</string>
+    <string name="boarding_notifications">Boarding Notifications</string>
+    <string name="boarding_notifications_subtitle">Notify on passenger boarding</string>
+    <string name="journey_completed_notifications">Journey Completed</string>
+    <string name="journey_completed_subtitle">Notify when journey is completed</string>
+    <string name="sound_settings">SOUND SETTINGS</string>
+    <string name="notification_sound">Notification Sound</string>
+    <string name="vibration">Vibration</string>
+
+    <!-- Icons content descriptions -->
+    <string name="proximity_icon">Proximity icon</string>
+    <string name="journey_icon">Journey icon</string>
+    <string name="sound_icon">Sound icon</string>
+    <string name="vibration_icon">Vibration icon</string>
+    <string name="support_icon">Support icon</string>
+    <string name="phone_icon">Phone icon</string>
+    <string name="email_icon">Email icon</string>
+    <string name="document_icon">Document icon</string>
+    <string name="privacy_icon">Privacy icon</string>
+    <string name="code_icon">Code icon</string>
+
+    <!-- About -->
+    <string name="about_app">About This App</string>
+    <string name="app_description">TRMS Driver App is a professional mobile application for managing passenger transport operations in Malawi. Track journeys, manage passengers, and monitor your daily statistics.</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="open_source_licenses">Open Source Licenses</string>
+    <string name="copyright">© 2026 TRMS. All rights reserved.</string>
+
+    <!-- Help & Support -->
+    <string name="need_help">Need Help?</string>
+    <string name="contact_support_subtitle">Our support team is here to help you</string>
+    <string name="contact_us">CONTACT US</string>
+    <string name="call_support">Call Support</string>
+    <string name="email_support">Email Support</string>
+    <string name="frequently_asked_questions">FREQUENTLY ASKED QUESTIONS</string>
+    <string name="faq_1_question">How do I report a missed stop?</string>
+    <string name="faq_1_answer">When a passenger doesn\'t alight at their destination, tap the seat card and select "Missed Stop". Add any notes and submit the report. The vehicle owner will be notified immediately.</string>
+    <string name="faq_2_question">How do I change my duty status?</string>
+    <string name="faq_2_answer">From the dashboard menu, select "End Duty" to go off duty. To start duty, tap "Start Duty" on the Duty Status screen.</string>
+    <string name="faq_3_question">What should I do if the app crashes?</string>
+    <string name="faq_3_answer">Try restarting the app first. If the problem persists, contact support via phone or email with details about when the crash occurred.</string>
+
+    <!-- Module 6: Live Location Tracking -->
+    <string name="location_tracking_title">TRMS Driver - Location Tracking</string>
+    <string name="location_tracking_message">Tracking your location for journey management</string>
+    <string name="location_tracking_channel_name">Location Tracking</string>
+    <string name="location_tracking_channel_description">Continuous location tracking while on duty</string>
+    <string name="location_update_sent">Location update sent</string>
+    <string name="location_update_failed">Failed to send location update</string>
 </resources>

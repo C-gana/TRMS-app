@@ -11,7 +11,7 @@ public class JourneySummary {
     private String alighting_time;
     private int duration_minutes;
     private double distance_km;
-    private boolean fare_collected;
+    private int fare_collected; // API returns 0 or 1, not boolean
 
     // Constructors
     public JourneySummary() {
@@ -75,10 +75,10 @@ public class JourneySummary {
     }
 
     public boolean isFareCollected() {
-        return fare_collected;
+        return fare_collected == 1;
     }
 
-    public void setFareCollected(boolean fare_collected) {
+    public void setFareCollected(int fare_collected) {
         this.fare_collected = fare_collected;
     }
 

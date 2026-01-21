@@ -154,8 +154,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Notifications setting click
         notificationsSetting.setOnClickListener(v -> {
-            // TODO: Open notifications settings when implemented
-            showToast("Notifications settings coming soon");
+            Intent intent = new Intent(this, NotificationSettingsActivity.class);
+            startActivity(intent);
         });
 
         // Change password setting click
@@ -170,13 +170,14 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Help setting click
         helpSetting.setOnClickListener(v -> {
-            // TODO: Open help & support when implemented
-            showToast("Help & Support coming soon");
+            Intent intent = new Intent(this, HelpSupportActivity.class);
+            startActivity(intent);
         });
 
         // About setting click
         aboutSetting.setOnClickListener(v -> {
-            showAboutDialog();
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -239,25 +240,6 @@ public class SettingsActivity extends AppCompatActivity {
         finish();
     }
 
-    private void showAboutDialog() {
-        String aboutMessage = "TRMS Driver App\n\n" +
-                "Version: 1.0.0\n" +
-                "Build: 1\n\n" +
-                "© 2026 TRMS\n" +
-                "All rights reserved.\n\n" +
-                "This app is designed for TRMS drivers to manage " +
-                "their journeys and passengers efficiently.";
-
-        new AlertDialog.Builder(this)
-            .setTitle(R.string.about)
-            .setMessage(aboutMessage)
-            .setPositiveButton(R.string.ok, null)
-            .show();
-    }
-
-    private void showToast(String message) {
-        android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     protected void onResume() {

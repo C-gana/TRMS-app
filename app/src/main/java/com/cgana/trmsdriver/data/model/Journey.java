@@ -17,7 +17,7 @@ public class Journey {
     private String alighting_time;
     private int duration_minutes;
     private double distance_km;
-    private boolean fare_collected;
+    private int fare_collected; // API returns 0 or 1, not boolean
     private String status;
     private String route_polyline;
     private String notes;
@@ -102,8 +102,8 @@ public class Journey {
     public double getDistanceKm() { return distance_km; }
     public void setDistanceKm(double distance_km) { this.distance_km = distance_km; }
 
-    public boolean isFareCollected() { return fare_collected; }
-    public void setFareCollected(boolean fare_collected) { this.fare_collected = fare_collected; }
+    public boolean isFareCollected() { return fare_collected == 1; }
+    public void setFareCollected(int fare_collected) { this.fare_collected = fare_collected; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

@@ -17,7 +17,7 @@ public class JourneyHistory {
     private int duration_minutes;
     private double distance_km;
     private int fare;
-    private boolean fare_collected;
+    private int fare_collected; // API returns 0 or 1, not boolean
 
     // Constructors
     public JourneyHistory() {
@@ -26,7 +26,7 @@ public class JourneyHistory {
     public JourneyHistory(long journey_id, int seat_number, String destination,
                          String boarding_time, String alighting_time,
                          int duration_minutes, double distance_km,
-                         int fare, boolean fare_collected) {
+                         int fare, int fare_collected) {
         this.journey_id = journey_id;
         this.seat_number = seat_number;
         this.destination = destination;
@@ -104,10 +104,10 @@ public class JourneyHistory {
     }
 
     public boolean isFareCollected() {
-        return fare_collected;
+        return fare_collected == 1;
     }
 
-    public void setFareCollected(boolean fare_collected) {
+    public void setFareCollected(int fare_collected) {
         this.fare_collected = fare_collected;
     }
 
