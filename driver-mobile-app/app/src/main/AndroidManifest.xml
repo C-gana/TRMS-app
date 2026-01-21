@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
+        android:name=".TRMSDriverApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TRMSDriver"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+
+        <!-- LOGIN ACTIVITY - Now the launcher (entry point) -->
+        <activity
+            android:name=".ui.auth.LoginActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- DUTY STATUS ACTIVITY - Shown after login -->
+        <activity
+            android:name=".ui.duty.DutyStatusActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- MAIN ACTIVITY - Dashboard (Module 2), shown when on duty -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- DESTINATION SELECTION ACTIVITY - Module 3, shown after boarding -->
+        <activity
+            android:name=".ui.destination.DestinationSelectionActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- JOURNEY HISTORY ACTIVITY - Module 5 -->
+        <activity
+            android:name=".ui.history.JourneyHistoryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- SETTINGS ACTIVITY - Module 7 -->
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- EDIT PROFILE ACTIVITY - Module 7 -->
+        <activity
+            android:name=".ui.settings.EditProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- NOTIFICATION SETTINGS ACTIVITY - Module 7 -->
+        <activity
+            android:name=".ui.settings.NotificationSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- ABOUT ACTIVITY - Module 7 -->
+        <activity
+            android:name=".ui.settings.AboutActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- HELP & SUPPORT ACTIVITY - Module 7 -->
+        <activity
+            android:name=".ui.settings.HelpSupportActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- FCM Service -->
+        <service
+            android:name=".fcm.TRMSFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Location Tracking Service (Module 6) -->
+        <service
+            android:name=".service.LocationTrackingService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+    </application>
+
+</manifest>
+

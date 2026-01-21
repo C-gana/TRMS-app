@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Name -->
+    <string name="app_name">TRMS Driver</string>
+    <string name="app_tagline">Your Journey, Our System</string>
+    <string name="app_logo">App Logo</string>
+    <string name="app_version">Version 1.0.0</string>
+
+    <!-- Login Screen -->
+    <string name="welcome_back">Welcome Back</string>
+    <string name="login_instruction">Sign in to start your duty</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="password">Password</string>
+    <string name="remember_me">Remember me</string>
+    <string name="login_to_drive">LOGIN TO DRIVE</string>
+    <string name="logging_in">Logging in…</string>
+
+    <!-- Login Errors -->
+    <string name="error_phone_required">Phone number is required</string>
+    <string name="error_phone_invalid">Phone number must be 9 digits</string>
+    <string name="error_phone_digits_only">Phone number must contain only digits</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_password_too_short">Password must be at least 8 characters</string>
+    <string name="error_invalid_credentials">Invalid phone number or password</string>
+    <string name="error_network">Network error. Please check your connection. </string>
+
+    <!-- Duty Status Screen -->
+    <string name="duty_status">Duty Status</string>
+    <string name="welcome_driver">Welcome</string>
+    <string name="your_vehicle">Your Vehicle</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+
+    <!-- Duty Status Messages -->
+    <string name="you_are_off_duty">YOU ARE OFF DUTY</string>
+    <string name="tap_to_start">Tap button below to start accepting passengers</string>
+    <string name="you_are_on_duty">YOU ARE ON DUTY</string>
+    <string name="started_at">Started at %s</string>
+    <string name="duration_format">Duration: %s</string>
+
+    <!-- Duty Buttons -->
+    <string name="start_duty">START DUTY</string>
+    <string name="end_duty">END DUTY</string>
+
+    <!-- Duty Confirmations -->
+    <string name="end_duty_confirmation_title">End Duty? </string>
+    <string name="end_duty_confirmation_message">Are you sure you want to end your duty?  All active journeys must be completed first.</string>
+    <string name="yes_end_duty">Yes, End Duty</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Duty Status Messages -->
+    <string name="duty_started_successfully">Duty started successfully.  Drive safe!</string>
+    <string name="duty_ended_successfully">Duty ended successfully. See you next time!</string>
+    <string name="updating_status">Updating duty status…</string>
+    <string name="use_end_duty_button">Please use End Duty button to go off duty</string>
+
+    <!-- Today's Summary -->
+    <string name="todays_summary">TODAY\'S SUMMARY</string>
+    <string name="passengers_today">Passengers Today</string>
+    <string name="active_passengers">Active Passengers</string>
+    <string name="revenue_today">Revenue Today</string>
+
+    <!-- Location Permission -->
+    <string name="location_permission_title">Location Permission Required</string>
+    <string name="location_permission_message">TRMS needs your location to:\n\n• Track vehicle position\n• Send proximity alerts\n• Record journey routes\n\nYour location is only tracked while on duty.</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="getting_location">Getting your location…</string>
+    <string name="location_unavailable">Location unavailable. Using default. </string>
+
+    <!-- Background Location Permission (Android 10+) -->
+    <string name="background_location_title">Background Location Access</string>
+    <string name="background_location_message">For continuous tracking while on duty, please allow location access "All the time" in the next screen.\n\nThis ensures accurate journey recording and proximity alerts.</string>
+    <string name="skip">Skip</string>
+
+    <!-- Permission Denied -->
+    <string name="permission_denied">Permission Denied</string>
+    <string name="permission_denied_message">Location permission is required to go on duty. Please grant permission in app settings.</string>
+    <string name="open_settings">Open Settings</string>
+
+    <!-- Logout -->
+    <string name="logout">Logout</string>
+    <string name="logout_confirmation">Are you sure you want to logout? </string>
+
+    <!-- Common -->
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="error">Error</string>
+    <string name="success">Success</string>
+    <string name="loading">Loading…</string>
+    <string name="retry">Retry</string>
+
+    <!-- Content Descriptions (Accessibility) -->
+    <string name="error_icon">Error icon</string>
+    <string name="vehicle_icon">Vehicle icon</string>
+    <string name="off_duty_icon">Off duty icon</string>
+    <string name="on_duty_icon">On duty icon</string>
+    <string name="summary_icon">Summary icon</string>
+    <string name="passengers_icon">Passengers icon</string>
+    <string name="seats_icon">Seats icon</string>
+    <string name="revenue_icon">Revenue icon</string>
+
+    <!-- Menu Items -->
+    <string name="settings">Settings</string>
+    <string name="help">Help</string>
+    <string name="about">About</string>
+
+    <string name="default_notification_channel_id" translatable="false">trms_alerts_channel</string>
+    <!-- Placeholder MainActivity -->
+    <string name="dashboard">Dashboard</string>
+    <string name="coming_soon">Coming soon in Module 2</string>
+
+    <!-- Dashboard Screen -->
+    <string name="on_duty">On Duty</string>
+    <string name="off_duty">Off Duty</string>
+    <string name="active_seats">Active: %d/4</string>
+    <string name="duty_since">On duty since %s</string>
+    <string name="last_updated">Last updated: %s</string>
+    <string name="just_now">Just now</string>
+    <string name="seconds_ago">%d seconds ago</string>
+    <string name="minutes_ago">%d minutes ago</string>
+
+    <!-- Seat Status -->
+    <string name="seat_vacant">VACANT</string>
+    <string name="seat_awaiting">AWAITING</string>
+    <string name="seat_active">ACTIVE</string>
+    <string name="seat_approaching">APPROACHING</string>
+    <string name="seat_number">SEAT %d</string>
+    <string name="timeout">⏱️ %ds</string>
+    <string name="distance_eta" formatted="false">%s • %d min</string>
+    <string name="tap_to_board">Tap to board passenger</string>
+
+    <!-- Summary -->
+    <string name="passengers">Passengers</string>
+    <string name="revenue_mk">Revenue (MK)</string>
+
+    <!-- Dashboard Menu -->
+    <string name="refresh">Refresh</string>
+    <string name="end_duty_menu">End Duty</string>
+
+    <!-- Boarding -->
+    <string name="boarding_success">Passenger boarded successfully</string>
+    <string name="boarding_failed">Failed to record boarding</string>
+    <string name="select_destination">Select destination</string>
+
+    <!-- Seat Card (Module 2 Part 3) -->
+    <string name="seat_number_format">SEAT %d</string>
+    <string name="timeout_format">⏱️ %ds</string>
+    <string name="seat_unknown">UNKNOWN</string>
+
+    <!-- Boarding Dialog (Module 2 Part 3) -->
+    <string name="board_passenger">Board Passenger</string>
+    <string name="board_passenger_title">Board Passenger - Seat %d</string>
+    <string name="board_passenger_message">Confirm boarding of passenger for this seat. Location will be captured automatically.</string>
+    <string name="confirm_boarding">Confirm Boarding</string>
+
+    <!-- Enhanced Boarding Dialog (Module 2 Part 4) -->
+    <string name="record_boarding">Record Boarding</string>
+    <string name="boarding_confirmation_message">Record passenger boarding in Seat %d?</string>
+    <string name="boarding_icon">Boarding Icon</string>
+    <string name="boarding_success_message">Passenger boarded successfully! Journey started.</string>
+    <string name="boarding_failed_message">Failed to record boarding. Please try again.</string>
+
+    <!-- Module 2 Part 5: Additional Resources -->
+    <string name="active_seats_format">Active: %d/4</string>
+    <string name="on_duty_since">On duty since %s</string>
+    <string name="vacant">VACANT</string>
+    <string name="awaiting">AWAITING</string>
+    <string name="active">ACTIVE</string>
+    <string name="approaching">APPROACHING</string>
+    <string name="unknown">UNKNOWN</string>
+    <string name="journey_detail_format" formatted="false">%.1fkm · %dmin</string>
+    <string name="distance_format">%.0fm</string>
+    <string name="last_updated_now">Last updated: Just now</string>
+
+    <!-- Boarding Progress -->
+    <string name="boarding_in_progress">Recording boarding…</string>
+    <string name="boarding_recorded_success">Passenger boarded successfully. Select destination.</string>
+    <string name="seat_already_occupied">This seat is already occupied</string>
+    <string name="seat_not_available">Seat not available</string>
+    <string name="boarding_timeout">Request timeout. Please try again.</string>
+
+    <!-- Dashboard Errors (Enhanced) -->
+    <string name="dashboard_load_error">Failed to load dashboard</string>
+    <string name="session_expired">Session expired. Please login again.</string>
+    <string name="vehicle_not_found">Vehicle not found</string>
+    <string name="server_error">Server error. Please try again.</string>
+    <string name="network_error">Network error. Check your connection.</string>
+    <string name="connection_timeout">Connection timeout. Check your internet.</string>
+    <string name="no_internet">No internet connection</string>
+
+    <!-- Additional Content Descriptions -->
+    <string name="seat_icon">Seat icon</string>
+    <string name="alert_icon">Alert icon</string>
+
+    <!-- Module 3: Destination Selection -->
+    <string name="search_destinations">Search destinations…</string>
+    <string name="no_destinations_found">No destinations found</string>
+    <string name="confirm_destination">Confirm Destination</string>
+    <string name="seat_label">Seat</string>
+    <string name="destination_label">Destination</string>
+    <string name="fare_label">Fare</string>
+    <string name="journey_details_label">Journey Details</string>
+    <string name="destination_confirmation_warning">Make sure passenger confirms this destination before proceeding.</string>
+    <string name="confirm">Confirm</string>
+    <string name="timeout_warning">Time remaining to select destination</string>
+    <string name="destination_set_success">Destination set successfully</string>
+    <string name="destination_set_failed">Failed to set destination</string>
+    <string name="destination_timeout">Destination selection timed out</string>
+    <string name="loading_destinations">Loading destinations...</string>
+    <string name="no_destinations_available">No destinations available</string>
+    <string name="destination_icon">Destination icon</string>
+    <string name="selected_icon">Selected icon</string>
+    <string name="warning_icon">Warning icon</string>
+    <string name="no_destinations_icon">No destinations icon</string>
+    <string name="passenger_waiting">Passenger waiting</string>
+    <string name="seat_x_select_destination">Seat %d - Select Destination</string>
+    <string name="estimated_x_minutes">Estimated %d minutes</string>
+
+    <!-- Module 3 Part 3: Additional Strings -->
+    <string name="timeout_title">Timeout</string>
+    <string name="timeout_message">90 seconds have passed. The destination must be selected immediately or the journey will be cancelled.</string>
+    <string name="cancel_selection_title">Cancel Selection?</string>
+    <string name="cancel_selection_message">You haven\'t selected a destination yet. The passenger is waiting. Are you sure you want to cancel?</string>
+    <string name="yes_cancel">Yes, Cancel</string>
+    <string name="no_continue">No, Continue</string>
+    <string name="invalid_destination">Invalid destination selected</string>
+    <string name="destination_already_set">Destination already set for this journey</string>
+    <string name="journey_not_found">Journey not found</string>
+
+    <!-- Module 4: Passenger Alighting & Journey Completion -->
+    <string name="confirm_alighting">Confirm Alighting</string>
+    <string name="alighting_subtitle">Record passenger exit</string>
+    <string name="alighting_icon">Alighting icon</string>
+    <string name="seat">Seat</string>
+    <string name="destination">Destination</string>
+    <string name="fare">Fare</string>
+    <string name="duration">Duration</string>
+    <string name="distance">Distance</string>
+    <string name="did_passenger_alight">Did the passenger alight?</string>
+    <string name="yes_alighted">Yes, Alighted</string>
+    <string name="missed_stop">Missed Stop</string>
+    <string name="was_fare_collected">Was the fare collected?</string>
+    <string name="alighting_success">Journey completed successfully</string>
+    <string name="alighting_failed">Failed to record alighting</string>
+    <string name="recording_alighting">Recording alighting…</string>
+
+    <!-- Missed Stop Dialog -->
+    <string name="missed_stop_icon">Missed stop icon</string>
+    <string name="missed_stop_explanation">The passenger did not alight at their destination. An alert will be sent to the vehicle owner.</string>
+    <string name="add_notes_optional">Add notes (optional)</string>
+    <string name="missed_stop_warning">An alert will be sent to management. The journey will remain active until the passenger alights.</string>
+    <string name="report_missed_stop">Report Missed Stop</string>
+    <string name="missed_stop_reported">Missed stop reported successfully</string>
+    <string name="missed_stop_report_failed">Failed to report missed stop</string>
+
+    <!-- Journey Summary -->
+    <string name="journey_completed">Journey Completed</string>
+    <string name="fare_collected">Fare Collected</string>
+    <string name="fare_not_collected_label">Fare Not Collected</string>
+    <string name="journey_duration">Journey Duration</string>
+    <string name="total_distance">Total Distance</string>
+
+    <!-- Alighting Errors -->
+    <string name="journey_already_completed">Journey already completed</string>
+    <string name="invalid_journey">Invalid journey</string>
+    <string name="alighting_location_error">Failed to get location</string>
+    <string name="awaiting_destination_selection">Passenger is awaiting destination selection</string>
+    <string name="journey_completed_summary">Journey completed in %d minutes · %.1f km</string>
+
+    <!-- Module 4 Part 3: Proximity Alerts & FCM -->
+    <string name="approaching_destination">Approaching Destination</string>
+    <string name="approaching_notification_text">Seat %d approaching %s - %.0fm away</string>
+    <string name="proximity_alert">Proximity Alert</string>
+    <string name="destination_reached">Destination Reached</string>
+    <string name="notification_channel_proximity">Proximity Alerts</string>
+
+    <!-- Module 5: Journey History -->
+    <string name="journey_history">Journey History</string>
+    <string name="search_journeys">Search journeys...</string>
+    <string name="no_journeys_found">No journeys found</string>
+    <string name="no_journeys_subtitle">Your completed journeys will appear here</string>
+    <string name="no_journeys_icon">No journeys icon</string>
+    <string name="filter">Filter</string>
+    <string name="export">Export</string>
+    <string name="close">Close</string>
+    <string name="boarding_time">Boarding Time</string>
+    <string name="alighting_time">Alighting Time</string>
+    <string name="fare_status">Fare Status</string>
+    <string name="fare_collected_icon">Fare collected icon</string>
+    <string name="journey_statistics">Journey Statistics</string>
+    <string name="journey_route">Journey Route</string>
+    <string name="boarding_location">Boarding Location</string>
+    <string name="alighting_location">Alighting Location</string>
+
+    <!-- Filter Options -->
+    <string name="filter_all">All Journeys</string>
+    <string name="filter_today">Today</string>
+    <string name="filter_week">This Week</string>
+    <string name="filter_month">This Month</string>
+    <string name="filter_fare_collected">Fare Collected</string>
+    <string name="filter_fare_not_collected">Fare Not Collected</string>
+
+    <!-- Module 7: Settings & Profile -->
+    <string name="view_profile">View Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="preferences">Preferences</string>
+    <string name="appearance">Appearance</string>
+    <string name="light_theme">Light</string>
+    <string name="dark_theme">Dark</string>
+    <string name="system_default">System Default</string>
+    <string name="theme_icon">Theme icon</string>
+    <string name="notifications">Notifications</string>
+    <string name="notification_preferences">Manage your notification settings</string>
+    <string name="notifications_icon">Notifications icon</string>
+    <string name="account">Account</string>
+    <string name="change_password">Change Password</string>
+    <string name="update_password">Update your account password</string>
+    <string name="lock_icon">Lock icon</string>
+    <string name="sign_out_account">Sign out from your account</string>
+    <string name="logout_icon">Logout icon</string>
+    <string name="support">Support</string>
+    <string name="help_support">Help &amp; Support</string>
+    <string name="contact_faq">Contact us or view FAQs</string>
+    <string name="help_icon">Help icon</string>
+    <string name="info_icon">Info icon</string>
+    <string name="navigate_icon">Navigate icon</string>
+
+    <!-- Edit Profile -->
+    <string name="full_name">Full Name</string>
+    <string name="phone_readonly">Phone number cannot be changed</string>
+    <string name="email_readonly">Email cannot be changed</string>
+    <string name="email">Email</string>
+    <string name="vehicle_information">Vehicle Information</string>
+    <string name="vehicle_id">Vehicle ID</string>
+    <string name="registration_number">Registration Number</string>
+    <string name="change_photo">Change Photo</string>
+    <string name="save">Save</string>
+    <string name="profile_updated">Profile updated successfully</string>
+    <string name="profile_update_failed">Failed to update profile</string>
+    <string name="name_required">Name is required</string>
+    <string name="app_version_format">Version %s</string>
+
+    <!-- Notification Settings -->
+    <string name="enable_notifications">Enable All Notifications</string>
+    <string name="enable_all_notifications_subtitle">Master switch for all notifications</string>
+    <string name="notification_types">NOTIFICATION TYPES</string>
+    <string name="proximity_alerts">Proximity Alerts</string>
+    <string name="proximity_alerts_subtitle">Notify when approaching destination</string>
+    <string name="boarding_notifications">Boarding Notifications</string>
+    <string name="boarding_notifications_subtitle">Notify on passenger boarding</string>
+    <string name="journey_completed_notifications">Journey Completed</string>
+    <string name="journey_completed_subtitle">Notify when journey is completed</string>
+    <string name="sound_settings">SOUND SETTINGS</string>
+    <string name="notification_sound">Notification Sound</string>
+    <string name="vibration">Vibration</string>
+
+    <!-- Icons content descriptions -->
+    <string name="proximity_icon">Proximity icon</string>
+    <string name="journey_icon">Journey icon</string>
+    <string name="sound_icon">Sound icon</string>
+    <string name="vibration_icon">Vibration icon</string>
+    <string name="support_icon">Support icon</string>
+    <string name="phone_icon">Phone icon</string>
+    <string name="email_icon">Email icon</string>
+    <string name="document_icon">Document icon</string>
+    <string name="privacy_icon">Privacy icon</string>
+    <string name="code_icon">Code icon</string>
+
+    <!-- About -->
+    <string name="about_app">About This App</string>
+    <string name="app_description">TRMS Driver App is a professional mobile application for managing passenger transport operations in Malawi. Track journeys, manage passengers, and monitor your daily statistics.</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="open_source_licenses">Open Source Licenses</string>
+    <string name="copyright">© 2026 TRMS. All rights reserved.</string>
+
+    <!-- Help & Support -->
+    <string name="need_help">Need Help?</string>
+    <string name="contact_support_subtitle">Our support team is here to help you</string>
+    <string name="contact_us">CONTACT US</string>
+    <string name="call_support">Call Support</string>
+    <string name="email_support">Email Support</string>
+    <string name="frequently_asked_questions">FREQUENTLY ASKED QUESTIONS</string>
+    <string name="faq_1_question">How do I report a missed stop?</string>
+    <string name="faq_1_answer">When a passenger doesn\'t alight at their destination, tap the seat card and select "Missed Stop". Add any notes and submit the report. The vehicle owner will be notified immediately.</string>
+    <string name="faq_2_question">How do I change my duty status?</string>
+    <string name="faq_2_answer">From the dashboard menu, select "End Duty" to go off duty. To start duty, tap "Start Duty" on the Duty Status screen.</string>
+    <string name="faq_3_question">What should I do if the app crashes?</string>
+    <string name="faq_3_answer">Try restarting the app first. If the problem persists, contact support via phone or email with details about when the crash occurred.</string>
+
+    <!-- Module 6: Live Location Tracking -->
+    <string name="location_tracking_title">TRMS Driver - Location Tracking</string>
+    <string name="location_tracking_message">Tracking your location for journey management</string>
+    <string name="location_tracking_channel_name">Location Tracking</string>
+    <string name="location_tracking_channel_description">Continuous location tracking while on duty</string>
+    <string name="location_update_sent">Location update sent</string>
+    <string name="location_update_failed">Failed to send location update</string>
+</resources>

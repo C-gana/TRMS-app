@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardDestination"
+    android:layout_width="match_parent"
+    android:layout_height="88dp"
+    android:layout_marginBottom="@dimen/spacing_sm"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="12dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:strokeWidth="2dp"
+    app:strokeColor="@android:color/transparent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:padding="@dimen/spacing_md"
+        android:gravity="center_vertical">
+
+        <!-- Destination Icon -->
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_location_pin"
+            app:tint="@color/primary"
+            android:contentDescription="@string/destination_icon"
+            android:padding="8dp"
+            android:background="@drawable/circle_background_light" />
+
+        <!-- Destination Info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:orientation="vertical">
+
+            <!-- Destination Name -->
+            <TextView
+                android:id="@+id/tvDestinationName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chichiri Shopping Centre"
+                android:textSize="@dimen/text_destination_name"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <!-- Fare, Distance, ETA -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
+
+                <!-- Fare -->
+                <TextView
+                    android:id="@+id/tvFare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1,500 MK"
+                    android:textSize="@dimen/text_fare"
+                    android:textStyle="bold"
+                    android:textColor="@color/fare_text"
+                    android:drawableStart="@drawable/ic_money_small"
+                    android:drawablePadding="4dp"
+                    android:drawableTint="@color/fare_text" />
+
+                <!-- Divider -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" · "
+                    android:textSize="@dimen/text_distance"
+                    android:textColor="@color/distance_text"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp" />
+
+                <!-- Distance & ETA -->
+                <TextView
+                    android:id="@+id/tvDistanceTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2.5km · 8min"
+                    android:textSize="@dimen/text_distance"
+                    android:textColor="@color/distance_text" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Selection Indicator -->
+        <ImageView
+            android:id="@+id/ivSelected"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_check_circle"
+            app:tint="@color/primary"
+            android:contentDescription="@string/selected_icon"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
+
