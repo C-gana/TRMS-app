@@ -1,0 +1,675 @@
+# TRMS Driver Mobile App - Module 7: Settings & Profile Management
+
+## Context
+I have completed **Modules 1-5** of the TRMS Driver mobile app with authentication, dashboard, destination selection, alighting, and journey history.  Now I need **Module 7** which implements comprehensive settings and profile management.
+
+**Current App State:**
+- ✅ Module 1: Authentication & Duty Management
+- ✅ Module 2: Dashboard with 4-Seat Grid & Boarding
+- ✅ Module 3: Destination Selection & Journey Activation
+- ✅ Module 4: Alighting & Journey Completion
+- ✅ Module 5: Journey History & Reports
+- ✅ Complete app functionality working
+
+**Package:** `com.trms.driver`
+**Architecture:** MVVM with Repository pattern
+**Design:** Material Design 3, driver-optimized UI
+**Backend API:** Node.js with complete endpoints
+
+---
+
+## Module 7 Objective
+
+Implement a **professional settings and profile management system** that allows drivers to:
+
+### **Primary Features:**
+1. **Profile Management** - View and edit driver information
+2. **Theme Selection** - Switch between Light and Dark mode
+3. **Notification Preferences** - Enable/disable notification types
+4. **App Information** - Version, build number, licenses
+5. **Help & Support** - Contact information, FAQs
+6. **Account Management** - Change password, logout
+7. **Preferences Storage** - Persist user settings
+8. **About Screen** - App details, terms, privacy policy
+
+### **User Flow:**
+```
+Dashboard → Menu → Settings
+    ↓
+Settings sections display:
+    ├── Profile (View/Edit)
+    ├── Appearance (Theme:  Light/Dark)
+    ├── Notifications (Proximity alerts, Journey updates)
+    ├── Account (Change password, Logout)
+    ├── Help & Support (Contact, FAQ)
+    └── About (Version, Terms, Privacy)
+    ↓
+Tap Profile → Edit Profile Screen
+    ↓
+Edit:  Name, Phone, Email (readonly), Photo
+    ↓
+Save → Update profile
+```
+
+---
+
+## Design System (Consistent with Modules 1-5)
+
+### Color Palette (Light & Dark Themes)
+
+**Light Theme (colors.xml):**
+```xml
+<!-- Already defined -->
+<color name="primary">#2196F3</color>
+<color name="primary_dark">#1976D2</color>
+<color name="accent">#FF9800</color>
+<color name="background">#F5F5F5</color>
+<color name="surface">#FFFFFF</color>
+<color name="text_primary">#212121</color>
+<color name="text_secondary">#757575</color>
+<color name="divider">#BDBDBD</color>
+```
+
+**Dark Theme (colors-night.xml):**
+```xml
+<color name="primary">#64B5F6</color>
+<color name="primary_dark">#42A5F5</color>
+<color name="accent">#FFB74D</color>
+<color name="background">#121212</color>
+<color name="surface">#1E1E1E</color>
+<color name="text_primary">#FFFFFF</color>
+<color name="text_secondary">#B0B0B0</color>
+<color name="divider">#373737</color>
+```
+
+### Typography
+```xml
+<dimen name="text_setting_title">16sp</dimen>
+<dimen name="text_setting_subtitle">14sp</dimen>
+```
+
+---
+
+## Feature 1: Settings Main Screen
+
+### UI Structure:
+```
+┌─────────────────��───────────────────┐
+│  [←] Settings                       │ ← Toolbar
+├─────────────────────────────────────┤
+│                                     │
+│  👤 John Doe                        │ ← Profile header
+│  +265991234567                      │
+│  [View Profile →]                   │
+│                                     │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  │
+│                                     │
+│  PREFERENCES                        │ ← Section header
+│                                     │
+│  🎨 Appearance                      │ ← Setting item
+│  Theme: Light                       │
+│  ›                                  │
+│  ─────────────────────────────────  │
+│  🔔 Notifications                   │
+│  Manage notification preferences    │
+│  ›                                  │
+│  ─────────────────────────────────  │
+│                                     │
+│  ACCOUNT                            │
+│                                     │
+│  🔑 Change Password                 │
+│  Update your password               │
+│  ›                                  │
+│  ─────────────────────────────────  │
+│  🚪 Logout                          │
+│  Sign out of your account           │
+│  ›                                  │
+│  ─────────────────────────────────  │
+│                                     │
+│  SUPPORT                            │
+│                                     │
+│  ❓ Help & Support                  │
+│  Get help and contact support       │
+│  ›                                  │
+│  ─────────────────────────────────  │
+│  ℹ️ About                           │
+│  App version and information        │
+│  ›                                  │
+│                                     │
+└─────────────────────────────────────┘
+```
+
+### Layout Implementation:
+
+**File:** `res/layout/activity_settings.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="? attr/colorBackground">
+
+    <!-- App Bar -->
+    <com.google.android.material.appbar. AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android: background="?attr/colorPrimary"
+            app:title="@string/settings"
+            app:titleTextColor="@android:color/white"
+            app:navigationIcon="@drawable/ic_arrow_back" />
+
+    </com.google. android.material.appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android: layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android: layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android: orientation="vertical">
+
+            <!-- Profile Header Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/profileCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/spacing_md"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="12dp"
+                android:clickable="true"
+                android: focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android: orientation="horizontal"
+                    android:padding="@dimen/spacing_md"
+                    android:gravity="center_vertical">
+
+                    <!-- Profile Avatar -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        app:cardCornerRadius="32dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="? attr/colorPrimary">
+
+                        <TextView
+                            android:id="@+id/tvProfileInitial"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android: text="JD"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/white"
+                            android:gravity="center" />
+
+                    </com. google.android.material.card. MaterialCardView>
+
+                    <!-- Profile Info -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/spacing_md"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvProfileName"
+                            android:layout_width="wrap_content"
+                            android: layout_height="wrap_content"
+                            android:text="John Doe"
+                            android: textSize="@dimen/text_body_large"
+                            android:textStyle="bold"
+                            android: textColor="? attr/colorOnSurface" />
+
+                        <TextView
+                            android:id="@+id/tvProfilePhone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="+265991234567"
+                            android:textSize="@dimen/text_label"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:layout_marginTop="2dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/view_profile"
+                            android:textSize="@dimen/text_label"
+                            android:textColor="?attr/colorPrimary"
+                            android:textStyle="bold"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:drawableEnd="@drawable/ic_arrow_forward_small"
+                            android:drawablePadding="@dimen/spacing_xs"
+                            android:drawableTint="?attr/colorPrimary" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google. android.material.card.MaterialCardView>
+
+            <!-- Preferences Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/preferences"
+                android:textSize="@dimen/text_caption"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android:paddingStart="@dimen/spacing_md"
+                android:paddingEnd="@dimen/spacing_md"
+                android:paddingTop="@dimen/spacing_md"
+                android:paddingBottom="@dimen/spacing_sm" />
+
+            <!-- Appearance Setting -->
+            <LinearLayout
+                android:id="@+id/appearanceSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android: focusable="true"
+                android:padding="@dimen/spacing_md"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_theme"
+                    android:tint="?attr/colorOnSurface"
+                    android:contentDescription="@string/theme_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android: layout_height="wrap_content"
+                        android:text="@string/appearance"
+                        android:textSize="@dimen/text_setting_title"
+                        android: textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:id="@+id/tvThemeValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android: text="@string/light_theme"
+                        android:textSize="@dimen/text_setting_subtitle"
+                        android: textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:tint="?attr/colorOnSurfaceVariant"
+                    android:contentDescription="@string/navigate_icon" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android: layout_height="1dp"
+                android:background="?attr/colorOutlineVariant"
+                android:layout_marginStart="56dp" />
+
+            <!-- Notifications Setting -->
+            <LinearLayout
+                android:id="@+id/notificationsSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android: focusable="true"
+                android:padding="@dimen/spacing_md"
+                android: gravity="center_vertical">
+
+                <ImageView
+                    android: layout_width="24dp"
+                    android:layout_height="24dp"
+                    android: src="@drawable/ic_notifications"
+                    android:tint="?attr/colorOnSurface"
+                    android:contentDescription="@string/notifications_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android: layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android: layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android: layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/notifications"
+                        android:textSize="@dimen/text_setting_title"
+                        android: textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/manage_notifications"
+                        android: textSize="@dimen/text_setting_subtitle"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:tint="?attr/colorOnSurfaceVariant"
+                    android:contentDescription="@string/navigate_icon" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/colorOutlineVariant"
+                android:layout_marginStart="56dp" />
+
+            <!-- Account Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android: layout_height="wrap_content"
+                android:text="@string/account"
+                android:textSize="@dimen/text_caption"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android:paddingStart="@dimen/spacing_md"
+                android:paddingEnd="@dimen/spacing_md"
+                android:paddingTop="@dimen/spacing_md"
+                android:paddingBottom="@dimen/spacing_sm" />
+
+            <!-- Change Password Setting -->
+            <LinearLayout
+                android:id="@+id/changePasswordSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android: focusable="true"
+                android:padding="@dimen/spacing_md"
+                android: gravity="center_vertical">
+
+                <ImageView
+                    android: layout_width="24dp"
+                    android:layout_height="24dp"
+                    android: src="@drawable/ic_password"
+                    android:tint="?attr/colorOnSurface"
+                    android:contentDescription="@string/password_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android: layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android: layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android: layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/change_password"
+                        android: textSize="@dimen/text_setting_title"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/update_your_password"
+                        android: textSize="@dimen/text_setting_subtitle"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:tint="?attr/colorOnSurfaceVariant"
+                    android:contentDescription="@string/navigate_icon" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/colorOutlineVariant"
+                android:layout_marginStart="56dp" />
+
+            <!-- Logout Setting -->
+            <LinearLayout
+                android:id="@+id/logoutSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="@dimen/spacing_md"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_logout"
+                    android: tint="@color/danger"
+                    android:contentDescription="@string/logout_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/logout"
+                        android:textSize="@dimen/text_setting_title"
+                        android:textColor="@color/danger" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sign_out_account"
+                        android:textSize="@dimen/text_setting_subtitle"
+                        android: textColor="? attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android: layout_width="20dp"
+                    android:layout_height="20dp"
+                    android: src="@drawable/ic_chevron_right"
+                    android:tint="?attr/colorOnSurfaceVariant"
+                    android:contentDescription="@string/navigate_icon" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/colorOutlineVariant"
+                android:layout_marginStart="56dp" />
+
+            <!-- Support Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/support"
+                android:textSize="@dimen/text_caption"
+                android:textStyle="bold"
+                android:textColor="? attr/colorPrimary"
+                android:paddingStart="@dimen/spacing_md"
+                android:paddingEnd="@dimen/spacing_md"
+                android:paddingTop="@dimen/spacing_md"
+                android:paddingBottom="@dimen/spacing_sm" />
+
+            <!-- Help & Support Setting -->
+            <LinearLayout
+                android:id="@+id/helpSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="? attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="@dimen/spacing_md"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android: layout_height="24dp"
+                    android:src="@drawable/ic_help"
+                    android:tint="?attr/colorOnSurface"
+                    android:contentDescription="@string/help_icon" />
+
+                <LinearLayout
+                    android: layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/help_and_support"
+                        android:textSize="@dimen/text_setting_title"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/get_help_contact_support"
+                        android:textSize="@dimen/text_setting_subtitle"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:tint="?attr/colorOnSurfaceVariant"
+                    android:contentDescription="@string/navigate_icon" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/colorOutlineVariant"
+                android: layout_marginStart="56dp" />
+
+            <!-- About Setting -->
+            <LinearLayout
+                android:id="@+id/aboutSetting"
+                android: layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android: orientation="horizontal"
+                android: background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="@dimen/spacing_md"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_info"
+                    android:tint="?attr/colorOnSurface"
+                    android:contentDescription="@string/info_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/about"
+                        android: textSize="@dimen/text_setting_title"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:id="@+id/tvAppVersion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Version 1.0.0"
+                        android:textSize="@dimen/text_setting_subtitle"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:tint="?attr/colorOnSurfaceVariant"
+                    android:contentDescription="@string/navigate_icon" />
+
+            </LinearLayout>
+
+            <!-- Bottom Spacing -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="32dp" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+```
+
+---
+
+## Continue to Part 2 for:
+- Profile Edit Activity layout and implementation
+- Theme Selection Dialog
+- Notifications Settings Activity
+- Change Password Dialog
+- About Activity
+- Help & Support Activity
+- SettingsActivity.java implementation
+- PreferenceManager for storing settings
+
+Shall I continue with Part 2?  🚖📱

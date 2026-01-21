@@ -1,0 +1,736 @@
+# TRMS Driver Mobile App - Module 5: Journey History & Reports
+
+## Context
+I have completed **Modules 1-4** of the TRMS Driver mobile app with authentication, dashboard, destination selection, and alighting functionality. Now I need **Module 5** which implements comprehensive journey history, reporting, and analytics for drivers.
+
+**Current App State:**
+- ✅ Module 1: Authentication & Duty Management
+- ✅ Module 2: Dashboard with 4-Seat Grid & Boarding
+- ✅ Module 3: Destination Selection & Journey Activation
+- ✅ Module 4: Alighting & Journey Completion
+- ✅ Complete journey cycle working end-to-end
+
+**Package:** `com.trms.driver`
+**Architecture:** MVVM with Repository pattern
+**Design:** Material Design 3, driver-optimized UI
+**Backend API:** Node.js with complete endpoints
+
+---
+
+## Module 5 Objective
+
+Implement a **professional journey history and reporting system** that allows drivers to:
+
+### **Primary Features:**
+1. **Journey History List** - View all completed journeys with filtering
+2. **Journey Details View** - Detailed information for each journey
+3. **Date Range Filtering** - Filter by today, yesterday, this week, this month, custom range
+4. **Search Functionality** - Search by destination, passenger, journey ID
+5. **Statistics Dashboard** - Daily/weekly/monthly summary statistics
+6. **Export Reports** - Export journey data as CSV or PDF (optional)
+7. **Pagination** - Load journeys in pages (20 per page)
+8. **Pull-to-Refresh** - Refresh journey list
+9. **Fare Collection Status** - Visual indicators for collected/uncollected fares
+10. **Empty States** - Professional empty states for no journeys
+
+### **User Flow:**
+```
+Dashboard → Menu → Journey History
+    ↓
+Journey list displays (today's journeys by default)
+    ↓
+Filter by date range (tabs:  Today, Yesterday, This Week, This Month, Custom)
+    ↓
+Search by destination or journey ID
+    ↓
+Tap journey card → Journey details screen
+    ↓
+View:  Passenger info, boarding/alighting times, route, fare status, duration, distance
+    ↓
+Optional: Export report (CSV/PDF)
+```
+
+---
+
+## Design System (Consistent with Modules 1-4)
+
+### Color Palette
+```xml
+<!-- Journey Status Colors -->
+<color name="fare_collected">#4CAF50</color>          <!-- Green -->
+<color name="fare_not_collected">#FFC107</color>      <!-- Yellow/Orange -->
+<color name="journey_completed">#2196F3</color>       <!-- Blue -->
+
+<!-- Report Colors -->
+<color name="stat_positive">#4CAF50</color>           <!-- Green for good stats -->
+<color name="stat_neutral">#2196F3</color>            <!-- Blue for neutral -->
+<color name="stat_negative">#F44336</color>           <!-- Red for issues -->
+```
+
+### Typography
+```xml
+<dimen name="text_journey_id">14sp</dimen>            <!-- Small for IDs -->
+<dimen name="text_stat_value">32sp</dimen>            <!-- Large for statistics -->
+<dimen name="text_stat_label">12sp</dimen>            <!-- Small for stat labels -->
+```
+
+---
+
+## Backend API Endpoints
+
+### 1. Get Journey History (Paginated)
+```
+GET /api/mobile/driver/journeys? vehicleId={id}&page={page}&limit={limit}&startDate={date}&endDate={date}
+Authorization: Bearer {token}
+
+Query Parameters:
+- vehicleId: string (required)
+- page: number (default: 1)
+- limit: number (default: 20)
+- startDate: ISO date string (optional)
+- endDate: ISO date string (optional)
+- search: string (optional - search destination)
+
+Response:
+{
+  "success": true,
+  "journeys": [
+    {
+      "journey_id": 1234,
+      "passenger_id": 567,
+      "passenger_name": "John Doe",
+      "passenger_phone": "+265991234567",
+      "seat_number": 1,
+      "destination": "Chichiri Shopping Centre",
+      "fare":  1500,
+      "boarding_location": {
+        "latitude": -15.7891,
+        "longitude": 35.0412,
+        "address": "Ginnery Corner"
+      },
+      "alighting_location": {
+        "latitude": -15.8123,
+        "longitude": 35.0456,
+        "address": "Chichiri Shopping Centre"
+      },
+      "boarding_time": "2025-12-31T08:15:00Z",
+      "alighting_time": "2025-12-31T08:23:00Z",
+      "duration_minutes": 8,
+      "distance_km": 2.5,
+      "fare_collected": true,
+      "status": "completed"
+    }
+    // ... more journeys
+  ],
+  "pagination": {
+    "current_page": 1,
+    "total_pages": 5,
+    "total_journeys": 95,
+    "per_page":  20
+  }
+}
+```
+
+### 2. Get Journey Details
+```
+GET /api/mobile/driver/journeys/{journeyId}
+Authorization: Bearer {token}
+
+Response:
+{
+  "success":  true,
+  "journey":  {
+    "journey_id":  1234,
+    "passenger_id": 567,
+    "passenger_name": "John Doe",
+    "passenger_phone": "+265991234567",
+    "seat_number": 1,
+    "destination": "Chichiri Shopping Centre",
+    "fare": 1500,
+    "boarding_location": {
+      "latitude": -15.7891,
+      "longitude": 35.0412,
+      "address": "Ginnery Corner"
+    },
+    "alighting_location": {
+      "latitude": -15.8123,
+      "longitude": 35.0456,
+      "address":  "Chichiri Shopping Centre"
+    },
+    "boarding_time": "2025-12-31T08:15:00Z",
+    "alighting_time": "2025-12-31T08:23:00Z",
+    "duration_minutes": 8,
+    "distance_km": 2.5,
+    "fare_collected": true,
+    "route_polyline": "encoded_polyline_string",
+    "status": "completed",
+    "notes": null
+  }
+}
+```
+
+### 3. Get Statistics Summary
+```
+GET /api/mobile/driver/statistics? vehicleId={id}&startDate={date}&endDate={date}
+Authorization: Bearer {token}
+
+Response:
+{
+  "success":  true,
+  "period": {
+    "start_date": "2025-12-31T00:00:00Z",
+    "end_date": "2025-12-31T23:59:59Z",
+    "label": "Today"
+  },
+  "statistics": {
+    "total_journeys": 15,
+    "total_passengers": 15,
+    "total_revenue": 22500,
+    "total_distance_km": 37. 5,
+    "total_duration_minutes": 120,
+    "average_journey_duration":  8,
+    "average_fare":  1500,
+    "fare_collected_count": 13,
+    "fare_not_collected_count": 2,
+    "fare_collection_rate": 86.7,
+    "busiest_destination": "Chichiri Shopping Centre",
+    "busiest_hour": "08:00-09:00"
+  }
+}
+```
+
+---
+
+## Feature 1: Journey History List Screen
+
+### UI Structure:
+```
+┌─────────────────────────────────────┐
+│  [←] Journey History    [📊 Stats]  │ ← Toolbar
+├─────────────────────────────────────┤
+│  [Today] [Yesterday] [Week] [Month] │ ← Filter tabs
+├─────────────────────────────────────┤
+│                                     │
+│  🔍 Search destinations...           │ ← Search bar
+│                                     │
+│  ┌─────────────────────────────┐  │
+│  │  Journey #1234              │  │ ← Journey card
+│  │  📍 Chichiri Shopping       │  │
+│  │  ⏱️ 08:15 → 08:23 (8 min)   │  │
+│  │  💰 1,500 MK ✅             │  │
+│  │  📏 2.5 km                   │  │
+│  └─────────────────────────────┘  │
+│                                     │
+│  ┌─────────────────────────────┐  │
+│  │  Journey #1233              │  │
+│  │  📍 Limbe Market            │  │
+│  │  ⏱️ 07:45 → 07:57 (12 min)  │  │
+│  │  💰 2,000 MK ⚠️              │  │ ← Not collected
+│  │  📏 3.8 km                   │  │
+│  └─────────────────────────────┘  │
+│                                     │
+│         ...  more journeys           │
+│                                     │
+│  [Load More]                        │ ← Pagination
+│                                     │
+└─────────────────────────────────────┘
+```
+
+### Layout Implementation:
+
+**File:** `res/layout/activity_journey_history.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns: app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android: layout_height="match_parent"
+    android:background="@color/background">
+
+    <!-- App Bar -->
+    <com.google.android.material.appbar. AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android: background="@color/primary"
+            app:title="@string/journey_history"
+            app:titleTextColor="@android:color/white"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:menu="@menu/menu_journey_history" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- Filter Tabs -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android: layout_height="48dp"
+            android:background="@color/surface"
+            android:elevation="2dp"
+            app:tabMode="scrollable"
+            app:tabIndicatorColor="@color/primary"
+            app:tabSelectedTextColor="@color/primary"
+            app:tabTextColor="@color/text_secondary" />
+
+        <!-- Search Bar -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/spacing_md"
+            app:cardElevation="2dp"
+            app:cardCornerRadius="12dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSearch"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/search_journeys"
+                app:startIconDrawable="@drawable/ic_search"
+                app:startIconTint="@color/text_secondary"
+                app:endIconMode="clear_text"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:inputType="text"
+                    android: imeOptions="actionSearch"
+                    android:textSize="@dimen/text_body"
+                    android:background="@android:color/transparent" />
+
+            </com.google.android. material.textfield.TextInputLayout>
+
+        </com.google. android.material.card.MaterialCardView>
+
+        <!-- Journey List with SwipeRefresh -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android: id="@+id/swipeRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <androidx.recyclerview. widget.RecyclerView
+                android:id="@+id/recyclerJourneys"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/spacing_md"
+                android:clipToPadding="false" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Empty State -->
+        <LinearLayout
+            android:id="@+id/emptyState"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android: orientation="vertical"
+            android:gravity="center"
+            android:padding="@dimen/spacing_xl"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/ic_no_journeys"
+                android:tint="@color/text_hint"
+                android:alpha="0.5"
+                android:contentDescription="@string/no_journeys_icon" />
+
+            <TextView
+                android:id="@+id/tvEmptyMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android: text="@string/no_journeys_found"
+                android:textSize="@dimen/text_body_large"
+                android:textColor="@color/text_secondary"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="@string/no_journeys_subtitle"
+                android:textSize="@dimen/text_label"
+                android:textColor="@color/text_hint"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Loading Overlay -->
+    <include layout="@layout/loading_overlay" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+```
+
+---
+
+### Journey Card Item Layout
+
+**File:** `res/layout/item_journey_card.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<com.google. android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardJourney"
+    android: layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android: layout_marginBottom="@dimen/spacing_md"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="12dp"
+    android:clickable="true"
+    android: focusable="true"
+    android:foreground="? attr/selectableItemBackground">
+
+    <LinearLayout
+        android: layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android: orientation="vertical"
+        android:padding="@dimen/spacing_md">
+
+        <!-- Header:  Journey ID + Time -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Journey ID -->
+            <TextView
+                android:id="@+id/tvJourneyId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Journey #1234"
+                android:textSize="@dimen/text_journey_id"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <!-- Seat Number Badge -->
+            <TextView
+                android:id="@+id/tvSeatNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Seat 1"
+                android: textSize="@dimen/text_caption"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:background="@drawable/seat_badge_background"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
+
+        </LinearLayout>
+
+        <!-- Destination -->
+        <TextView
+            android:id="@+id/tvDestination"
+            android: layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="Chichiri Shopping Centre"
+            android:textSize="@dimen/text_body_large"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:drawableStart="@drawable/ic_location_small"
+            android:drawablePadding="@dimen/spacing_xs"
+            android:drawableTint="@color/primary" />
+
+        <!-- Time Info -->
+        <TextView
+            android:id="@+id/tvTimeInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="08:15 → 08:23 (8 min)"
+            android:textSize="@dimen/text_label"
+            android:textColor="@color/text_secondary"
+            android:drawableStart="@drawable/ic_time_small"
+            android:drawablePadding="@dimen/spacing_xs"
+            android:drawableTint="@color/text_secondary" />
+
+        <!-- Bottom Row:  Fare + Distance -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Fare with Collection Status -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvFare"
+                    android:layout_width="wrap_content"
+                    android: layout_height="wrap_content"
+                    android:text="1,500 MK"
+                    android:textSize="@dimen/text_body"
+                    android:textStyle="bold"
+                    android: textColor="@color/fare_text"
+                    android:drawableStart="@drawable/ic_money_small"
+                    android:drawablePadding="@dimen/spacing_xs"
+                    android:drawableTint="@color/fare_text" />
+
+                <!-- Fare Status Icon -->
+                <ImageView
+                    android:id="@+id/ivFareStatus"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:src="@drawable/ic_check_small"
+                    android: tint="@color/fare_collected"
+                    android:contentDescription="@string/fare_collected_icon" />
+
+            </LinearLayout>
+
+            <!-- Distance -->
+            <TextView
+                android:id="@+id/tvDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2.5 km"
+                android:textSize="@dimen/text_label"
+                android:textColor="@color/text_secondary"
+                android:drawableStart="@drawable/ic_distance"
+                android:drawablePadding="@dimen/spacing_xs"
+                android:drawableTint="@color/text_secondary" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
+```
+
+---
+
+## Feature 2: Journey Details Screen
+
+**File:** `res/layout/activity_journey_detail.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <!-- App Bar -->
+    <com. google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp">
+
+        <com. google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android: layout_height="?attr/actionBarSize"
+            android:background="@color/primary"
+            app:title="@string/journey_details"
+            app:titleTextColor="@android:color/white"
+            app:navigationIcon="@drawable/ic_arrow_back" />
+
+    </com.google. android.material.appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
+
+            <!-- Journey ID Header Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="@color/primary"
+                android:layout_marginBottom="@dimen/spacing_md">
+
+                <LinearLayout
+                    android: layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/journey_id_label"
+                        android:textSize="@dimen/text_caption"
+                        android:textColor="@android:color/white"
+                        android:alpha="0.8" />
+
+                    <TextView
+                        android:id="@+id/tvJourneyId"
+                        android: layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="#1234"
+                        android: textSize="@dimen/text_headline"
+                        android:textStyle="bold"
+                        android: textColor="@android:color/white" />
+
+                    <TextView
+                        android:id="@+id/tvJourneyDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android: layout_marginTop="@dimen/spacing_xs"
+                        android:text="31 Dec 2025"
+                        android:textSize="@dimen/text_label"
+                        android:textColor="@android:color/white"
+                        android:alpha="0.9" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Passenger Information Card -->
+            <com.google. android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="12dp"
+                android:layout_marginBottom="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android: text="@string/passenger_information"
+                        android:textSize="@dimen/text_body"
+                        android:textStyle="bold"
+                        android: textColor="@color/text_primary"
+                        android:drawableStart="@drawable/ic_passenger"
+                        android:drawablePadding="@dimen/spacing_sm"
+                        android:drawableTint="@color/primary" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/divider"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:layout_marginBottom="@dimen/spacing_sm" />
+
+                    <!-- Passenger Name -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android: orientation="horizontal"
+                        android:layout_marginBottom="@dimen/spacing_sm">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android: layout_weight="1"
+                            android:text="@string/name"
+                            android:textSize="@dimen/text_label"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tvPassengerName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="John Doe"
+                            android: textSize="@dimen/text_body"
+                            android: textColor="@color/text_primary"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Passenger Phone -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/phone"
+                            android:textSize="@dimen/text_label"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tvPassengerPhone"
+                            android: layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="+265991234567"
+                            android: textSize="@dimen/text_body"
+                            android: textColor="@color/text_primary" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com. google.android.material.card. MaterialCardView>
+
+            <!-- Continue in next message with more detail cards...  -->
+
+        </LinearLayout>
+
+    </androidx.core.widget. NestedScrollView>
+
+    <!-- Loading Overlay -->
+    <include layout="@layout/loading_overlay" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+```
+
+---
+
+## Continue to Part 2 for:
+- Complete journey detail layout (route, timing, fare cards)
+- Statistics dashboard layout
+- Data models (Journey, JourneyHistory, Statistics)
+- Repository (JourneyHistoryRepository)
+- ViewModel (JourneyHistoryViewModel with pagination)
+- Adapter (JourneyAdapter with search/filter)
+
+Shall I continue with Part 2?  🚖📱

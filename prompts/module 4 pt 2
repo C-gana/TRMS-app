@@ -1,0 +1,968 @@
+# TRMS Driver App - Module 4: Passenger Alighting (Part 2: Data Layer & Dialog Implementation)
+
+---
+
+## Feature 3: Data Models for Alighting
+
+### 1. Alighting Request Model
+
+**File:** `com. trms.driver.data.model.AlightingRequest.java`
+
+```java
+package com.trms.driver.data.model;
+
+public class AlightingRequest {
+    private String vehicle_id;
+    private int journey_id;
+    private int seat_number;
+    private Location alighting_location;
+    private boolean fare_collected;
+    private boolean missed_stop;
+
+    // Constructor
+    public AlightingRequest(String vehicle_id, int journey_id, int seat_number,
+                           Location alighting_location, boolean fare_collected,
+                           boolean missed_stop) {
+        this.vehicle_id = vehicle_id;
+        this.journey_id = journey_id;
+        this.seat_number = seat_number;
+        this.alighting_location = alighting_location;
+        this. fare_collected = fare_collected;
+        this.missed_stop = missed_stop;
+    }
+
+    // Getters
+    public String getVehicle_id() { return vehicle_id; }
+    public int getJourney_id() { return journey_id; }
+    public int getSeat_number() { return seat_number; }
+    public Location getAlighting_location() { return alighting_location; }
+    public boolean isFare_collected() { return fare_collected; }
+    public boolean isMissed_stop() { return missed_stop; }
+}
+```
+
+### 2. Journey Summary Model
+
+**File:** `com.trms.driver.data. model.JourneySummary.java`
+
+```java
+package com.trms.driver.data.model;
+
+public class JourneySummary {
+    private int passenger_id;
+    private String destination;
+    private int fare;
+    private String boarding_time;
+    private String alighting_time;
+    private int duration_minutes;
+    private double distance_km;
+    private boolean fare_collected;
+
+    // Constructor
+    public JourneySummary() {}
+
+    // Getters and Setters
+    public int getPassenger_id() { return passenger_id; }
+    public void setPassenger_id(int passenger_id) { this.passenger_id = passenger_id; }
+
+    public String getDestination() { return destination; }
+    public void setDestination(String destination) { this.destination = destination; }
+
+    public int getFare() { return fare; }
+    public void setFare(int fare) { this.fare = fare; }
+
+    public String getBoarding_time() { return boarding_time; }
+    public void setBoarding_time(String boarding_time) { this.boarding_time = boarding_time; }
+
+    public String getAlighting_time() { return alighting_time; }
+    public void setAlighting_time(String alighting_time) { this.alighting_time = alighting_time; }
+
+    public int getDuration_minutes() { return duration_minutes; }
+    public void setDuration_minutes(int duration_minutes) { this.duration_minutes = duration_minutes; }
+
+    public double getDistance_km() { return distance_km; }
+    public void setDistance_km(double distance_km) { this.distance_km = distance_km; }
+
+    public boolean isFare_collected() { return fare_collected; }
+    public void setFare_collected(boolean fare_collected) { this.fare_collected = fare_collected; }
+}
+```
+
+### 3. Alighting Response Model
+
+**File:** `com.trms.driver.data.model.AlightingResponse.java`
+
+```java
+package com.trms.driver.data.model;
+
+public class AlightingResponse {
+    private boolean success;
+    private int journey_id;
+    private int seat_number;
+    private String status;
+    private JourneySummary journey_summary;
+    private String message;
+
+    // Constructor
+    public AlightingResponse() {}
+
+    // Getters and Setters
+    public boolean isSuccess() { return success; }
+    public void setSuccess(boolean success) { this.success = success; }
+
+    public int getJourney_id() { return journey_id; }
+    public void setJourney_id(int journey_id) { this.journey_id = journey_id; }
+
+    public int getSeat_number() { return seat_number; }
+    public void setSeat_number(int seat_number) { this.seat_number = seat_number; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public JourneySummary getJourney_summary() { return journey_summary; }
+    public void setJourney_summary(JourneySummary journey_summary) {
+        this.journey_summary = journey_summary;
+    }
+
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
+}
+```
+
+### 4. Missed Stop Request Model
+
+**File:** `com.trms.driver.data.model.MissedStopRequest.java`
+
+```java
+package com.trms.driver. data.model;
+
+public class MissedStopRequest {
+    private String vehicle_id;
+    private int journey_id;
+    private int seat_number;
+    private Location current_location;
+    private String notes;
+
+    // Constructor
+    public MissedStopRequest(String vehicle_id, int journey_id, int seat_number,
+                            Location current_location, String notes) {
+        this.vehicle_id = vehicle_id;
+        this.journey_id = journey_id;
+        this.seat_number = seat_number;
+        this.current_location = current_location;
+        this.notes = notes;
+    }
+
+    // Getters
+    public String getVehicle_id() { return vehicle_id; }
+    public int getJourney_id() { return journey_id; }
+    public int getSeat_number() { return seat_number; }
+    public Location getCurrent_location() { return current_location; }
+    public String getNotes() { return notes; }
+}
+```
+
+### 5. Missed Stop Response Model
+
+**File:** `com.trms.driver.data.model.MissedStopResponse.java`
+
+```java
+package com.trms.driver. data.model;
+
+public class MissedStopResponse {
+    private boolean success;
+    private int journey_id;
+    private boolean alert_created;
+    private String message;
+
+    // Constructor
+    public MissedStopResponse() {}
+
+    // Getters and Setters
+    public boolean isSuccess() { return success; }
+    public void setSuccess(boolean success) { this.success = success; }
+
+    public int getJourney_id() { return journey_id; }
+    public void setJourney_id(int journey_id) { this.journey_id = journey_id; }
+
+    public boolean isAlert_created() { return alert_created; }
+    public void setAlert_created(boolean alert_created) { this.alert_created = alert_created; }
+
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
+}
+```
+
+---
+
+## Feature 4: API Service Extension
+
+**Update:** `com.trms.driver.data.api.DashboardApiService.java`
+
+```java
+package com.trms.driver. data.api;
+
+import com. trms.driver.data.model.AlightingRequest;
+import com.trms.driver.data.model.AlightingResponse;
+import com.trms.driver.data.model.BoardingRequest;
+import com.trms.driver.data.model. BoardingResponse;
+import com. trms.driver.data.model.DashboardResponse;
+import com. trms.driver.data.model. DestinationsResponse;
+import com.trms.driver.data.model.MissedStopRequest;
+import com.trms.driver.data.model.MissedStopResponse;
+import com.trms.driver.data.model.SetDestinationRequest;
+import com.trms.driver.data.model.SetDestinationResponse;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
+
+public interface DashboardApiService {
+
+    @GET("api/mobile/driver/dashboard/{vehicleId}")
+    Call<DashboardResponse> getDashboard(
+        @Path("vehicleId") String vehicleId,
+        @Header("Authorization") String token
+    );
+
+    @POST("api/mobile/driver/boarding")
+    Call<BoardingResponse> recordBoarding(
+        @Body BoardingRequest request,
+        @Header("Authorization") String token
+    );
+
+    @GET("api/mobile/driver/destinations/{vehicleId}")
+    Call<DestinationsResponse> getDestinations(
+        @Path("vehicleId") String vehicleId,
+        @Header("Authorization") String token
+    );
+
+    @POST("api/mobile/driver/destination")
+    Call<SetDestinationResponse> setDestination(
+        @Body SetDestinationRequest request,
+        @Header("Authorization") String token
+    );
+
+    // NEW: Record passenger alighting
+    @POST("api/mobile/driver/alighting")
+    Call<AlightingResponse> recordAlighting(
+        @Body AlightingRequest request,
+        @Header("Authorization") String token
+    );
+
+    // NEW: Report missed stop
+    @POST("api/mobile/driver/missed-stop")
+    Call<MissedStopResponse> reportMissedStop(
+        @Body MissedStopRequest request,
+        @Header("Authorization") String token
+    );
+}
+```
+
+---
+
+## Feature 5: Alighting Repository
+
+**File:** `com.trms.driver.data.repository.AlightingRepository. java`
+
+```java
+package com.trms.driver.data. repository;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle. MutableLiveData;
+import com.trms.driver.data. api.DashboardApiService;
+import com.trms.driver. data.api.RetrofitClient;
+import com.trms.driver.data.local.TokenManager;
+import com.trms. driver.data.model.AlightingRequest;
+import com.trms.driver.data.model. AlightingResponse;
+import com.trms.driver.data. model.Location;
+import com.trms. driver.data.model.MissedStopRequest;
+import com.trms.driver.data. model.MissedStopResponse;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class AlightingRepository {
+
+    private DashboardApiService apiService;
+    private TokenManager tokenManager;
+
+    public AlightingRepository(TokenManager tokenManager) {
+        this.apiService = RetrofitClient.getInstance().getDashboardApi();
+        this.tokenManager = tokenManager;
+    }
+
+    /**
+     * Record passenger alighting
+     */
+    public LiveData<Result<AlightingResponse>> recordAlighting(String vehicleId, int journeyId,
+                                                                int seatNumber, Location location,
+                                                                boolean fareCollected, boolean missedStop) {
+        MutableLiveData<Result<AlightingResponse>> result = new MutableLiveData<>();
+
+        String token = tokenManager.getToken();
+        if (token == null) {
+            result.setValue(Result.error("Authentication required"));
+            return result;
+        }
+
+        AlightingRequest request = new AlightingRequest(vehicleId, journeyId, seatNumber,
+                                                        location, fareCollected, missedStop);
+
+        apiService.recordAlighting(request, "Bearer " + token)
+            .enqueue(new Callback<AlightingResponse>() {
+                @Override
+                public void onResponse(Call<AlightingResponse> call, Response<AlightingResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        AlightingResponse alightingResponse = response.body();
+                        if (alightingResponse.isSuccess()) {
+                            result.setValue(Result.success(alightingResponse));
+                        } else {
+                            result.setValue(Result.error(alightingResponse. getMessage()));
+                        }
+                    } else {
+                        String error = "Failed to record alighting";
+                        if (response.code() == 400) {
+                            error = "Invalid journey data";
+                        } else if (response.code() == 401) {
+                            error = "Session expired. Please login again. ";
+                        } else if (response.code() == 404) {
+                            error = "Journey not found";
+                        } else if (response.code() == 409) {
+                            error = "Journey already completed";
+                        } else if (response.code() >= 500) {
+                            error = "Server error. Please try again.";
+                        }
+                        result.setValue(Result.error(error));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AlightingResponse> call, Throwable t) {
+                    String error = "Network error";
+                    if (t. getMessage() != null) {
+                        if (t.getMessage().contains("timeout")) {
+                            error = "Connection timeout.  Check your internet. ";
+                        } else if (t.getMessage().contains("Unable to resolve host")) {
+                            error = "No internet connection";
+                        } else {
+                            error = t.getMessage();
+                        }
+                    }
+                    result. setValue(Result.error(error));
+                }
+            });
+
+        return result;
+    }
+
+    /**
+     * Report missed stop
+     */
+    public LiveData<Result<MissedStopResponse>> reportMissedStop(String vehicleId, int journeyId,
+                                                                  int seatNumber, Location location,
+                                                                  String notes) {
+        MutableLiveData<Result<MissedStopResponse>> result = new MutableLiveData<>();
+
+        String token = tokenManager.getToken();
+        if (token == null) {
+            result.setValue(Result.error("Authentication required"));
+            return result;
+        }
+
+        MissedStopRequest request = new MissedStopRequest(vehicleId, journeyId, seatNumber,
+                                                          location, notes);
+
+        apiService.reportMissedStop(request, "Bearer " + token)
+            .enqueue(new Callback<MissedStopResponse>() {
+                @Override
+                public void onResponse(Call<MissedStopResponse> call, Response<MissedStopResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        MissedStopResponse missedResponse = response.body();
+                        if (missedResponse.isSuccess()) {
+                            result.setValue(Result.success(missedResponse));
+                        } else {
+                            result.setValue(Result. error(missedResponse.getMessage()));
+                        }
+                    } else {
+                        String error = "Failed to report missed stop";
+                        if (response.code() == 400) {
+                            error = "Invalid data";
+                        } else if (response.code() == 401) {
+                            error = "Session expired";
+                        } else if (response.code() == 404) {
+                            error = "Journey not found";
+                        }
+                        result.setValue(Result.error(error));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MissedStopResponse> call, Throwable t) {
+                    result.setValue(Result.error("Network error:  " + t.getMessage()));
+                }
+            });
+
+        return result;
+    }
+
+    // Result wrapper
+    public static class Result<T> {
+        private T data;
+        private String error;
+        private boolean success;
+
+        private Result(T data, String error, boolean success) {
+            this. data = data;
+            this. error = error;
+            this. success = success;
+        }
+
+        public static <T> Result<T> success(T data) {
+            return new Result<>(data, null, true);
+        }
+
+        public static <T> Result<T> error(String error) {
+            return new Result<>(null, error, false);
+        }
+
+        public T getData() { return data; }
+        public String getError() { return error; }
+        public boolean isSuccess() { return success; }
+    }
+}
+```
+
+---
+
+## Feature 6: Alighting Confirmation Dialog (Java Implementation)
+
+**File:** `com.trms.driver.ui.alighting.AlightingConfirmationDialog.java`
+
+```java
+package com.trms.driver. ui.alighting;
+
+import android.app.Dialog;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget. TextView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment. app.DialogFragment;
+import com.google.android.material.button.MaterialButton;
+import com. google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.trms.driver.R;
+import com.trms.driver.data.model. Seat;
+import com.trms. driver.utils.DateUtils;
+import java.util. Locale;
+
+public class AlightingConfirmationDialog extends DialogFragment {
+
+    public interface AlightingDialogListener {
+        void onConfirmAlighting(int seatNumber, int journeyId, boolean fareCollected);
+        void onMissedStop(int seatNumber, int journeyId);
+    }
+
+    private AlightingDialogListener listener;
+    private Seat seat;
+    private boolean fareCollected = false;
+    private boolean fareQuestionAnswered = false;
+
+    public static AlightingConfirmationDialog newInstance(Seat seat) {
+        AlightingConfirmationDialog dialog = new AlightingConfirmationDialog();
+        Bundle args = new Bundle();
+        // Pass seat data as separate parameters
+        args.putInt("seat_number", seat.getSeat_number());
+        args.putInt("journey_id", seat.getJourney_id());
+        args.putString("destination", seat.getDestination());
+        args.putInt("fare", seat.getFare());
+        args.putString("boarding_time", seat.getBoarding_time());
+        args.putDouble("distance_km", seat.getDistance_to_destination() != null ?
+                       seat.getDistance_to_destination() : 0.0);
+        dialog.setArguments(args);
+        return dialog;
+    }
+
+    public void setListener(AlightingDialogListener listener) {
+        this.listener = listener;
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        // Reconstruct seat from arguments
+        seat = new Seat();
+        if (getArguments() != null) {
+            seat.setSeat_number(getArguments().getInt("seat_number"));
+            seat.setJourney_id(getArguments().getInt("journey_id"));
+            seat.setDestination(getArguments().getString("destination"));
+            seat.setFare(getArguments().getInt("fare"));
+            seat.setBoarding_time(getArguments().getString("boarding_time"));
+            seat.setDistance_to_destination(getArguments().getDouble("distance_km"));
+        }
+
+        // Inflate layout
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_alighting_confirmation, null);
+
+        // Setup views
+        TextView tvSeatNumber = view.findViewById(R.id.tvSeatNumber);
+        TextView tvDestination = view.findViewById(R. id.tvDestination);
+        TextView tvFare = view.findViewById(R.id.tvFare);
+        TextView tvDuration = view.findViewById(R.id.tvDuration);
+        TextView tvDistance = view.findViewById(R.id.tvDistance);
+        MaterialButton btnYesAlighted = view.findViewById(R.id.btnYesAlighted);
+        MaterialButton btnMissedStop = view.findViewById(R.id.btnMissedStop);
+        MaterialButton btnCancel = view.findViewById(R. id.btnCancel);
+        LinearLayout fareCollectionSection = view.findViewById(R.id.fareCollectionSection);
+        MaterialButton btnFareYes = view.findViewById(R. id.btnFareYes);
+        MaterialButton btnFareNo = view.findViewById(R.id.btnFareNo);
+
+        // Set data
+        tvSeatNumber.setText(getString(R.string.seat_number_format, seat.getSeat_number()));
+        tvDestination.setText(seat.getDestination());
+        tvFare.setText(String.format(Locale.getDefault(), "%,d MK", seat.getFare()));
+
+        // Calculate duration
+        if (seat.getBoarding_time() != null) {
+            String duration = DateUtils.calculateDuration(seat.getBoarding_time());
+            tvDuration.setText(duration);
+        } else {
+            tvDuration. setText("N/A");
+        }
+
+        // Set distance
+        if (seat.getDistance_to_destination() != null) {
+            tvDistance.setText(String.format(Locale.getDefault(), "%.1f km",
+                                            seat.getDistance_to_destination()));
+        } else {
+            tvDistance.setText("N/A");
+        }
+
+        // Build dialog
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext())
+                .setView(view)
+                .setCancelable(true);
+
+        AlertDialog dialog = builder.create();
+
+        // Button listeners
+        btnYesAlighted. setOnClickListener(v -> {
+            // Show fare collection question
+            v.setEnabled(false);
+            btnMissedStop.setEnabled(false);
+            fareCollectionSection.setVisibility(View.VISIBLE);
+        });
+
+        btnMissedStop.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (listener != null) {
+                listener.onMissedStop(seat.getSeat_number(), seat.getJourney_id());
+            }
+        });
+
+        btnFareYes.setOnClickListener(v -> {
+            fareCollected = true;
+            fareQuestionAnswered = true;
+            dialog.dismiss();
+            if (listener != null) {
+                listener. onConfirmAlighting(seat. getSeat_number(), seat.getJourney_id(), true);
+            }
+        });
+
+        btnFareNo. setOnClickListener(v -> {
+            fareCollected = false;
+            fareQuestionAnswered = true;
+            dialog.dismiss();
+            if (listener != null) {
+                listener.onConfirmAlighting(seat.getSeat_number(), seat.getJourney_id(), false);
+            }
+        });
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        return dialog;
+    }
+}
+```
+
+---
+
+## Feature 7: Missed Stop Notes Dialog (Java Implementation)
+
+**File:** `com.trms.driver.ui.alighting.MissedStopDialog.java`
+
+```java
+package com.trms.driver.ui.alighting;
+
+import android. app.Dialog;
+import android. os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app. AlertDialog;
+import androidx.fragment.app.DialogFragment;
+import com.google.android.material.button.MaterialButton;
+import com.google. android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.trms.driver.R;
+
+public class MissedStopDialog extends DialogFragment {
+
+    public interface MissedStopDialogListener {
+        void onReportMissedStop(int seatNumber, int journeyId, String notes);
+    }
+
+    private MissedStopDialogListener listener;
+    private int seatNumber;
+    private int journeyId;
+
+    public static MissedStopDialog newInstance(int seatNumber, int journeyId) {
+        MissedStopDialog dialog = new MissedStopDialog();
+        Bundle args = new Bundle();
+        args.putInt("seat_number", seatNumber);
+        args.putInt("journey_id", journeyId);
+        dialog.setArguments(args);
+        return dialog;
+    }
+
+    public void setListener(MissedStopDialogListener listener) {
+        this.listener = listener;
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (getArguments() != null) {
+            seatNumber = getArguments().getInt("seat_number");
+            journeyId = getArguments().getInt("journey_id");
+        }
+
+        // Inflate layout
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_missed_stop_notes, null);
+
+        // Setup views
+        TextInputEditText etNotes = view.findViewById(R.id.etNotes);
+        MaterialButton btnReportMissed = view.findViewById(R.id.btnReportMissed);
+        MaterialButton btnCancelMissed = view.findViewById(R.id.btnCancelMissed);
+
+        // Build dialog
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext())
+                .setView(view)
+                .setCancelable(true);
+
+        AlertDialog dialog = builder.create();
+
+        // Button listeners
+        btnReportMissed.setOnClickListener(v -> {
+            String notes = etNotes.getText() != null ? etNotes.getText().toString().trim() : "";
+            dialog.dismiss();
+            if (listener != null) {
+                listener. onReportMissedStop(seatNumber, journeyId, notes);
+            }
+        });
+
+        btnCancelMissed.setOnClickListener(v -> dialog.dismiss());
+
+        return dialog;
+    }
+}
+```
+
+---
+
+## Feature 8: Update MainActivity for Alighting
+
+**Update MainActivity.java to handle seat taps for alighting:**
+
+```java
+// Add to MainActivity.java
+
+// Add imports
+import com.trms. driver.data.repository.AlightingRepository;
+import com. trms.driver.ui.alighting.AlightingConfirmationDialog;
+import com. trms.driver.ui.alighting.MissedStopDialog;
+
+// Add member variables
+private AlightingRepository alightingRepository;
+private MutableLiveData<AlightingState> alightingState = new MutableLiveData<>();
+
+// In onCreate(), initialize alighting repository
+alightingRepository = new AlightingRepository(tokenManager);
+
+// Update setupSeatListeners() method
+private void setupSeatListeners() {
+    seat1Card.setOnClickListener(v -> onSeatTapped(getSeatFromCard(seat1Card)));
+    seat2Card.setOnClickListener(v -> onSeatTapped(getSeatFromCard(seat2Card)));
+    seat3Card.setOnClickListener(v -> onSeatTapped(getSeatFromCard(seat3Card)));
+    seat4Card.setOnClickListener(v -> onSeatTapped(getSeatFromCard(seat4Card)));
+}
+
+// Helper method to get seat data from card view
+private Seat getSeatFromCard(View seatCard) {
+    // Retrieve the seat object that was bound to this card
+    // This assumes you stored it as a tag during updateSeatCard()
+    return (Seat) seatCard.getTag();
+}
+
+// Update onSeatTapped to handle both boarding and alighting
+private void onSeatTapped(Seat seat) {
+    if (seat == null) return;
+
+    // Haptic feedback
+    findViewById(android.R.id.content).performHapticFeedback(
+        android.view.HapticFeedbackConstants.CONTEXT_CLICK
+    );
+
+    String status = seat.getStatus();
+
+    if ("vacant".equals(status)) {
+        // Boarding flow (existing)
+        onBoardSeat(seat);
+
+    } else if ("active_journey".equals(status) || "approaching_destination".equals(status)) {
+        // Alighting flow (NEW)
+        showAlightingConfirmationDialog(seat);
+
+    } else if ("awaiting_destination".equals(status)) {
+        // Seat is awaiting destination selection
+        Toast.makeText(this, R.string.awaiting_destination_selection, Toast. LENGTH_SHORT).show();
+    }
+}
+
+// Update updateSeatCard to store seat as tag
+private void updateSeatCard(View seatCard, Seat seat) {
+    // Store seat object in card tag for later retrieval
+    seatCard.setTag(seat);
+
+    // ...  rest of existing updateSeatCard code ...
+}
+
+// NEW: Show alighting confirmation dialog
+private void showAlightingConfirmationDialog(Seat seat) {
+    AlightingConfirmationDialog dialog = AlightingConfirmationDialog. newInstance(seat);
+    dialog.setListener(new AlightingConfirmationDialog.AlightingDialogListener() {
+        @Override
+        public void onConfirmAlighting(int seatNumber, int journeyId, boolean fareCollected) {
+            recordAlighting(journeyId, seatNumber, fareCollected, false);
+        }
+
+        @Override
+        public void onMissedStop(int seatNumber, int journeyId) {
+            showMissedStopDialog(seatNumber, journeyId);
+        }
+    });
+    dialog.show(getSupportFragmentManager(), "AlightingDialog");
+}
+
+// NEW: Show missed stop dialog
+private void showMissedStopDialog(int seatNumber, int journeyId) {
+    MissedStopDialog dialog = MissedStopDialog.newInstance(seatNumber, journeyId);
+    dialog.setListener((seatNum, jId, notes) -> {
+        reportMissedStop(jId, seatNum, notes);
+    });
+    dialog.show(getSupportFragmentManager(), "MissedStopDialog");
+}
+
+// NEW: Record passenger alighting
+private void recordAlighting(int journeyId, int seatNumber, boolean fareCollected, boolean missedStop) {
+    // Check location permission
+    if (ContextCompat.checkSelfPermission(this, Manifest. permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
+        getCurrentLocationAndRecordAlighting(journeyId, seatNumber, fareCollected, missedStop);
+    } else {
+        // Use default location
+        performAlighting(journeyId, seatNumber, fareCollected, missedStop,
+                        new com.trms.driver.data. model.Location(0.0, 0.0));
+    }
+}
+
+// NEW:  Get location and record alighting
+private void getCurrentLocationAndRecordAlighting(int journeyId, int seatNumber,
+                                                  boolean fareCollected, boolean missedStop) {
+    showLoading(true);
+
+    fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+        .addOnSuccessListener(this, location -> {
+            com.trms.driver.data. model.Location alightingLocation;
+            if (location != null) {
+                alightingLocation = new com.trms.driver. data.model.Location(
+                    location.getLatitude(),
+                    location.getLongitude()
+                );
+            } else {
+                alightingLocation = new com.trms. driver.data.model.Location(0.0, 0.0);
+            }
+            performAlighting(journeyId, seatNumber, fareCollected, missedStop, alightingLocation);
+        })
+        .addOnFailureListener(this, e -> {
+            // Use default location on failure
+            performAlighting(journeyId, seatNumber, fareCollected, missedStop,
+                           new com.trms.driver. data.model.Location(0.0, 0.0));
+        });
+}
+
+// NEW: Perform alighting API call
+private void performAlighting(int journeyId, int seatNumber, boolean fareCollected,
+                              boolean missedStop, com.trms.driver.data.model.Location location) {
+    showLoading(true);
+
+    LiveData<AlightingRepository.Result<AlightingResponse>> result =
+        alightingRepository.recordAlighting(vehicleId, journeyId, seatNumber,
+                                           location, fareCollected, missedStop);
+
+    result.observeForever(alightingResult -> {
+        showLoading(false);
+
+        if (alightingResult.isSuccess()) {
+            showAlightingSuccess(alightingResult.getData());
+
+            // Refresh dashboard
+            viewModel.refreshNow();
+        } else {
+            showError(alightingResult.getError());
+        }
+    });
+}
+
+// NEW: Report missed stop
+private void reportMissedStop(int journeyId, int seatNumber, String notes) {
+    // Check location permission
+    if (ContextCompat.checkSelfPermission(this, Manifest.permission. ACCESS_FINE_LOCATION)
+            == PackageManager. PERMISSION_GRANTED) {
+        getCurrentLocationAndReportMissed(journeyId, seatNumber, notes);
+    } else {
+        // Use default location
+        performReportMissed(journeyId, seatNumber, notes,
+                           new com.trms.driver. data.model.Location(0.0, 0.0));
+    }
+}
+
+// NEW:  Get location and report missed stop
+private void getCurrentLocationAndReportMissed(int journeyId, int seatNumber, String notes) {
+    showLoading(true);
+
+    fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+        .addOnSuccessListener(this, location -> {
+            com.trms.driver.data.model.Location currentLocation;
+            if (location != null) {
+                currentLocation = new com.trms.driver. data.model.Location(
+                    location.getLatitude(),
+                    location.getLongitude()
+                );
+            } else {
+                currentLocation = new com. trms.driver.data.model.Location(0.0, 0.0);
+            }
+            performReportMissed(journeyId, seatNumber, notes, currentLocation);
+        })
+        .addOnFailureListener(this, e -> {
+            // Use default location on failure
+            performReportMissed(journeyId, seatNumber, notes,
+                              new com.trms.driver. data.model.Location(0.0, 0.0));
+        });
+}
+
+// NEW: Perform report missed stop API call
+private void performReportMissed(int journeyId, int seatNumber, String notes,
+                                 com.trms.driver.data.model.Location location) {
+    showLoading(true);
+
+    LiveData<AlightingRepository.Result<MissedStopResponse>> result =
+        alightingRepository. reportMissedStop(vehicleId, journeyId, seatNumber, location, notes);
+
+    result.observeForever(missedResult -> {
+        showLoading(false);
+
+        if (missedResult.isSuccess()) {
+            showMissedStopSuccess(missedResult.getData().getMessage());
+
+            // Refresh dashboard
+            viewModel.refreshNow();
+        } else {
+            showError(missedResult. getError());
+        }
+    });
+}
+
+// NEW: Show alighting success dialog
+private void showAlightingSuccess(AlightingResponse response) {
+    String message = response.getMessage() + "\n\n" +
+                    getString(R.string.journey_completed_summary,
+                              response.getJourney_summary().getDuration_minutes(),
+                              response.getJourney_summary().getDistance_km());
+
+    new AlertDialog.Builder(this)
+        .setTitle(R.string. journey_completed)
+        .setMessage(message)
+        .setIcon(R.drawable.ic_check_circle)
+        .setPositiveButton(R.string.ok, null)
+        .show();
+
+    // Haptic feedback
+    findViewById(android. R.id.content).performHapticFeedback(
+        android.view.HapticFeedbackConstants.CONFIRM
+    );
+}
+
+// NEW: Show missed stop success
+private void showMissedStopSuccess(String message) {
+    new AlertDialog.Builder(this)
+        .setTitle(R. string.missed_stop_reported)
+        .setMessage(message)
+        .setIcon(R. drawable.ic_info)
+        .setPositiveButton(R.string.ok, null)
+        .show();
+}
+
+// Add AlightingState class (similar to BoardingState)
+public static class AlightingState {
+    public enum Status { IDLE, LOADING, SUCCESS, ERROR }
+
+    private Status status;
+    private AlightingResponse data;
+    private String error;
+
+    private AlightingState(Status status, AlightingResponse data, String error) {
+        this.status = status;
+        this.data = data;
+        this.error = error;
+    }
+
+    public static AlightingState idle() {
+        return new AlightingState(Status.IDLE, null, null);
+    }
+
+    public static AlightingState loading() {
+        return new AlightingState(Status.LOADING, null, null);
+    }
+
+    public static AlightingState success(AlightingResponse data) {
+        return new AlightingState(Status.SUCCESS, data, null);
+    }
+
+    public static AlightingState error(String error) {
+        return new AlightingState(Status. ERROR, null, error);
+    }
+
+    public Status getStatus() { return status; }
+    public AlightingResponse getData() { return data; }
+    public String getError() { return error; }
+}
+```
+
+---
+
+## Continue to Part 3 for:
+- String resources (all alighting-related strings)
+- Additional drawable resources
+- Update AndroidManifest.xml
+- Push notification handling (FCM setup for proximity alerts)
+- Complete testing checklist
+
+Shall I continue with Part 3?  🚖📱

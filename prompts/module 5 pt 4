@@ -1,0 +1,1016 @@
+# TRMS Driver App - Module 5: Journey History (Part 4: Activities, Resources & Testing)
+
+---
+
+## Feature 11: Journey Detail Activity
+
+**File:** `com.trms.driver.ui.history. JourneyDetailActivity.java`
+
+```java
+package com.trms.driver.ui.history;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget. FrameLayout;
+import android. widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
+import com.google.android.material.appbar. MaterialToolbar;
+import com. trms.driver.R;
+import com.trms.driver.data.local.TokenManager;
+import com.trms.driver.data.model.Journey;
+import com.trms.driver.data. repository.JourneyHistoryRepository;
+import com.trms. driver.utils.DateUtils;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+public class JourneyDetailActivity extends AppCompatActivity {
+
+    // UI Components
+    private MaterialToolbar toolbar;
+    private TextView tvJourneyId, tvJourneyDate;
+    private TextView tvPassengerName, tvPassengerPhone;
+    private TextView tvBoardingLocation, tvBoardingTime;
+    private TextView tvAlightingLocation, tvAlightingTime;
+    private TextView tvDuration, tvDistanceValue, tvFareValue;
+    private TextView tvFareStatus;
+    private ImageView ivFareStatusIcon;
+    private FrameLayout loadingOverlay;
+
+    // Data
+    private JourneyHistoryRepository repository;
+    private TokenManager tokenManager;
+    private int journeyId;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R. layout.activity_journey_detail);
+
+        // Get journey ID from intent
+        journeyId = getIntent().getIntExtra("journey_id", -1);
+        if (journeyId == -1) {
+            Toast.makeText(this, "Invalid journey", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        // Initialize
+        tokenManager = new TokenManager(this);
+        repository = new JourneyHistoryRepository(tokenManager);
+
+        // Initialize views
+        initializeViews();
+
+        // Setup toolbar
+        setupToolbar();
+
+        // Load journey details
+        loadJourneyDetails();
+    }
+
+    private void initializeViews() {
+        toolbar = findViewById(R.id.toolbar);
+        tvJourneyId = findViewById(R.id.tvJourneyId);
+        tvJourneyDate = findViewById(R.id.tvJourneyDate);
+        tvPassengerName = findViewById(R.id.tvPassengerName);
+        tvPassengerPhone = findViewById(R.id.tvPassengerPhone);
+        tvBoardingLocation = findViewById(R.id.tvBoardingLocation);
+        tvBoardingTime = findViewById(R.id.tvBoardingTime);
+        tvAlightingLocation = findViewById(R.id.tvAlightingLocation);
+        tvAlightingTime = findViewById(R.id.tvAlightingTime);
+        tvDuration = findViewById(R.id.tvDuration);
+        tvDistanceValue = findViewById(R.id.tvDistanceValue);
+        tvFareValue = findViewById(R.id. tvFareValue);
+        tvFareStatus = findViewById(R. id.tvFareStatus);
+        ivFareStatusIcon = findViewById(R.id.ivFareStatusIcon);
+        loadingOverlay = findViewById(R.id. loadingOverlay);
+    }
+
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        toolbar. setNavigationOnClickListener(v -> onBackPressed());
+    }
+
+    private void loadJourneyDetails() {
+        showLoading(true);
+
+        LiveData<JourneyHistoryRepository.Result<Journey>> result =
+            repository.getJourneyDetail(journeyId);
+
+        result.observeForever(journeyResult -> {
+            showLoading(false);
+
+            if (journeyResult.isSuccess()) {
+                displayJourneyDetails(journeyResult.getData());
+            } else {
+                Toast.makeText(this, journeyResult.getError(), Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+    }
+
+    private void displayJourneyDetails(Journey journey) {
+        // Journey ID and Date
+        tvJourneyId. setText(String.format(Locale.getDefault(), "#%d", journey.getJourney_id()));
+
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
+            Date date = inputFormat.parse(journey.getBoarding_time());
+            if (date != null) {
+                tvJourneyDate.setText(outputFormat.format(date));
+            }
+        } catch (Exception e) {
+            tvJourneyDate.setText("");
+        }
+
+        // Passenger Information
+        tvPassengerName. setText(journey.getPassenger_name() != null ?
+                               journey.getPassenger_name() : "N/A");
+        tvPassengerPhone.setText(journey.getPassenger_phone() != null ?
+                                journey.getPassenger_phone() : "N/A");
+
+        // Boarding Location
+        if (journey.getBoarding_location() != null &&
+            journey.getBoarding_location().getAddress() != null) {
+            tvBoardingLocation.setText(journey.getBoarding_location().getAddress());
+        } else {
+            tvBoardingLocation.setText("Location unavailable");
+        }
+        tvBoardingTime.setText(DateUtils.formatTime(journey.getBoarding_time()));
+
+        // Alighting Location
+        if (journey.getAlighting_location() != null &&
+            journey.getAlighting_location().getAddress() != null) {
+            tvAlightingLocation.setText(journey.getAlighting_location().getAddress());
+        } else {
+            tvAlightingLocation.setText(journey.getDestination());
+        }
+        tvAlightingTime.setText(DateUtils. formatTime(journey.getAlighting_time()));
+
+        // Journey Statistics
+        tvDuration.setText(String.valueOf(journey.getDuration_minutes()));
+        tvDistanceValue.setText(String.format(Locale.getDefault(), "%.1f", journey.getDistance_km()));
+        tvFareValue. setText(String.format(Locale.getDefault(), "%,d", journey.getFare()));
+
+        // Fare Collection Status
+        if (journey.isFare_collected()) {
+            tvFareStatus.setText(R.string.fare_collected);
+            tvFareStatus.setTextColor(ContextCompat.getColor(this, R.color.fare_collected));
+            ivFareStatusIcon.setImageResource(R.drawable.ic_check_circle);
+            ivFareStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color. fare_collected));
+        } else {
+            tvFareStatus.setText(R. string.fare_not_collected);
+            tvFareStatus.setTextColor(ContextCompat. getColor(this, R.color.fare_not_collected));
+            ivFareStatusIcon.setImageResource(R.drawable.ic_warning);
+            ivFareStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color.fare_not_collected));
+        }
+    }
+
+    private void showLoading(boolean show) {
+        loadingOverlay. setVisibility(show ? View. VISIBLE : View.GONE);
+    }
+}
+```
+
+---
+
+## Feature 12: Statistics Activity
+
+**File:** `com.trms.driver.ui. history.StatisticsActivity.java`
+
+```java
+package com.trms.driver.ui.history;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx. appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.tabs.TabLayout;
+import com. trms.driver.R;
+import com.trms.driver. data.local.TokenManager;
+import com.trms.driver. data.model.Statistics;
+import com.trms. driver.data.model.StatisticsResponse;
+import com.trms. driver.data.repository.JourneyHistoryRepository;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util. Locale;
+
+public class StatisticsActivity extends AppCompatActivity {
+
+    // UI Components
+    private MaterialToolbar toolbar;
+    private TabLayout tabLayoutPeriod;
+    private TextView tvTotalJourneys, tvTotalRevenue, tvTotalDistance, tvAverageFare;
+    private TextView tvTotalDuration, tvFareCollectionRate, tvFaresCollected, tvBusiestDestination;
+    private FrameLayout loadingOverlay;
+
+    // Data
+    private JourneyHistoryRepository repository;
+    private TokenManager tokenManager;
+    private String vehicleId;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_statistics);
+
+        // Initialize
+        tokenManager = new TokenManager(this);
+        vehicleId = tokenManager.getDriver().getVehicleId();
+        repository = new JourneyHistoryRepository(tokenManager);
+
+        // Initialize views
+        initializeViews();
+
+        // Setup toolbar
+        setupToolbar();
+
+        // Setup tabs
+        setupTabs();
+
+        // Load today's statistics by default
+        loadStatistics("today");
+    }
+
+    private void initializeViews() {
+        toolbar = findViewById(R.id.toolbar);
+        tabLayoutPeriod = findViewById(R.id.tabLayoutPeriod);
+        tvTotalJourneys = findViewById(R.id. tvTotalJourneys);
+        tvTotalRevenue = findViewById(R.id.tvTotalRevenue);
+        tvTotalDistance = findViewById(R.id. tvTotalDistance);
+        tvAverageFare = findViewById(R.id.tvAverageFare);
+        tvTotalDuration = findViewById(R.id.tvTotalDuration);
+        tvFareCollectionRate = findViewById(R.id.tvFareCollectionRate);
+        tvFaresCollected = findViewById(R.id.tvFaresCollected);
+        tvBusiestDestination = findViewById(R. id.tvBusiestDestination);
+        loadingOverlay = findViewById(R.id.loadingOverlay);
+    }
+
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+    }
+
+    private void setupTabs() {
+        tabLayoutPeriod.addTab(tabLayoutPeriod.newTab().setText(R.string.today));
+        tabLayoutPeriod.addTab(tabLayoutPeriod.newTab().setText(R.string.yesterday));
+        tabLayoutPeriod.addTab(tabLayoutPeriod.newTab().setText(R.string.this_week));
+        tabLayoutPeriod.addTab(tabLayoutPeriod. newTab().setText(R.string.this_month));
+
+        tabLayoutPeriod.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                String period;
+                switch (tab.getPosition()) {
+                    case 0: period = "today"; break;
+                    case 1: period = "yesterday"; break;
+                    case 2: period = "week"; break;
+                    case 3: period = "month"; break;
+                    default: period = "today";
+                }
+                loadStatistics(period);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout. Tab tab) {}
+        });
+    }
+
+    private void loadStatistics(String period) {
+        showLoading(true);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
+        Calendar calendar = Calendar. getInstance();
+
+        String endDate = sdf.format(calendar.getTime());
+        String startDate;
+
+        switch (period) {
+            case "today":
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar. set(Calendar.SECOND, 0);
+                startDate = sdf.format(calendar.getTime());
+                break;
+
+            case "yesterday":
+                calendar.add(Calendar.DAY_OF_MONTH, -1);
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar. MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                startDate = sdf.format(calendar. getTime());
+
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
+                calendar. set(Calendar.SECOND, 59);
+                endDate = sdf.format(calendar.getTime());
+                break;
+
+            case "week":
+                calendar.add(Calendar.DAY_OF_MONTH, -7);
+                startDate = sdf.format(calendar.getTime());
+                break;
+
+            case "month":
+                calendar.add(Calendar. MONTH, -1);
+                startDate = sdf.format(calendar.getTime());
+                break;
+
+            default:
+                return;
+        }
+
+        LiveData<JourneyHistoryRepository.Result<StatisticsResponse>> result =
+            repository.getStatistics(vehicleId, startDate, endDate);
+
+        result. observeForever(statsResult -> {
+            showLoading(false);
+
+            if (statsResult.isSuccess()) {
+                displayStatistics(statsResult.getData().getStatistics());
+            } else {
+                Toast.makeText(this, statsResult.getError(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void displayStatistics(Statistics stats) {
+        // Summary Cards
+        tvTotalJourneys.setText(String.valueOf(stats.getTotal_journeys()));
+        tvTotalRevenue.setText(String.format(Locale.getDefault(), "%,d", stats.getTotal_revenue()));
+        tvTotalDistance.setText(String.format(Locale.getDefault(), "%.1f", stats.getTotal_distance_km()));
+        tvAverageFare.setText(String. format(Locale.getDefault(), "%,d", stats.getAverage_fare()));
+
+        // Detailed Statistics
+        int hours = stats.getTotal_duration_minutes() / 60;
+        int minutes = stats.getTotal_duration_minutes() % 60;
+        tvTotalDuration.setText(String.format(Locale. getDefault(), "%dh %dmin", hours, minutes));
+
+        tvFareCollectionRate.setText(String.format(Locale.getDefault(), "%.1f%%",
+                                                   stats.getFare_collection_rate()));
+
+        tvFaresCollected. setText(String.format(Locale.getDefault(), "%d / %d",
+                                               stats.getFare_collected_count(),
+                                               stats.getTotal_journeys()));
+
+        tvBusiestDestination.setText(stats.getBusiest_destination() != null ?
+                                    stats.getBusiest_destination() : "N/A");
+    }
+
+    private void showLoading(boolean show) {
+        loadingOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+}
+```
+
+---
+
+## Feature 13: String Resources (Module 5)
+
+**Add to `res/values/strings.xml`:**
+
+```xml
+<!-- Module 5: Journey History & Reports -->
+<string name="journey_history">Journey History</string>
+<string name="statistics">Statistics</string>
+<string name="journey_details">Journey Details</string>
+
+<!-- Filter Tabs -->
+<string name="today">Today</string>
+<string name="yesterday">Yesterday</string>
+<string name="this_week">This Week</string>
+<string name="this_month">This Month</string>
+<string name="custom">Custom</string>
+
+<!-- Search -->
+<string name="search_journeys">Search destinations or journey ID... </string>
+
+<!-- Journey Card -->
+<string name="journey_id_format">Journey #%d</string>
+<string name="seat_number_short">Seat %d</string>
+
+<!-- Journey Details -->
+<string name="journey_id_label">Journey ID</string>
+<string name="passenger_information">Passenger Information</string>
+<string name="name">Name</string>
+<string name="phone">Phone</string>
+<string name="journey_route">Journey Route</string>
+<string name="boarding_location">Boarding Location</string>
+<string name="alighting_location">Alighting Location</string>
+<string name="journey_statistics">Journey Statistics</string>
+<string name="minutes">minutes</string>
+<string name="kilometers">km</string>
+<string name="mk">MK</string>
+<string name="fare_collection_status">Fare Collection Status</string>
+<string name="fare_collected">Fare Collected</string>
+<string name="fare_not_collected">Fare Not Collected</string>
+
+<!-- Statistics -->
+<string name="total_journeys">Total Journeys</string>
+<string name="total_revenue">Total Revenue</string>
+<string name="avg_fare">Avg Fare</string>
+<string name="detailed_statistics">Detailed Statistics</string>
+<string name="total_duration">Total Duration</string>
+<string name="fare_collection_rate">Fare Collection Rate</string>
+<string name="fares_collected">Fares Collected</string>
+<string name="busiest_destination">Busiest Destination</string>
+
+<!-- Empty States -->
+<string name="no_journeys_found">No Journeys Found</string>
+<string name="no_journeys_subtitle">Complete a journey to see it here</string>
+<string name="no_journeys_for_period">No journeys for this period</string>
+
+<!-- Menu -->
+<string name="view_statistics">View Statistics</string>
+<string name="export_report">Export Report</string>
+
+<!-- Content Descriptions -->
+<string name="no_journeys_icon">No journeys icon</string>
+<string name="fare_collected_icon">Fare collected icon</string>
+<string name="fare_status_icon">Fare status icon</string>
+<string name="journeys_icon">Journeys icon</string>
+<string name="revenue_icon">Revenue icon</string>
+<string name="distance_icon">Distance icon</string>
+<string name="average_icon">Average icon</string>
+<string name="duration_icon">Duration icon</string>
+<string name="fare_icon">Fare icon</string>
+<string name="boarding_icon">Boarding icon</string>
+<string name="alighting_icon">Alighting icon</string>
+```
+---
+
+## Feature 14: Additional Drawable Resources
+
+**File:** `res/drawable/ic_journey. xml`
+
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M20,6h-3V4c0,-1.11 -0.89,-2 -2,-2H9C7.89,2 7,2.89 7,4v2H4C2.89,6 2.01,6.89 2.01,8L2,19c0,1.11 0.89,2 2,2h16c1.11,0 2,-0.89 2,-2V8C22,6.89 21.11,6 20,6zM9,4h6v2H9V4zM20,19H4V8h16V19z"/>
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M13,10h-2v3H8v2h3v3h2v-3h3v-2h-3z"/>
+</vector>
+```
+
+**File:** `res/drawable/ic_statistics.xml`
+
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android: width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/primary"
+        android:pathData="M19,3H5C3.9,3 3,3.9 3,5v14c0,1.1 0.9,2 2,2h14c1.1,0 2,-0.9 2,-2V5C21,3.9 20.1,3 19,3zM9,17H7v-7h2V17zM13,17h-2V7h2V17zM17,17h-2v-4h2V17z"/>
+</vector>
+```
+
+**File:** `res/drawable/ic_route.xml`
+
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android: width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/primary"
+        android:pathData="M19,15. 18V7c0,-2.21 -1.79,-4 -4,-4s-4,1.79 -4,4v10c0,1.1 -0.9,2 -2,2s-2,-0.9 -2,-2V8. 82C8.16,8.4 9,7.3 9,6c0,-1.66 -1.34,-3 -3,-3S3,4.34 3,6c0,1.3 0.84,2.4 2,2.82V17c0,2.21 1.79,4 4,4s4,-1.79 4,-4V7c0,-1.1 0.9,-2 2,-2s2,0.9 2,2v8.18c-1.16,0.41 -2,1.51 -2,2.82c0,1.66 1.34,3 3,3s3,-1.34 3,-3C21,16.7 20.16,15.6 19,15.18z"/>
+</vector>
+```
+
+**File:** `res/drawable/ic_boarding.xml`
+
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android: width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/success"
+        android:pathData="M12,2c1.1,0 2,0.9 2,2s-0.9,2 -2,2 -2,-0.9 -2,-2 0.9,-2 2,-2zM21,9h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/>
+</vector>
+```
+
+**File:** `res/drawable/ic_alighting.xml`
+
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/danger"
+        android:pathData="M12,2c1.1,0 2,0.9 2,2s-0.9,2 -2,2 -2,-0.9 -2,-2 0.9,-2 2,-2zM15. 89,8.11C15.5,7.72 14.83,7 13.53,7c-0.21,0 -1.42,0 -2.54,0C8.24,6.99 6,4.75 6,2H4c0,3.16 2.11,5.84 5,6.71V22h2v-6h2v6h2V10. 05l1.95,5.95h2.1L15.89,8.11z"/>
+</vector>
+```
+
+**File:** `res/drawable/ic_location_small.xml`
+
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android: width="16dp"
+    android:height="16dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/primary"
+        android:pathData="M12,2C8.13,2 5,5.13 5,9c0,5.25 7,13 7,13s7,-7. 75 7,-13c0,-3.87 -3.13,-7 -7,-7zM12,11. 5c-1.38,0 -2.5,-1.12 -2.5,-2.5s1.12,-2.5 2.5,-2.5 2.5,1.12 2.5,2.5 -1.12,2.5 -2.5,2.5z"/>
+</vector>
+```
+
+**File:** `res/drawable/ic_time_small.xml`
+
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/text_secondary"
+        android:pathData="M11. 99,2C6.47,2 2,6.48 2,12s4.47,10 9.99,10C17. 52,22 22,17.52 22,12S17.52,2 11.99,2zM12,20c-4.42,0 -8,-3.58 -8,-8s3.58,-8 8,-8 8,3.58 8,8 -3.58,8 -8,8zM12.5,7H11v6l5.25,3.15 0.75,-1.23 -4.5,-2.67z"/>
+</vector>
+```
+
+**File:** `res/drawable/ic_check_small.xml`
+
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/fare_collected"
+        android:pathData="M9,16.17L4.83,12l-1.42,1.41L9,19 21,7l-1.41,-1.41z"/>
+</vector>
+```
+
+**File:** `res/drawable/ic_warning_small.xml`
+
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/fare_not_collected"
+        android:pathData="M1,21h22L12,2 1,21zM13,18h-2v-2h2v2zM13,14h-2v-4h2v4z"/>
+</vector>
+```
+
+**File:** `res/drawable/ic_distance. xml`
+
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/text_secondary"
+        android:pathData="M13. 5,0. 67s0.74,2.65 0.74,4.8c0,2.06 -1.35,3.73 -3.41,3.73 -2.07,0 -3.63,-1.67 -3.63,-3.73l0.03,-0.36C5.21,7.51 4,10.62 4,14c0,4.42 3.58,8 8,8s8,-3.58 8,-8C20,8.61 17.41,3.8 13.5,0.67zM11.71,19c-1.78,0 -3.22,-1.4 -3.22,-3.14 0,-1.62 1.05,-2.76 2.81,-3.12 1.77,-0.36 3.6,-1.21 4.62,-2.58 0.39,1.29 0.59,2.65 0.59,4.04 0,2.65 -2.15,4.8 -4.8,4.8z"/>
+</vector>
+```
+
+**File:** `res/drawable/ic_average.xml`
+
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android: width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M16,11c1.66,0 2.99,-1.34 2.99,-3S17.66,5 16,5c-1.66,0 -3,1.34 -3,3s1.34,3 3,3zM8,11c1.66,0 2.99,-1.34 2.99,-3S9.66,5 8,5C6.34,5 5,6.34 5,8s1.34,3 3,3zM8,13c-2.33,0 -7,1.17 -7,3.5V19h14v-2.5c0,-2.33 -4.67,-3.5 -7,-3.5zM16,13c-0.29,0 -0.62,0.02 -0.97,0.05 1.16,0.84 1.97,1.97 1.97,3.45V19h6v-2.5c0,-2.33 -4.67,-3.5 -7,-3.5z"/>
+</vector>
+```
+
+**File:** `res/drawable/ic_no_journeys.xml`
+
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/text_hint"
+        android:pathData="M20,6h-3V4c0,-1.11 -0.89,-2 -2,-2H9C7.89,2 7,2.89 7,4v2H4C2.89,6 2.01,6.89 2.01,8L2,19c0,1.11 0.89,2 2,2h16c1.11,0 2,-0.89 2,-2V8C22,6.89 21.11,6 20,6zM15,4v2H9V4H15zM20,19H4V8h16V19z"/>
+    <path
+        android:fillColor="@color/text_hint"
+        android:pathData="M8,11h8v2H8z"/>
+</vector>
+```
+
+**File:** `res/drawable/seat_badge_background.xml`
+
+```xml
+<? xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#E3F2FD" />
+    <corners android:radius="8dp" />
+    <padding
+        android:left="8dp"
+        android:top="4dp"
+        android:right="8dp"
+        android:bottom="4dp" />
+</shape>
+```
+
+---
+
+## Feature 15: Menu Resources
+
+**File:** `res/menu/menu_journey_history.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Statistics -->
+    <item
+        android: id="@+id/action_statistics"
+        android:icon="@drawable/ic_statistics"
+        android:title="@string/view_statistics"
+        app:showAsAction="ifRoom" />
+</menu>
+```
+
+**Update:** `res/menu/menu_dashboard.xml` (Add Journey History option)
+
+```xml
+<!-- Add to existing menu_dashboard.xml -->
+<item
+    android:id="@+id/action_journey_history"
+    android:icon="@drawable/ic_journey"
+    android:title="@string/journey_history"
+    app:showAsAction="never" />
+```
+
+---
+
+## Feature 16: Update MainActivity to Add Journey History Navigation
+
+**Update MainActivity.java:**
+
+```java
+// In MainActivity.java, update onCreateOptionsMenu and onOptionsItemSelected
+
+@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.menu_dashboard, menu);
+    return true;
+}
+
+@Override
+public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    if (item.getItemId() == R.id.action_journey_history) {
+        // Navigate to Journey History
+        Intent intent = new Intent(this, com.trms.driver.ui.history.JourneyHistoryActivity. class);
+        startActivity(intent);
+        return true;
+    } else if (item.getItemId() == R.id.action_end_duty) {
+        showEndDutyConfirmation();
+        return true;
+    } else if (item.getItemId() == R.id.action_logout) {
+        showLogoutConfirmation();
+        return true;
+    }
+    return super. onOptionsItemSelected(item);
+}
+```
+
+---
+
+## Feature 17: Update AndroidManifest.xml
+
+**Add new activities:**
+
+```xml
+<!-- Add to AndroidManifest.xml -->
+
+<!-- Journey History Activity -->
+<activity
+    android: name=".ui.history.JourneyHistoryActivity"
+    android:exported="false"
+    android:screenOrientation="portrait"
+    android:windowSoftInputMode="adjustResize" />
+
+<!-- Journey Detail Activity -->
+<activity
+    android:name=".ui.history.JourneyDetailActivity"
+    android:exported="false"
+    android:screenOrientation="portrait" />
+
+<!-- Statistics Activity -->
+<activity
+    android:name=".ui.history.StatisticsActivity"
+    android:exported="false"
+    android:screenOrientation="portrait" />
+```
+
+---
+
+## Feature 18: Professional Testing Checklist
+
+### ✅ **Module 5 Complete Testing Checklist**
+
+#### **Phase 1: Journey History List**
+
+1. ✅ **Activity Launch**
+   - [ ] Tap "Journey History" in dashboard menu
+   - [ ] Activity opens smoothly
+   - [ ] Toolbar displays with back button
+   - [ ] Filter tabs display (Today, Yesterday, Week, Month)
+   - [ ] Search bar displays
+   - [ ] "Today" tab selected by default
+
+2. ✅ **Load Today's Journeys**
+   - [ ] Loading indicator shows
+   - [ ] API call made to fetch journeys
+   - [ ] Journeys display in list
+   - [ ] Each card shows: Journey ID, Seat, Destination, Time, Fare, Distance
+   - [ ] Fare collection status icon displays (✓ or ⚠️)
+   - [ ] Cards are touch-friendly (88dp+ height)
+
+3. ✅ **Empty State**
+   - [ ] If no journeys → Empty state displays
+   - [ ] Icon shows (greyed out journey icon)
+   - [ ] Message: "No Journeys Found"
+   - [ ] Subtitle explains how to see journeys
+
+#### **Phase 2: Filter by Date Range**
+
+4. ✅ **Filter Tabs**
+   - [ ] Tap "Yesterday" tab
+   - [ ] Loading indicator shows
+   - [ ] Yesterday's journeys load
+   - [ ] List updates correctly
+   - [ ] Tap "This Week" → Shows last 7 days
+   - [ ] Tap "This Month" → Shows last 30 days
+   - [ ] Tap "Today" → Returns to today
+
+5. ✅ **Tab Visual Feedback**
+   - [ ] Selected tab highlighted (blue text)
+   - [ ] Blue indicator line under selected tab
+   - [ ] Unselected tabs grey text
+   - [ ] Tab transitions smooth
+
+#### **Phase 3: Search Functionality**
+
+6. ✅ **Search Journeys**
+   - [ ] Type in search box
+   - [ ] List filters in real-time
+   - [ ] Matching destinations display
+   - [ ] Non-matching journeys hidden
+   - [ ] Case-insensitive search works
+   - [ ] Clear search → All journeys return
+
+7. ✅ **Search Empty Result**
+   - [ ] Search for non-existent destination
+   - [ ] Empty state displays
+   - [ ] Message updates appropriately
+
+#### **Phase 4: Pagination**
+
+8. ✅ **Load More Journeys**
+   - [ ] Scroll to bottom of list
+   - [ ] "Loading more..." indicator appears
+   - [ ] Next page of journeys loads
+   - [ ] Appends to existing list (no flicker)
+   - [ ] Scroll position maintained
+   - [ ] Continues until no more pages
+
+9. ✅ **Pagination Edge Cases**
+   - [ ] Only 1 page of results → No load more
+   - [ ] Last page reached → No more loading
+   - [ ] Error during load more → Error message
+
+#### **Phase 5: Pull-to-Refresh**
+
+10. ✅ **Manual Refresh**
+    - [ ] Pull down on list
+    - [ ] Refresh animation shows
+    - [ ] API call made
+    - [ ] List updates with latest data
+    - [ ] Scroll returns to top
+
+#### **Phase 6: Journey Detail Screen**
+
+11. ✅ **Tap Journey Card**
+    - [ ] Tap any journey card
+    - [ ] Journey Detail activity opens
+    - [ ] Loading indicator shows
+    - [ ] API call fetches journey details
+
+12. ✅ **Journey Detail Display**
+    - [ ] Journey ID displays in header (large, centered)
+    - [ ] Journey date displays
+    - [ ] Passenger info card shows:  Name, Phone
+    - [ ] Route card shows:
+      - Boarding location with green icon
+      - Boarding time
+      - Dotted line connecting
+      - Alighting location with red icon
+      - Alighting time
+    - [ ] Statistics card shows: Duration, Distance, Fare (with icons)
+    - [ ] Fare status card shows: Collected/Not Collected with icon
+
+13. ✅ **Fare Status Display**
+    - [ ] If collected → Green checkmark + "Fare Collected" in green
+    - [ ] If not collected → Yellow warning + "Fare Not Collected" in yellow
+
+#### **Phase 7: Statistics Screen**
+
+14. ✅ **Navigate to Statistics**
+    - [ ] Tap statistics icon in journey history toolbar
+    - [ ] Statistics activity opens
+    - [ ] Period tabs display (Today, Yesterday, Week, Month)
+    - [ ] "Today" selected by default
+    - [ ] Loading indicator shows
+
+15. ✅ **Statistics Summary Cards (2×2 Grid)**
+    - [ ] Total Journeys card (blue background, white text)
+    - [ ] Total Revenue card (green background, white text)
+    - [ ] Total Distance card (orange background, white text)
+    - [ ] Average Fare card (blue background, white text)
+    - [ ] Each card shows: Icon, Large value, Small label
+    - [ ] Values are large and bold (32sp)
+
+16. ✅ **Detailed Statistics Card**
+    - [ ] Total Duration displays (e.g., "2h 30min")
+    - [ ] Fare Collection Rate displays (e.g., "86. 7%")
+    - [ ] Fares Collected displays (e.g., "13 / 15")
+    - [ ] Busiest Destination displays
+    - [ ] All rows separated by divider lines
+
+17. ✅ **Filter Statistics by Period**
+    - [ ] Tap "Yesterday" → Statistics update
+    - [ ] Tap "This Week" → Statistics update
+    - [ ] Tap "This Month" → Statistics update
+    - [ ] Each period shows correct data
+
+#### **Phase 8: Error Handling**
+
+18. ✅ **Network Errors**
+    - [ ] No internet → Toast:  "No internet connection"
+    - [ ] Timeout → Toast: "Connection timeout"
+    - [ ] Server error → Toast: "Server error"
+    - [ ] Session expired → Navigate to login
+
+19. ✅ **Empty Data Handling**
+    - [ ] No journeys for period → Empty state
+    - [ ] Zero statistics → Shows "0" (not crash)
+    - [ ] Null passenger name → Shows "N/A"
+    - [ ] Null location address → Shows destination name
+
+#### **Phase 9: Performance**
+
+20. ✅ **Performance Metrics**
+    - [ ] Journey list loads < 2 seconds
+    - [ ] Search filters < 100ms
+    - [ ] Journey detail loads < 1 second
+    - [ ] Statistics load < 2 seconds
+    - [ ] Pagination smooth (no lag)
+    - [ ] No memory leaks
+
+21. ✅ **Scroll Performance**
+    - [ ] List scrolls smoothly (60fps)
+    - [ ] No stuttering with 100+ journeys
+    - [ ] Images load without blocking UI
+    - [ ] Pagination doesn't cause scroll jump
+
+#### **Phase 10: UI/UX Quality**
+
+22. ✅ **Touch Targets**
+    - [ ] Journey cards minimum 88dp height
+    - [ ] Tab buttons minimum 48dp
+    - [ ] Search input 56dp height
+    - [ ] All buttons meet accessibility standards
+
+23. ✅ **Visual Feedback**
+    - [ ] Tap journey card → Ripple effect
+    - [ ] Loading states clear
+    - [ ] Success states clear
+    - [ ] Error states with icons
+
+24. ✅ **Text Readability**
+    - [ ] All text minimum 14sp
+    - [ ] High contrast colors
+    - [ ] Journey ID readable
+    - [ ] Statistics values large (32sp)
+    - [ ] Readable in sunlight
+
+#### **Phase 11: Navigation**
+
+25. ✅ **Navigation Flow**
+    - [ ] Dashboard → Journey History (menu)
+    - [ ] Journey History → Journey Detail (tap card)
+    - [ ] Journey History → Statistics (toolbar icon)
+    - [ ] Back button from each screen works
+    - [ ] Returns to previous screen correctly
+
+26. ✅ **State Preservation**
+    - [ ] Filter selection preserved on back
+    - [ ] Search query preserved on back
+    - [ ] Scroll position preserved on back (optional)
+
+#### **Phase 12: Integration**
+
+27. ✅ **Integration with Existing Modules**
+    - [ ] Complete journey (Module 4)
+    - [ ] Navigate to Journey History
+    - [ ] New journey appears in list
+    - [ ] Statistics update with new journey
+    - [ ] Can view journey details
+
+28. ✅ **Data Consistency**
+    - [ ] Journey fare matches Module 3 destination fare
+    - [ ] Duration matches actual journey time
+    - [ ] Distance accurate
+    - [ ] Passenger info correct
+    - [ ] All timestamps consistent
+
+---
+
+## 🎉 Module 5 Complete - Professional Journey History & Reports System!
+
+### **What We've Built:**
+
+✅ **Journey History List**
+- Paginated list (20 per page)
+- Date range filtering (Today, Yesterday, Week, Month)
+- Real-time search
+- Pull-to-refresh
+- Empty states
+
+✅ **Journey Detail View**
+- Complete journey information
+- Passenger details
+- Route visualization
+- Statistics display
+- Fare collection status
+
+✅ **Statistics Dashboard**
+- Summary cards (Journeys, Revenue, Distance, Avg Fare)
+- Detailed statistics
+- Multiple time periods
+- Professional visualizations
+
+✅ **Professional UX**
+- Large touch targets
+- Smooth animations
+- Clear visual hierarchy
+- High contrast colors
+- Responsive design
+
+✅ **Complete Error Handling**
+- Network errors
+- Empty states
+- Data validation
+- Session management
+
+✅ **SRS Alignment**
+- ✅ FR3. 1: View journey history
+- ✅ FR3.2: Filter by date range
+- ✅ FR3.3: Search journeys
+- ✅ FR3.4: View journey details
+- ✅ FR3.5: View statistics and reports
+
+---
+
+**Ready for Module 6 (Offline Mode) and Module 7 (Settings)?** 🚖📱✨

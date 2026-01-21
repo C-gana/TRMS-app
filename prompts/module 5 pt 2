@@ -1,0 +1,1109 @@
+# TRMS Driver App - Module 5: Journey History (Part 2: Data Layer & Business Logic)
+
+---
+
+## Feature 3: Complete Journey Details Layout (Continued)
+
+**Complete `res/layout/activity_journey_detail.xml` (remaining cards):**
+
+```xml
+<!-- Add these cards after Passenger Information Card in activity_journey_detail.xml -->
+
+            <!-- Journey Route Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="12dp"
+                android:layout_marginBottom="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android: orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android: text="@string/journey_route"
+                        android:textSize="@dimen/text_body"
+                        android:textStyle="bold"
+                        android: textColor="@color/text_primary"
+                        android:drawableStart="@drawable/ic_route"
+                        android:drawablePadding="@dimen/spacing_sm"
+                        android:drawableTint="@color/primary" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android: layout_height="1dp"
+                        android:background="@color/divider"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:layout_marginBottom="@dimen/spacing_sm" />
+
+                    <!-- Boarding Location -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android: layout_marginBottom="@dimen/spacing_md">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_boarding"
+                            android:tint="@color/success"
+                            android:contentDescription="@string/boarding_icon" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/boarding_location"
+                                android:textSize="@dimen/text_caption"
+                                android:textColor="@color/text_secondary" />
+
+                            <TextView
+                                android:id="@+id/tvBoardingLocation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ginnery Corner"
+                                android:textSize="@dimen/text_body"
+                                android:textColor="@color/text_primary"
+                                android:layout_marginTop="2dp" />
+
+                            <TextView
+                                android:id="@+id/tvBoardingTime"
+                                android: layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="08:15 AM"
+                                android:textSize="@dimen/text_caption"
+                                android:textColor="@color/success"
+                                android:textStyle="bold"
+                                android:layout_marginTop="2dp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Route Line -->
+                    <View
+                        android:layout_width="2dp"
+                        android:layout_height="40dp"
+                        android:background="@color/divider"
+                        android:layout_marginStart="11dp"
+                        android:layout_marginBottom="@dimen/spacing_sm" />
+
+                    <!-- Alighting Location -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android: orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_alighting"
+                            android:tint="@color/danger"
+                            android:contentDescription="@string/alighting_icon" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/alighting_location"
+                                android:textSize="@dimen/text_caption"
+                                android:textColor="@color/text_secondary" />
+
+                            <TextView
+                                android:id="@+id/tvAlightingLocation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Chichiri Shopping Centre"
+                                android:textSize="@dimen/text_body"
+                                android:textColor="@color/text_primary"
+                                android:layout_marginTop="2dp" />
+
+                            <TextView
+                                android:id="@+id/tvAlightingTime"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="08:23 AM"
+                                android: textSize="@dimen/text_caption"
+                                android: textColor="@color/danger"
+                                android:textStyle="bold"
+                                android:layout_marginTop="2dp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com. google.android.material.card. MaterialCardView>
+
+            <!-- Journey Statistics Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="12dp"
+                android:layout_marginBottom="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android: padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/journey_statistics"
+                        android:textSize="@dimen/text_body"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:drawableStart="@drawable/ic_statistics"
+                        android:drawablePadding="@dimen/spacing_sm"
+                        android:drawableTint="@color/primary" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/divider"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:layout_marginBottom="@dimen/spacing_sm" />
+
+                    <!-- Stats Grid -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android: weightSum="3">
+
+                        <!-- Duration -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:src="@drawable/ic_time"
+                                android:tint="@color/info"
+                                android:contentDescription="@string/duration_icon" />
+
+                            <TextView
+                                android:id="@+id/tvDuration"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="8"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary"
+                                android:layout_marginTop="@dimen/spacing_xs" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/minutes"
+                                android:textSize="@dimen/text_caption"
+                                android:textColor="@color/text_secondary" />
+
+                        </LinearLayout>
+
+                        <!-- Distance -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android: layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android: orientation="vertical"
+                            android:gravity="center">
+
+                            <ImageView
+                                android: layout_width="32dp"
+                                android:layout_height="32dp"
+                                android: src="@drawable/ic_distance"
+                                android:tint="@color/primary"
+                                android:contentDescription="@string/distance_icon" />
+
+                            <TextView
+                                android:id="@+id/tvDistanceValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android: text="2.5"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary"
+                                android:layout_marginTop="@dimen/spacing_xs" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/kilometers"
+                                android:textSize="@dimen/text_caption"
+                                android:textColor="@color/text_secondary" />
+
+                        </LinearLayout>
+
+                        <!-- Fare -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:src="@drawable/ic_money"
+                                android:tint="@color/fare_text"
+                                android:contentDescription="@string/fare_icon" />
+
+                            <TextView
+                                android:id="@+id/tvFareValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="1,500"
+                                android: textSize="24sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/fare_text"
+                                android: layout_marginTop="@dimen/spacing_xs" />
+
+                            <TextView
+                                android: layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/mk"
+                                android:textSize="@dimen/text_caption"
+                                android:textColor="@color/text_secondary" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material. card.MaterialCardView>
+
+            <!-- Fare Collection Status Card -->
+            <com.google. android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="12dp"
+                android:layout_marginBottom="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_md"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android: id="@+id/ivFareStatusIcon"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_check_circle"
+                        android: tint="@color/fare_collected"
+                        android:contentDescription="@string/fare_status_icon" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android: layout_weight="1"
+                        android:layout_marginStart="@dimen/spacing_md"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/fare_collection_status"
+                            android: textSize="@dimen/text_caption"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tvFareStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android: text="@string/fare_collected"
+                            android:textSize="@dimen/text_body_large"
+                            android:textStyle="bold"
+                            android: textColor="@color/fare_collected"
+                            android:layout_marginTop="2dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+```
+
+---
+
+## Feature 4: Statistics Dashboard Layout
+
+**File:** `res/layout/activity_statistics. xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget. CoordinatorLayout
+    xmlns: android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <!-- App Bar -->
+    <com. google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android: layout_height="wrap_content"
+        android:elevation="4dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary"
+            app: title="@string/statistics"
+            app:titleTextColor="@android:color/white"
+            app:navigationIcon="@drawable/ic_arrow_back" />
+
+    </com.google. android.material.appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <androidx.core. widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
+
+            <!-- Period Selector Tabs -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayoutPeriod"
+                android: layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@color/surface"
+                android:elevation="2dp"
+                android:layout_marginBottom="@dimen/spacing_md"
+                app:tabMode="scrollable"
+                app:tabIndicatorColor="@color/primary"
+                app:tabSelectedTextColor="@color/primary"
+                app:tabTextColor="@color/text_secondary" />
+
+            <!-- Summary Cards Grid -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="2"
+                android:alignmentMode="alignBounds"
+                android:layout_marginBottom="@dimen/spacing_md">
+
+                <!-- Total Journeys Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android: layout_margin="@dimen/spacing_xs"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardBackgroundColor="@color/primary">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_journey"
+                            android:tint="@android:color/white"
+                            android:contentDescription="@string/journeys_icon" />
+
+                        <TextView
+                            android:id="@+id/tvTotalJourneys"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="15"
+                            android:textSize="@dimen/text_stat_value"
+                            android:textStyle="bold"
+                            android: textColor="@android:color/white"
+                            android:layout_marginTop="@dimen/spacing_xs" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/total_journeys"
+                            android:textSize="@dimen/text_stat_label"
+                            android:textColor="@android:color/white"
+                            android:alpha="0.9" />
+
+                    </LinearLayout>
+
+                </com.google. android.material.card.MaterialCardView>
+
+                <!-- Total Revenue Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android: layout_columnWeight="1"
+                    android:layout_margin="@dimen/spacing_xs"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardBackgroundColor="@color/success">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_money"
+                            android:tint="@android:color/white"
+                            android:contentDescription="@string/revenue_icon" />
+
+                        <TextView
+                            android:id="@+id/tvTotalRevenue"
+                            android: layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="22,500"
+                            android:textSize="@dimen/text_stat_value"
+                            android: textStyle="bold"
+                            android:textColor="@android: color/white"
+                            android:layout_marginTop="@dimen/spacing_xs" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/mk"
+                            android:textSize="@dimen/text_stat_label"
+                            android:textColor="@android:color/white"
+                            android: alpha="0.9" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Total Distance Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android: layout_columnWeight="1"
+                    android:layout_margin="@dimen/spacing_xs"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardBackgroundColor="@color/accent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_distance"
+                            android:tint="@android:color/white"
+                            android:contentDescription="@string/distance_icon" />
+
+                        <TextView
+                            android:id="@+id/tvTotalDistance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="37. 5"
+                            android:textSize="@dimen/text_stat_value"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/white"
+                            android:layout_marginTop="@dimen/spacing_xs" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/km"
+                            android: textSize="@dimen/text_stat_label"
+                            android:textColor="@android: color/white"
+                            android:alpha="0.9" />
+
+                    </LinearLayout>
+
+                </com.google.android. material.card.MaterialCardView>
+
+                <!-- Average Fare Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="@dimen/spacing_xs"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardBackgroundColor="@color/info">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_average"
+                            android:tint="@android:color/white"
+                            android:contentDescription="@string/average_icon" />
+
+                        <TextView
+                            android:id="@+id/tvAverageFare"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1,500"
+                            android:textSize="@dimen/text_stat_value"
+                            android: textStyle="bold"
+                            android:textColor="@android: color/white"
+                            android:layout_marginTop="@dimen/spacing_xs" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/avg_fare"
+                            android:textSize="@dimen/text_stat_label"
+                            android:textColor="@android:color/white"
+                            android: alpha="0.9" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </GridLayout>
+
+            <!-- Detailed Statistics Card -->
+            <com.google. android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="12dp"
+                android:layout_marginBottom="@dimen/spacing_md">
+
+                <LinearLayout
+                    android: layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/detailed_statistics"
+                        android:textSize="@dimen/text_body"
+                        android:textStyle="bold"
+                        android: textColor="@color/text_primary" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/divider"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:layout_marginBottom="@dimen/spacing_sm" />
+
+                    <!-- Total Duration -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android: layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="@dimen/spacing_xs"
+                        android:paddingBottom="@dimen/spacing_xs">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/total_duration"
+                            android:textSize="@dimen/text_body"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tvTotalDuration"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="120 min"
+                            android:textSize="@dimen/text_body"
+                            android:textStyle="bold"
+                            android: textColor="@color/text_primary" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/divider" />
+
+                    <!-- Fare Collection Rate -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="@dimen/spacing_xs"
+                        android: paddingBottom="@dimen/spacing_xs">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/fare_collection_rate"
+                            android:textSize="@dimen/text_body"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tvFareCollectionRate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="86. 7%"
+                            android:textSize="@dimen/text_body"
+                            android:textStyle="bold"
+                            android:textColor="@color/success" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android: layout_height="1dp"
+                        android:background="@color/divider" />
+
+                    <!-- Fares Collected -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="@dimen/spacing_xs"
+                        android:paddingBottom="@dimen/spacing_xs">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/fares_collected"
+                            android:textSize="@dimen/text_body"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tvFaresCollected"
+                            android:layout_width="wrap_content"
+                            android: layout_height="wrap_content"
+                            android:text="13 / 15"
+                            android: textSize="@dimen/text_body"
+                            android: textStyle="bold"
+                            android:textColor="@color/text_primary" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/divider" />
+
+                    <!-- Busiest Destination -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="@dimen/spacing_xs"
+                        android: paddingBottom="@dimen/spacing_xs">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/busiest_destination"
+                            android:textSize="@dimen/text_body"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tvBusiestDestination"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chichiri Shopping"
+                            android:textSize="@dimen/text_body"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Loading Overlay -->
+    <include layout="@layout/loading_overlay" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+```
+
+---
+
+## Feature 5: Data Models
+
+### 1. Journey Model
+
+**File:** `com.trms.driver.data.model.Journey.java`
+
+```java
+package com.trms.driver.data.model;
+
+public class Journey {
+    private int journey_id;
+    private int passenger_id;
+    private String passenger_name;
+    private String passenger_phone;
+    private int seat_number;
+    private String destination;
+    private int fare;
+    private BoardingLocation boarding_location;
+    private AlightingLocation alighting_location;
+    private String boarding_time;
+    private String alighting_time;
+    private int duration_minutes;
+    private double distance_km;
+    private boolean fare_collected;
+    private String status;
+    private String route_polyline;
+    private String notes;
+
+    // Inner classes for locations
+    public static class BoardingLocation {
+        private double latitude;
+        private double longitude;
+        private String address;
+
+        // Getters and Setters
+        public double getLatitude() { return latitude; }
+        public void setLatitude(double latitude) { this.latitude = latitude; }
+
+        public double getLongitude() { return longitude; }
+        public void setLongitude(double longitude) { this.longitude = longitude; }
+
+        public String getAddress() { return address; }
+        public void setAddress(String address) { this.address = address; }
+    }
+
+    public static class AlightingLocation {
+        private double latitude;
+        private double longitude;
+        private String address;
+
+        // Getters and Setters
+        public double getLatitude() { return latitude; }
+        public void setLatitude(double latitude) { this.latitude = latitude; }
+
+        public double getLongitude() { return longitude; }
+        public void setLongitude(double longitude) { this.longitude = longitude; }
+
+        public String getAddress() { return address; }
+        public void setAddress(String address) { this.address = address; }
+    }
+
+    // Constructor
+    public Journey() {}
+
+    // Getters and Setters
+    public int getJourney_id() { return journey_id; }
+    public void setJourney_id(int journey_id) { this.journey_id = journey_id; }
+
+    public int getPassenger_id() { return passenger_id; }
+    public void setPassenger_id(int passenger_id) { this.passenger_id = passenger_id; }
+
+    public String getPassenger_name() { return passenger_name; }
+    public void setPassenger_name(String passenger_name) { this.passenger_name = passenger_name; }
+
+    public String getPassenger_phone() { return passenger_phone; }
+    public void setPassenger_phone(String passenger_phone) { this.passenger_phone = passenger_phone; }
+
+    public int getSeat_number() { return seat_number; }
+    public void setSeat_number(int seat_number) { this.seat_number = seat_number; }
+
+    public String getDestination() { return destination; }
+    public void setDestination(String destination) { this.destination = destination; }
+
+    public int getFare() { return fare; }
+    public void setFare(int fare) { this.fare = fare; }
+
+    public BoardingLocation getBoarding_location() { return boarding_location; }
+    public void setBoarding_location(BoardingLocation boarding_location) {
+        this.boarding_location = boarding_location;
+    }
+
+    public AlightingLocation getAlighting_location() { return alighting_location; }
+    public void setAlighting_location(AlightingLocation alighting_location) {
+        this.alighting_location = alighting_location;
+    }
+
+    public String getBoarding_time() { return boarding_time; }
+    public void setBoarding_time(String boarding_time) { this.boarding_time = boarding_time; }
+
+    public String getAlighting_time() { return alighting_time; }
+    public void setAlighting_time(String alighting_time) { this.alighting_time = alighting_time; }
+
+    public int getDuration_minutes() { return duration_minutes; }
+    public void setDuration_minutes(int duration_minutes) { this.duration_minutes = duration_minutes; }
+
+    public double getDistance_km() { return distance_km; }
+    public void setDistance_km(double distance_km) { this.distance_km = distance_km; }
+
+    public boolean isFare_collected() { return fare_collected; }
+    public void setFare_collected(boolean fare_collected) { this.fare_collected = fare_collected; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public String getRoute_polyline() { return route_polyline; }
+    public void setRoute_polyline(String route_polyline) { this.route_polyline = route_polyline; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+}
+```
+
+### 2. Journey History Response Model
+
+**File:** `com.trms.driver.data.model.JourneyHistoryResponse.java`
+
+```java
+package com.trms.driver.data.model;
+
+import java.util.List;
+
+public class JourneyHistoryResponse {
+    private boolean success;
+    private List<Journey> journeys;
+    private Pagination pagination;
+
+    public static class Pagination {
+        private int current_page;
+        private int total_pages;
+        private int total_journeys;
+        private int per_page;
+
+        // Getters and Setters
+        public int getCurrent_page() { return current_page; }
+        public void setCurrent_page(int current_page) { this.current_page = current_page; }
+
+        public int getTotal_pages() { return total_pages; }
+        public void setTotal_pages(int total_pages) { this.total_pages = total_pages; }
+
+        public int getTotal_journeys() { return total_journeys; }
+        public void setTotal_journeys(int total_journeys) { this.total_journeys = total_journeys; }
+
+        public int getPer_page() { return per_page; }
+        public void setPer_page(int per_page) { this.per_page = per_page; }
+    }
+
+    // Constructor
+    public JourneyHistoryResponse() {}
+
+    // Getters and Setters
+    public boolean isSuccess() { return success; }
+    public void setSuccess(boolean success) { this.success = success; }
+
+    public List<Journey> getJourneys() { return journeys; }
+    public void setJourneys(List<Journey> journeys) { this.journeys = journeys; }
+
+    public Pagination getPagination() { return pagination; }
+    public void setPagination(Pagination pagination) { this.pagination = pagination; }
+}
+```
+
+### 3. Journey Detail Response Model
+
+**File:** `com.trms.driver.data. model.JourneyDetailResponse. java`
+
+```java
+package com.trms.driver.data. model;
+
+public class JourneyDetailResponse {
+    private boolean success;
+    private Journey journey;
+
+    // Constructor
+    public JourneyDetailResponse() {}
+
+    // Getters and Setters
+    public boolean isSuccess() { return success; }
+    public void setSuccess(boolean success) { this.success = success; }
+
+    public Journey getJourney() { return journey; }
+    public void setJourney(Journey journey) { this.journey = journey; }
+}
+```
+
+### 4. Statistics Model
+
+**File:** `com.trms.driver.data.model. Statistics.java`
+
+```java
+package com.trms.driver.data.model;
+
+public class Statistics {
+    private int total_journeys;
+    private int total_passengers;
+    private int total_revenue;
+    private double total_distance_km;
+    private int total_duration_minutes;
+    private int average_journey_duration;
+    private int average_fare;
+    private int fare_collected_count;
+    private int fare_not_collected_count;
+    private double fare_collection_rate;
+    private String busiest_destination;
+    private String busiest_hour;
+
+    // Constructor
+    public Statistics() {}
+
+    // Getters and Setters
+    public int getTotal_journeys() { return total_journeys; }
+    public void setTotal_journeys(int total_journeys) { this.total_journeys = total_journeys; }
+
+    public int getTotal_passengers() { return total_passengers; }
+    public void setTotal_passengers(int total_passengers) { this.total_passengers = total_passengers; }
+
+    public int getTotal_revenue() { return total_revenue; }
+    public void setTotal_revenue(int total_revenue) { this.total_revenue = total_revenue; }
+
+    public double getTotal_distance_km() { return total_distance_km; }
+    public void setTotal_distance_km(double total_distance_km) {
+        this.total_distance_km = total_distance_km;
+    }
+
+    public int getTotal_duration_minutes() { return total_duration_minutes; }
+    public void setTotal_duration_minutes(int total_duration_minutes) {
+        this.total_duration_minutes = total_duration_minutes;
+    }
+
+    public int getAverage_journey_duration() { return average_journey_duration; }
+    public void setAverage_journey_duration(int average_journey_duration) {
+        this.average_journey_duration = average_journey_duration;
+    }
+
+    public int getAverage_fare() { return average_fare; }
+    public void setAverage_fare(int average_fare) { this.average_fare = average_fare; }
+
+    public int getFare_collected_count() { return fare_collected_count; }
+    public void setFare_collected_count(int fare_collected_count) {
+        this.fare_collected_count = fare_collected_count;
+    }
+
+    public int getFare_not_collected_count() { return fare_not_collected_count; }
+    public void setFare_not_collected_count(int fare_not_collected_count) {
+        this.fare_not_collected_count = fare_not_collected_count;
+    }
+
+    public double getFare_collection_rate() { return fare_collection_rate; }
+    public void setFare_collection_rate(double fare_collection_rate) {
+        this.fare_collection_rate = fare_collection_rate;
+    }
+
+    public String getBusiest_destination() { return busiest_destination; }
+    public void setBusiest_destination(String busiest_destination) {
+        this.busiest_destination = busiest_destination;
+    }
+
+    public String getBusiest_hour() { return busiest_hour; }
+    public void setBusiest_hour(String busiest_hour) { this.busiest_hour = busiest_hour; }
+}
+```
+
+### 5. Statistics Response Model
+
+**File:** `com.trms.driver.data. model.StatisticsResponse.java`
+
+```java
+package com.trms.driver.data.model;
+
+public class StatisticsResponse {
+    private boolean success;
+    private Period period;
+    private Statistics statistics;
+
+    public static class Period {
+        private String start_date;
+        private String end_date;
+        private String label;
+
+        // Getters and Setters
+        public String getStart_date() { return start_date; }
+        public void setStart_date(String start_date) { this.start_date = start_date; }
+
+        public String getEnd_date() { return end_date; }
+        public void setEnd_date(String end_date) { this.end_date = end_date; }
+
+        public String getLabel() { return label; }
+        public void setLabel(String label) { this.label = label; }
+    }
+
+    // Constructor
+    public StatisticsResponse() {}
+
+    // Getters and Setters
+    public boolean isSuccess() { return success; }
+    public void setSuccess(boolean success) { this.success = success; }
+
+    public Period getPeriod() { return period; }
+    public void setPeriod(Period period) { this.period = period; }
+
+    public Statistics getStatistics() { return statistics; }
+    public void setStatistics(Statistics statistics) { this.statistics = statistics; }
+}
+```
+
+---
+
+## Continue to Part 3 for:
+- API Service extensions for journey history
+- JourneyHistoryRepository with pagination
+- JourneyHistoryViewModel with filtering
+- JourneyAdapter with search
+- Complete Activity implementations
+
+Shall I continue with Part 3?  🚖📱

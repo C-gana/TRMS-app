@@ -1,0 +1,873 @@
+# TRMS Driver App - Module 7: Settings & Profile (Part 2: Activities & Preferences)
+
+---
+
+## Feature 2: Profile Edit Activity
+
+**File:** `res/layout/activity_edit_profile.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns: app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorBackground">
+
+    <!-- App Bar -->
+    <com.google.android.material.appbar. AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android: background="?attr/colorPrimary"
+            app:title="@string/edit_profile"
+            app:titleTextColor="@android:color/white"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:menu="@menu/menu_edit_profile" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android: layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
+
+            <!-- Profile Photo Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="@dimen/spacing_lg"
+                android:paddingBottom="@dimen/spacing_lg">
+
+                <!-- Profile Avatar -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    app:cardCornerRadius="60dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="? attr/colorPrimary">
+
+                    <TextView
+                        android:id="@+id/tvProfileInitial"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android: text="JD"
+                        android:textSize="48sp"
+                        android:textStyle="bold"
+                        android: textColor="@android:color/white"
+                        android:gravity="center" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Change Photo Button (Optional for future) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnChangePhoto"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android: layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:text="@string/change_photo"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <!-- Profile Information Card -->
+            <com.google. android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="12dp"
+                android:layout_marginBottom="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android: orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <!-- Full Name Input -->
+                    <com.google.android.material.textfield. TextInputLayout
+                        android: id="@+id/tilFullName"
+                        style="@style/Widget.MaterialComponents. TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android: hint="@string/full_name"
+                        app:startIconDrawable="@drawable/ic_person"
+                        app:startIconTint="? attr/colorPrimary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etFullName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName|textCapWords"
+                            android:textSize="@dimen/text_body" />
+
+                    </com. google.android.material.textfield.TextInputLayout>
+
+                    <!-- Phone Number Input (Read-only) -->
+                    <com.google.android.material. textfield.TextInputLayout
+                        android:id="@+id/tilPhoneNumber"
+                        style="@style/Widget. MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:hint="@string/phone_number"
+                        app:startIconDrawable="@drawable/ic_phone"
+                        app: startIconTint="?attr/colorPrimary"
+                        app:helperText="@string/phone_readonly"
+                        app:helperTextEnabled="true">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPhoneNumber"
+                            android:layout_width="match_parent"
+                            android: layout_height="wrap_content"
+                            android:inputType="phone"
+                            android:enabled="false"
+                            android: textSize="@dimen/text_body" />
+
+                    </com.google.android.material. textfield.TextInputLayout>
+
+                    <!-- Email Input (Read-only) -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilEmail"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android: layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:hint="@string/email"
+                        app: startIconDrawable="@drawable/ic_email"
+                        app:startIconTint="?attr/colorPrimary"
+                        app:helperText="@string/email_readonly"
+                        app:helperTextEnabled="true">
+
+                        <com.google.android.material. textfield.TextInputEditText
+                            android:id="@+id/etEmail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textEmailAddress"
+                            android: enabled="false"
+                            android: textSize="@dimen/text_body" />
+
+                    </com.google.android.material. textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Vehicle Information Card -->
+            <com. google.android.material.card. MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="12dp"
+                android:layout_marginBottom="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android: orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android: layout_height="wrap_content"
+                        android:text="@string/vehicle_information"
+                        android:textSize="@dimen/text_body"
+                        android:textStyle="bold"
+                        android: textColor="? attr/colorOnSurface"
+                        android:layout_marginBottom="@dimen/spacing_sm" />
+
+                    <!-- Vehicle ID -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android: orientation="horizontal"
+                        android:layout_marginBottom="@dimen/spacing_sm">
+
+                        <TextView
+                            android: layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/vehicle_id"
+                            android:textSize="@dimen/text_label"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                        <TextView
+                            android:id="@+id/tvVehicleId"
+                            android:layout_width="wrap_content"
+                            android: layout_height="wrap_content"
+                            android:text="TRM-BT-001"
+                            android: textSize="@dimen/text_body"
+                            android: textStyle="bold"
+                            android: textColor="?attr/colorOnSurface" />
+
+                    </LinearLayout>
+
+                    <!-- Vehicle Registration -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/registration"
+                            android:textSize="@dimen/text_label"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                        <TextView
+                            android:id="@+id/tvVehicleRegistration"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="MJ 1234"
+                            android:textSize="@dimen/text_body"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurface" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com. google.android.material.card. MaterialCardView>
+
+            <!-- Save Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveProfile"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/touch_target_lg"
+                android:text="@string/save_changes"
+                android:textSize="@dimen/text_body"
+                app:icon="@drawable/ic_check"
+                app:iconGravity="start" />
+
+        </LinearLayout>
+
+    </androidx.core.widget. NestedScrollView>
+
+    <!-- Loading Overlay -->
+    <include layout="@layout/loading_overlay" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+```
+
+---
+
+## Feature 3: Theme Selection Dialog
+
+**File:** `res/layout/dialog_theme_selection.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_lg">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_theme"
+        android: textSize="@dimen/text_title"
+        android:textStyle="bold"
+        android: textColor="?attr/colorOnSurface" />
+
+    <!-- Theme Options -->
+    <RadioGroup
+        android:id="@+id/radioGroupTheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md">
+
+        <!-- Light Theme -->
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/radioLight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/light_theme"
+            android:textSize="@dimen/text_body"
+            android:padding="@dimen/spacing_md"
+            android:drawableStart="@drawable/ic_sun"
+            android:drawablePadding="@dimen/spacing_md" />
+
+        <!-- Dark Theme -->
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/radioDark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dark_theme"
+            android:textSize="@dimen/text_body"
+            android:padding="@dimen/spacing_md"
+            android:drawableStart="@drawable/ic_moon"
+            android: drawablePadding="@dimen/spacing_md" />
+
+        <!-- System Default -->
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/radioSystem"
+            android: layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android: text="@string/system_default"
+            android:textSize="@dimen/text_body"
+            android:padding="@dimen/spacing_md"
+            android:drawableStart="@drawable/ic_phone_android"
+            android:drawablePadding="@dimen/spacing_md" />
+
+    </RadioGroup>
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:textSize="@dimen/text_body"
+            android:minWidth="100dp" />
+
+        <com.google. android.material.button.MaterialButton
+            android:id="@+id/btnApply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:text="@string/apply"
+            android: textSize="@dimen/text_body"
+            android:minWidth="100dp" />
+
+    </LinearLayout>
+
+</LinearLayout>
+```
+
+---
+
+## Feature 4: Notifications Settings Activity
+
+**File:** `res/layout/activity_notification_settings.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android: layout_width="match_parent"
+    android:layout_height="match_parent"
+    android: background="? attr/colorBackground">
+
+    <!-- App Bar -->
+    <com.google.android.material.appbar. AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android: background="?attr/colorPrimary"
+            app:title="@string/notifications"
+            app:titleTextColor="@android:color/white"
+            app:navigationIcon="@drawable/ic_arrow_back" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
+
+            <!-- Enable All Notifications Card -->
+            <com.google. android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="12dp"
+                android:layout_marginBottom="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android: orientation="horizontal"
+                    android:padding="@dimen/spacing_md"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android: layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/enable_notifications"
+                            android:textSize="@dimen/text_body"
+                            android:textStyle="bold"
+                            android: textColor="?attr/colorOnSurface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/enable_all_notifications_subtitle"
+                            android:textSize="@dimen/text_label"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:layout_marginTop="2dp" />
+
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchEnableAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+            </com.google.android. material.card.MaterialCardView>
+
+            <!-- Notification Types Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/notification_types"
+                android: textSize="@dimen/text_caption"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android:paddingTop="@dimen/spacing_sm"
+                android:paddingBottom="@dimen/spacing_sm" />
+
+            <!-- Proximity Alerts -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android: layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_md"
+                android:background="?attr/colorSurface"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_location"
+                    android:tint="?attr/colorOnSurface"
+                    android:contentDescription="@string/proximity_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android: layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android: layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/proximity_alerts"
+                        android:textSize="@dimen/text_body"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/proximity_alerts_subtitle"
+                        android:textSize="@dimen/text_caption"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchProximity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/colorOutlineVariant"
+                android:layout_marginStart="56dp" />
+
+            <!-- Boarding Notifications -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_md"
+                android: background="?attr/colorSurface"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_boarding"
+                    android:tint="? attr/colorOnSurface"
+                    android:contentDescription="@string/boarding_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/boarding_notifications"
+                        android:textSize="@dimen/text_body"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android: text="@string/boarding_notifications_subtitle"
+                        android: textSize="@dimen/text_caption"
+                        android: textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchBoarding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="? attr/colorOutlineVariant"
+                android:layout_marginStart="56dp" />
+
+            <!-- Journey Completed -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_md"
+                android: background="?attr/colorSurface"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_check_circle"
+                    android:tint="?attr/colorOnSurface"
+                    android: contentDescription="@string/journey_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android: layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android: layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android: layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/journey_completed_notifications"
+                        android:textSize="@dimen/text_body"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/journey_completed_subtitle"
+                        android:textSize="@dimen/text_caption"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchJourneyCompleted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <!-- Sound Settings Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android: layout_height="wrap_content"
+                android:text="@string/sound_settings"
+                android:textSize="@dimen/text_caption"
+                android: textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android: paddingTop="@dimen/spacing_md"
+                android:paddingBottom="@dimen/spacing_sm" />
+
+            <!-- Sound -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_md"
+                android:background="?attr/colorSurface"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_volume"
+                    android:tint="?attr/colorOnSurface"
+                    android:contentDescription="@string/sound_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/notification_sound"
+                        android: textSize="@dimen/text_body"
+                        android: textColor="?attr/colorOnSurface" />
+
+                </LinearLayout>
+
+                <com. google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchSound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="? attr/colorOutlineVariant"
+                android:layout_marginStart="56dp" />
+
+            <!-- Vibration -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_md"
+                android:background="?attr/colorSurface"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_vibration"
+                    android:tint="? attr/colorOnSurface"
+                    android:contentDescription="@string/vibration_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/vibration"
+                        android:textSize="@dimen/text_body"
+                        android:textColor="?attr/colorOnSurface" />
+
+                </LinearLayout>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchVibration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+```
+
+---
+
+## Feature 5: Change Password Dialog
+
+**File:** `res/layout/dialog_change_password.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_lg">
+
+    <!-- Icon -->
+    <ImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_password"
+        android:tint="? attr/colorPrimary"
+        android:contentDescription="@string/password_icon" />
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/spacing_md"
+        android: text="@string/change_password"
+        android:textSize="@dimen/text_title"
+        android:textStyle="bold"
+        android:textColor="?attr/colorOnSurface" />
+
+    <!-- Current Password -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilCurrentPassword"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:hint="@string/current_password"
+        app:startIconDrawable="@drawable/ic_lock"
+        app:endIconMode="password_toggle">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etCurrentPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:textSize="@dimen/text_body" />
+
+    </com.google.android.material.textfield. TextInputLayout>
+
+    <!-- New Password -->
+    <com.google.android.material.textfield. TextInputLayout
+        android:id="@+id/tilNewPassword"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:hint="@string/new_password"
+        app: startIconDrawable="@drawable/ic_lock"
+        app: endIconMode="password_toggle"
+        app:helperText="@string/password_requirements"
+        app:helperTextEnabled="true">
+
+        <com. google.android.material.textfield.TextInputEditText
+            android:id="@+id/etNewPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:textSize="@dimen/text_body" />
+
+    </com.google.android.material. textfield.TextInputLayout>
+
+    <!-- Confirm New Password -->
+    <com.google.android.material.textfield. TextInputLayout
+        android:id="@+id/tilConfirmPassword"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:hint="@string/confirm_new_password"
+        app:startIconDrawable="@drawable/ic_lock"
+        app:endIconMode="password_toggle">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:textSize="@dimen/text_body" />
+
+    </com. google.android.material.textfield.TextInputLayout>
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            style="@style/Widget.MaterialComponents.Button. TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:textSize="@dimen/text_body"
+            android: minWidth="100dp" />
+
+        <com.google. android.material.button.MaterialButton
+            android:id="@+id/btnChangePassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:text="@string/change"
+            android:textSize="@dimen/text_body"
+            android:minWidth="120dp" />
+
+    </LinearLayout>
+
+</LinearLayout>
+```
+
+---
+
+## Continue to Part 3 for:
+- About Activity
+- Help & Support Activity
+- PreferencesManager class
+- Complete SettingsActivity. java
+- EditProfileActivity.java
+- NotificationSettingsActivity.java
+- All Dialog implementations (Theme, ChangePassword)
+- String resources
+- Icons
+- Testing checklist
+
+Shall I continue with Part 3?  🚖📱

@@ -1,0 +1,676 @@
+# TRMS Driver Mobile App - Module 6: Offline Mode & Data Synchronization
+
+## Context
+I have completed **Modules 1-5 and 7** of the TRMS Driver mobile app.  Now I need **Module 6** which implements offline functionality and data synchronization for areas with poor connectivity.
+
+**Current App State:**
+- ✅ Module 1: Authentication & Duty Management
+- ✅ Module 2: Dashboard with 4-Seat Grid & Boarding
+- ✅ Module 3: Destination Selection & Journey Activation
+- ✅ Module 4: Alighting & Journey Completion
+- ✅ Module 5: Journey History & Reports
+- ✅ Module 7: Settings & Profile
+
+**Package:** `com.trms.driver`
+**Architecture:** MVVM with Repository pattern + Room Database
+**Design:** Material Design 3, driver-optimized UI
+**Backend API:** Node.js with complete endpoints
+
+---
+
+## Module 6 Objective
+
+Implement a **professional offline mode and synchronization system** that allows drivers to:
+
+### **Primary Features:**
+1. **Local Data Caching** - Store critical data locally using Room database
+2. **Offline Detection** - Monitor network connectivity in real-time
+3. **Offline Indicators** - Show clear visual indicators when offline
+4. **Operation Queueing** - Queue API operations when offline
+5. **Auto-Sync** - Automatically sync when connection restored
+6. **Manual Sync** - Allow manual refresh to sync data
+7. **Conflict Resolution** - Handle data conflicts intelligently
+8. **Cached Dashboard** - View last known dashboard state offline
+9. **Offline Journey Actions** - Record journeys offline, sync later
+10. **Sync Status UI** - Show sync progress and status
+
+### **User Flow:**
+```
+App starts → Check connectivity
+    ↓
+If ONLINE:
+    Fetch fresh data → Cache locally → Display
+
+If OFFLINE:
+    Load cached data → Display with offline indicator
+    ↓
+User performs action (e.g., board passenger)
+    ↓
+Action queued locally
+    ↓
+Connection restored → Auto-detect
+    ↓
+Show "Syncing..." indicator
+    ↓
+Process queued operations
+    ↓
+Sync complete → Update UI
+```
+
+---
+
+## Design System (Consistent with Modules 1-7)
+
+### Color Palette
+```xml
+<!-- Offline/Sync Colors -->
+<color name="offline">#9E9E9E</color>               <!-- Grey -->
+<color name="syncing">#2196F3</color>               <!-- Blue -->
+<color name="sync_success">#4CAF50</color>          <!-- Green -->
+<color name="sync_error">#F44336</color>            <!-- Red -->
+<color name="offline_banner">#FFF9C4</color>        <!-- Light Yellow -->
+```
+
+### Typography
+```xml
+<dimen name="text_offline_indicator">14sp</dimen>
+<dimen name="text_sync_status">12sp</dimen>
+```
+
+---
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────┐
+│           UI Layer (Activities)             │
+│  Shows offline indicators, sync status      │
+└─────────────────┬───────────────────────────┘
+                  │
+┌─────────────────▼───────────────────────────┐
+│         ViewModel Layer                     │
+│  Coordinates online/offline data sources    │
+└─────────────────┬───────────────────────────┘
+                  │
+┌─────────────────▼───────────────────────────┐
+│         Repository Layer                    │
+│  Online:  API calls                          │
+│  Offline:  Local database queries            │
+│  Sync: Queue operations                     │
+└─────────────────┬───────────────────────────┘
+                  │
+        ┌─────────┴─────────┐
+        │                   │
+┌───────▼─────┐   ┌─────────▼─────────┐
+│  Room DB    │   │   Sync Queue DB   │
+│  (Cache)    │   │   (Operations)    │
+└─────────────┘   └───────────────────┘
+```
+
+---
+
+## Feature 1: Room Database Setup
+
+### Add Dependencies
+
+**Update `build.gradle` (app level):**
+
+```gradle
+dependencies {
+    // Existing dependencies...
+
+    // Room Database
+    def room_version = "2.5.2"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+
+    // Room Kotlin Extensions (if using Kotlin)
+    // implementation "androidx.room:room-ktx:$room_version"
+
+    // WorkManager for background sync
+    def work_version = "2.8.1"
+    implementation "androidx.work:work-runtime:$work_version"
+
+    // Network connectivity
+    implementation "androidx.lifecycle:lifecycle-livedata: 2.6.2"
+}
+```
+
+---
+
+## Feature 2: Database Entities
+
+### Dashboard Cache Entity
+
+**File:** `com.trms.driver.data.local.entity.DashboardCacheEntity. java`
+
+```java
+package com.trms.driver.data.local.entity;
+
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+import com.trms.driver.data.local.converter.SeatListConverter;
+import com.trms.driver.data.local.converter.StatsConverter;
+import com.trms.driver.data.model. Seat;
+import com.trms.driver.data.model.DashboardResponse;
+import java.util.List;
+
+@Entity(tableName = "dashboard_cache")
+@TypeConverters({SeatListConverter.class, StatsConverter.class})
+public class DashboardCacheEntity {
+
+    @PrimaryKey(autoGenerate = false)
+    private int id = 1; // Single row cache
+
+    private String vehicle_id;
+    private String registration;
+    private int active_journeys;
+    private List<Seat> seats;
+    private DashboardResponse. TodaysStats todays_stats;
+    private long cached_at; // Timestamp
+
+    // Constructors
+    public DashboardCacheEntity() {}
+
+    // Getters and Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getVehicle_id() { return vehicle_id; }
+    public void setVehicle_id(String vehicle_id) { this.vehicle_id = vehicle_id; }
+
+    public String getRegistration() { return registration; }
+    public void setRegistration(String registration) { this.registration = registration; }
+
+    public int getActive_journeys() { return active_journeys; }
+    public void setActive_journeys(int active_journeys) { this.active_journeys = active_journeys; }
+
+    public List<Seat> getSeats() { return seats; }
+    public void setSeats(List<Seat> seats) { this.seats = seats; }
+
+    public DashboardResponse.TodaysStats getTodays_stats() { return todays_stats; }
+    public void setTodays_stats(DashboardResponse.TodaysStats todays_stats) {
+        this.todays_stats = todays_stats;
+    }
+
+    public long getCached_at() { return cached_at; }
+    public void setCached_at(long cached_at) { this.cached_at = cached_at; }
+}
+```
+
+---
+
+### Destinations Cache Entity
+
+**File:** `com.trms.driver.data.local.entity.DestinationCacheEntity.java`
+
+```java
+package com.trms.driver.data.local.entity;
+
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "destinations_cache")
+public class DestinationCacheEntity {
+
+    @PrimaryKey
+    private int destination_id;
+
+    private String vehicle_id;
+    private String name;
+    private int fare;
+    private double distance_km;
+    private int estimated_time_minutes;
+    private int alert_radius;
+    private String status;
+    private long cached_at;
+
+    // Constructors
+    public DestinationCacheEntity() {}
+
+    // Getters and Setters
+    public int getDestination_id() { return destination_id; }
+    public void setDestination_id(int destination_id) { this.destination_id = destination_id; }
+
+    public String getVehicle_id() { return vehicle_id; }
+    public void setVehicle_id(String vehicle_id) { this.vehicle_id = vehicle_id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public int getFare() { return fare; }
+    public void setFare(int fare) { this.fare = fare; }
+
+    public double getDistance_km() { return distance_km; }
+    public void setDistance_km(double distance_km) { this.distance_km = distance_km; }
+
+    public int getEstimated_time_minutes() { return estimated_time_minutes; }
+    public void setEstimated_time_minutes(int estimated_time_minutes) {
+        this.estimated_time_minutes = estimated_time_minutes;
+    }
+
+    public int getAlert_radius() { return alert_radius; }
+    public void setAlert_radius(int alert_radius) { this.alert_radius = alert_radius; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public long getCached_at() { return cached_at; }
+    public void setCached_at(long cached_at) { this.cached_at = cached_at; }
+}
+```
+
+---
+
+### Sync Queue Entity
+
+**File:** `com.trms.driver.data. local.entity.SyncQueueEntity.java`
+
+```java
+package com.trms.driver. data.local.entity;
+
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "sync_queue")
+public class SyncQueueEntity {
+
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+
+    private String operation_type; // "BOARDING", "SET_DESTINATION", "ALIGHTING"
+    private String request_data; // JSON string of request
+    private long created_at;
+    private int retry_count;
+    private String status; // "PENDING", "SYNCING", "FAILED", "COMPLETED"
+    private String error_message;
+
+    // Constructors
+    public SyncQueueEntity() {}
+
+    public SyncQueueEntity(String operation_type, String request_data) {
+        this.operation_type = operation_type;
+        this.request_data = request_data;
+        this.created_at = System. currentTimeMillis();
+        this.retry_count = 0;
+        this.status = "PENDING";
+    }
+
+    // Getters and Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getOperation_type() { return operation_type; }
+    public void setOperation_type(String operation_type) { this.operation_type = operation_type; }
+
+    public String getRequest_data() { return request_data; }
+    public void setRequest_data(String request_data) { this.request_data = request_data; }
+
+    public long getCreated_at() { return created_at; }
+    public void setCreated_at(long created_at) { this.created_at = created_at; }
+
+    public int getRetry_count() { return retry_count; }
+    public void setRetry_count(int retry_count) { this.retry_count = retry_count; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public String getError_message() { return error_message; }
+    public void setError_message(String error_message) { this.error_message = error_message; }
+}
+```
+
+---
+
+## Feature 3: Type Converters
+
+**File:** `com.trms.driver.data.local.converter. SeatListConverter.java`
+
+```java
+package com.trms.driver.data.local.converter;
+
+import androidx.room.TypeConverter;
+import com.google.gson.Gson;
+import com.google.gson.reflect. TypeToken;
+import com.trms.driver.data. model.Seat;
+import java.lang.reflect.Type;
+import java.util.List;
+
+public class SeatListConverter {
+
+    private static Gson gson = new Gson();
+
+    @TypeConverter
+    public static String fromSeatList(List<Seat> seats) {
+        if (seats == null) {
+            return null;
+        }
+        return gson.toJson(seats);
+    }
+
+    @TypeConverter
+    public static List<Seat> toSeatList(String seatsString) {
+        if (seatsString == null) {
+            return null;
+        }
+        Type listType = new TypeToken<List<Seat>>() {}.getType();
+        return gson.fromJson(seatsString, listType);
+    }
+}
+```
+
+**File:** `com.trms.driver.data.local.converter. StatsConverter.java`
+
+```java
+package com.trms. driver.data.local.converter;
+
+import androidx.room.TypeConverter;
+import com.google.gson.Gson;
+import com. trms.driver.data.model. DashboardResponse;
+
+public class StatsConverter {
+
+    private static Gson gson = new Gson();
+
+    @TypeConverter
+    public static String fromStats(DashboardResponse. TodaysStats stats) {
+        if (stats == null) {
+            return null;
+        }
+        return gson.toJson(stats);
+    }
+
+    @TypeConverter
+    public static DashboardResponse.TodaysStats toStats(String statsString) {
+        if (statsString == null) {
+            return null;
+        }
+        return gson.fromJson(statsString, DashboardResponse.TodaysStats.class);
+    }
+}
+```
+
+---
+
+## Feature 4: DAO (Data Access Objects)
+
+**File:** `com.trms.driver.data.local.dao.DashboardCacheDao.java`
+
+```java
+package com.trms.driver.data.local.dao;
+
+import androidx.lifecycle.LiveData;
+import androidx. room.Dao;
+import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
+import androidx.room.Query;
+import com.trms.driver.data. local.entity.DashboardCacheEntity;
+
+@Dao
+public interface DashboardCacheDao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertDashboard(DashboardCacheEntity dashboard);
+
+    @Query("SELECT * FROM dashboard_cache WHERE id = 1 LIMIT 1")
+    LiveData<DashboardCacheEntity> getDashboardLive();
+
+    @Query("SELECT * FROM dashboard_cache WHERE id = 1 LIMIT 1")
+    DashboardCacheEntity getDashboard();
+
+    @Query("DELETE FROM dashboard_cache")
+    void clearCache();
+}
+```
+
+**File:** `com.trms.driver.data.local.dao. DestinationCacheDao. java`
+
+```java
+package com.trms.driver.data. local.dao;
+
+import androidx. lifecycle.LiveData;
+import androidx. room.Dao;
+import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
+import androidx.room.Query;
+import com.trms. driver.data.local.entity. DestinationCacheEntity;
+import java.util.List;
+
+@Dao
+public interface DestinationCacheDao {
+
+    @Insert(onConflict = OnConflictStrategy. REPLACE)
+    void insertDestinations(List<DestinationCacheEntity> destinations);
+
+    @Query("SELECT * FROM destinations_cache WHERE vehicle_id = :vehicleId")
+    LiveData<List<DestinationCacheEntity>> getDestinationsLive(String vehicleId);
+
+    @Query("SELECT * FROM destinations_cache WHERE vehicle_id = :vehicleId")
+    List<DestinationCacheEntity> getDestinations(String vehicleId);
+
+    @Query("DELETE FROM destinations_cache WHERE vehicle_id = :vehicleId")
+    void clearCache(String vehicleId);
+}
+```
+
+**File:** `com.trms.driver.data.local.dao. SyncQueueDao.java`
+
+```java
+package com.trms.driver.data.local. dao;
+
+import androidx.lifecycle. LiveData;
+import androidx.room.Dao;
+import androidx. room.Insert;
+import androidx. room.Query;
+import androidx.room.Update;
+import com.trms. driver.data.local.entity. SyncQueueEntity;
+import java.util.List;
+
+@Dao
+public interface SyncQueueDao {
+
+    @Insert
+    long insertOperation(SyncQueueEntity operation);
+
+    @Update
+    void updateOperation(SyncQueueEntity operation);
+
+    @Query("SELECT * FROM sync_queue WHERE status = 'PENDING' ORDER BY created_at ASC")
+    List<SyncQueueEntity> getPendingOperations();
+
+    @Query("SELECT * FROM sync_queue WHERE status = 'PENDING'")
+    LiveData<List<SyncQueueEntity>> getPendingOperationsLive();
+
+    @Query("SELECT COUNT(*) FROM sync_queue WHERE status = 'PENDING'")
+    LiveData<Integer> getPendingCount();
+
+    @Query("DELETE FROM sync_queue WHERE id = :id")
+    void deleteOperation(int id);
+
+    @Query("DELETE FROM sync_queue WHERE status = 'COMPLETED'")
+    void clearCompleted();
+}
+```
+
+---
+
+## Feature 5: Room Database
+
+**File:** `com.trms.driver.data.local.TRMSDatabase.java`
+
+```java
+package com.trms. driver.data.local;
+
+import android.content.Context;
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import com.trms.driver.data. local.dao.DashboardCacheDao;
+import com.trms.driver.data.local. dao.DestinationCacheDao;
+import com.trms.driver.data.local.dao.SyncQueueDao;
+import com.trms.driver. data.local.entity.DashboardCacheEntity;
+import com.trms.driver.data. local.entity.DestinationCacheEntity;
+import com. trms.driver.data.local.entity.SyncQueueEntity;
+
+@Database(
+    entities = {
+        DashboardCacheEntity. class,
+        DestinationCacheEntity.class,
+        SyncQueueEntity.class
+    },
+    version = 1,
+    exportSchema = false
+)
+public abstract class TRMSDatabase extends RoomDatabase {
+
+    private static volatile TRMSDatabase INSTANCE;
+
+    public abstract DashboardCacheDao dashboardCacheDao();
+    public abstract DestinationCacheDao destinationCacheDao();
+    public abstract SyncQueueDao syncQueueDao();
+
+    public static TRMSDatabase getInstance(Context context) {
+        if (INSTANCE == null) {
+            synchronized (TRMSDatabase.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = Room.databaseBuilder(
+                        context.getApplicationContext(),
+                        TRMSDatabase.class,
+                        "trms_driver_database"
+                    ).build();
+                }
+            }
+        }
+        return INSTANCE;
+    }
+}
+```
+
+---
+
+## Feature 6: Network Connectivity Monitor
+
+**File:** `com.trms.driver.utils.NetworkMonitor.java`
+
+```java
+package com.trms.driver. utils;
+
+import android.content. Context;
+import android.net. ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net. NetworkRequest;
+import android.os.Build;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle. MutableLiveData;
+
+public class NetworkMonitor {
+
+    private Context context;
+    private ConnectivityManager connectivityManager;
+    private MutableLiveData<Boolean> isConnected = new MutableLiveData<>(false);
+    private ConnectivityManager.NetworkCallback networkCallback;
+
+    public NetworkMonitor(Context context) {
+        this.context = context. getApplicationContext();
+        connectivityManager = (ConnectivityManager)
+            context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // Initial check
+        isConnected.setValue(checkConnection());
+
+        // Register callback
+        registerNetworkCallback();
+    }
+
+    public LiveData<Boolean> isConnected() {
+        return isConnected;
+    }
+
+    public boolean isCurrentlyConnected() {
+        return checkConnection();
+    }
+
+    private boolean checkConnection() {
+        if (connectivityManager == null) {
+            return false;
+        }
+
+        if (Build.VERSION. SDK_INT >= Build.VERSION_CODES.M) {
+            Network network = connectivityManager.getActiveNetwork();
+            if (network == null) return false;
+
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+            return capabilities != null && (
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+            );
+        } else {
+            android.net.NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            return networkInfo != null && networkInfo.isConnected();
+        }
+    }
+
+    private void registerNetworkCallback() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES. N) {
+            networkCallback = new ConnectivityManager. NetworkCallback() {
+                @Override
+                public void onAvailable(@NonNull Network network) {
+                    isConnected.postValue(true);
+                }
+
+                @Override
+                public void onLost(@NonNull Network network) {
+                    isConnected. postValue(false);
+                }
+            };
+
+            connectivityManager.registerDefaultNetworkCallback(networkCallback);
+        } else {
+            NetworkRequest request = new NetworkRequest.Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .build();
+
+            networkCallback = new ConnectivityManager. NetworkCallback() {
+                @Override
+                public void onAvailable(@NonNull Network network) {
+                    isConnected.postValue(true);
+                }
+
+                @Override
+                public void onLost(@NonNull Network network) {
+                    isConnected. postValue(checkConnection());
+                }
+            };
+
+            connectivityManager. registerNetworkCallback(request, networkCallback);
+        }
+    }
+
+    public void unregister() {
+        if (networkCallback != null && connectivityManager != null) {
+            try {
+                connectivityManager.unregisterNetworkCallback(networkCallback);
+            } catch (Exception e) {
+                // Already unregistered
+            }
+        }
+    }
+}
+```
+
+---
+
+## Continue to Part 2 for:
+- Updated Repository classes (with offline support)
+- Sync Manager
+- WorkManager for background sync
+- Offline indicator UI components
+- Updated ViewModel classes
+- Complete MainActivity with offline indicators
+- Testing checklist
+
+Shall I continue with Part 2?  🚖📱
