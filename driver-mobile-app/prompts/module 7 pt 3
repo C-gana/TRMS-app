@@ -1,0 +1,936 @@
+# TRMS Driver App - Module 7: Settings & Profile (Part 3: Complete Implementation)
+
+---
+
+## Feature 6: About Activity
+
+**File:** `res/layout/activity_about.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget. CoordinatorLayout
+    xmlns: android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorBackground">
+
+    <!-- App Bar -->
+    <com.google.android.material.appbar. AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="? attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="@string/about"
+            app:titleTextColor="@android:color/white"
+            app:navigationIcon="@drawable/ic_arrow_back" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android: layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
+
+            <!-- App Logo & Name -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="@dimen/spacing_xl"
+                android:paddingBottom="@dimen/spacing_xl">
+
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:src="@mipmap/ic_launcher"
+                    android:contentDescription="@string/app_logo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android: layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:text="@string/app_name"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android: textColor="? attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/tvVersion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android: layout_marginTop="@dimen/spacing_xs"
+                    android:text="Version 1.0.0 (Build 1)"
+                    android:textSize="@dimen/text_label"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+            </LinearLayout>
+
+            <!-- App Information Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="12dp"
+                android:layout_marginBottom="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android: layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android: layout_height="wrap_content"
+                        android:text="@string/about_app"
+                        android: textSize="@dimen/text_body"
+                        android: textStyle="bold"
+                        android: textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="@dimen/spacing_sm" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_description"
+                        android:textSize="@dimen/text_body"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:lineSpacingExtra="4dp" />
+
+                </LinearLayout>
+
+            </com. google.android.material.card. MaterialCardView>
+
+            <!-- Links Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android: layout_height="wrap_content"
+                android:text="@string/legal"
+                android:textSize="@dimen/text_caption"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android:paddingTop="@dimen/spacing_sm"
+                android:paddingBottom="@dimen/spacing_sm" />
+
+            <!-- Terms of Service -->
+            <LinearLayout
+                android:id="@+id/termsLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="?attr/selectableItemBackground"
+                android: clickable="true"
+                android: focusable="true"
+                android:padding="@dimen/spacing_md"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_document"
+                    android:tint="?attr/colorOnSurface"
+                    android:contentDescription="@string/document_icon" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:text="@string/terms_of_service"
+                    android:textSize="@dimen/text_body"
+                    android:textColor="?attr/colorOnSurface" />
+
+                <ImageView
+                    android: layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:tint="?attr/colorOnSurfaceVariant"
+                    android:contentDescription="@string/navigate_icon" />
+
+            </LinearLayout>
+
+            <View
+                android: layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/colorOutlineVariant"
+                android:layout_marginStart="56dp" />
+
+            <!-- Privacy Policy -->
+            <LinearLayout
+                android:id="@+id/privacyLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="?attr/selectableItemBackground"
+                android: clickable="true"
+                android:focusable="true"
+                android:padding="@dimen/spacing_md"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_privacy"
+                    android:tint="?attr/colorOnSurface"
+                    android: contentDescription="@string/privacy_icon" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android: layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android: layout_marginStart="@dimen/spacing_md"
+                    android:text="@string/privacy_policy"
+                    android: textSize="@dimen/text_body"
+                    android: textColor="?attr/colorOnSurface" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android: tint="?attr/colorOnSurfaceVariant"
+                    android:contentDescription="@string/navigate_icon" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android: layout_height="1dp"
+                android:background="?attr/colorOutlineVariant"
+                android:layout_marginStart="56dp" />
+
+            <!-- Licenses -->
+            <LinearLayout
+                android:id="@+id/licensesLink"
+                android: layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android: orientation="horizontal"
+                android: background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="@dimen/spacing_md"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_code"
+                    android:tint="?attr/colorOnSurface"
+                    android:contentDescription="@string/code_icon" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:text="@string/open_source_licenses"
+                    android:textSize="@dimen/text_body"
+                    android:textColor="?attr/colorOnSurface" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:tint="?attr/colorOnSurfaceVariant"
+                    android:contentDescription="@string/navigate_icon" />
+
+            </LinearLayout>
+
+            <!-- Copyright -->
+            <TextView
+                android:layout_width="match_parent"
+                android: layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:text="@string/copyright"
+                android: textSize="@dimen/text_caption"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android: gravity="center" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+```
+
+---
+
+## Feature 7: Help & Support Activity
+
+**File:** `res/layout/activity_help_support. xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget. CoordinatorLayout
+    xmlns: android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorBackground">
+
+    <!-- App Bar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="@string/help_and_support"
+            app:titleTextColor="@android: color/white"
+            app: navigationIcon="@drawable/ic_arrow_back" />
+
+    </com.google.android.material. appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
+
+            <!-- Contact Support Card -->
+            <com.google. android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="?attr/colorPrimary"
+                android:layout_marginBottom="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android: layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@drawable/ic_support"
+                        android:tint="@android:color/white"
+                        android:contentDescription="@string/support_icon" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android: layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:text="@string/need_help"
+                        android: textSize="@dimen/text_body_large"
+                        android:textStyle="bold"
+                        android: textColor="@android:color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:text="@string/contact_support_subtitle"
+                        android:textSize="@dimen/text_body"
+                        android:textColor="@android:color/white"
+                        android:alpha="0.9"
+                        android:gravity="center" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Contact Options Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android: layout_height="wrap_content"
+                android:text="@string/contact_us"
+                android:textSize="@dimen/text_caption"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android:paddingTop="@dimen/spacing_sm"
+                android:paddingBottom="@dimen/spacing_sm" />
+
+            <!-- Phone Support -->
+            <LinearLayout
+                android:id="@+id/phoneSupport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="@dimen/spacing_md"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_phone"
+                    android:tint="?attr/colorPrimary"
+                    android: contentDescription="@string/phone_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/call_support"
+                        android: textSize="@dimen/text_body"
+                        android: textStyle="bold"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="+265 1 234 567"
+                        android:textSize="@dimen/text_label"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android: layout_width="20dp"
+                    android:layout_height="20dp"
+                    android: src="@drawable/ic_chevron_right"
+                    android:tint="?attr/colorOnSurfaceVariant"
+                    android:contentDescription="@string/navigate_icon" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/colorOutlineVariant"
+                android:layout_marginStart="56dp" />
+
+            <!-- Email Support -->
+            <LinearLayout
+                android:id="@+id/emailSupport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android: focusable="true"
+                android:padding="@dimen/spacing_md"
+                android: gravity="center_vertical">
+
+                <ImageView
+                    android: layout_width="24dp"
+                    android:layout_height="24dp"
+                    android: src="@drawable/ic_email"
+                    android:tint="?attr/colorPrimary"
+                    android:contentDescription="@string/email_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/email_support"
+                        android:textSize="@dimen/text_body"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android: layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="support@trms.mw"
+                        android:textSize="@dimen/text_label"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android: layout_width="20dp"
+                    android:layout_height="20dp"
+                    android: src="@drawable/ic_chevron_right"
+                    android:tint="?attr/colorOnSurfaceVariant"
+                    android:contentDescription="@string/navigate_icon" />
+
+            </LinearLayout>
+
+            <!-- FAQ Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/frequently_asked_questions"
+                android:textSize="@dimen/text_caption"
+                android: textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android:paddingTop="@dimen/spacing_md"
+                android:paddingBottom="@dimen/spacing_sm" />
+
+            <!-- FAQ 1 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app: cardElevation="1dp"
+                app:cardCornerRadius="8dp"
+                android:layout_marginBottom="@dimen/spacing_sm">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android: layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android: layout_height="wrap_content"
+                        android:text="@string/faq_1_question"
+                        android:textSize="@dimen/text_body"
+                        android:textStyle="bold"
+                        android: textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:text="@string/faq_1_answer"
+                        android:textSize="@dimen/text_label"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:lineSpacingExtra="2dp" />
+
+                </LinearLayout>
+
+            </com. google.android.material.card. MaterialCardView>
+
+            <!-- FAQ 2 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app: cardElevation="1dp"
+                app:cardCornerRadius="8dp"
+                android: layout_marginBottom="@dimen/spacing_sm">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android: text="@string/faq_2_question"
+                        android:textSize="@dimen/text_body"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:text="@string/faq_2_answer"
+                        android:textSize="@dimen/text_label"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:lineSpacingExtra="2dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- FAQ 3 -->
+            <com. google.android.material.card. MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="1dp"
+                app:cardCornerRadius="8dp"
+                android:layout_marginBottom="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android: layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/faq_3_question"
+                        android:textSize="@dimen/text_body"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android: layout_marginTop="@dimen/spacing_xs"
+                        android:text="@string/faq_3_answer"
+                        android:textSize="@dimen/text_label"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:lineSpacingExtra="2dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+```
+
+---
+
+## Feature 8: Preferences Manager
+
+**File:** `com.trms.driver.data.local.PreferencesManager. java`
+
+```java
+package com.trms.driver.data. local;
+
+import android.content. Context;
+import android.content. SharedPreferences;
+import androidx.appcompat.app.AppCompatDelegate;
+
+public class PreferencesManager {
+
+    private static final String PREFS_NAME = "trms_driver_preferences";
+
+    // Theme preferences
+    private static final String KEY_THEME_MODE = "theme_mode";
+    public static final int THEME_LIGHT = 0;
+    public static final int THEME_DARK = 1;
+    public static final int THEME_SYSTEM = 2;
+
+    // Notification preferences
+    private static final String KEY_NOTIFICATIONS_ENABLED = "notifications_enabled";
+    private static final String KEY_PROXIMITY_ALERTS = "proximity_alerts";
+    private static final String KEY_BOARDING_NOTIFICATIONS = "boarding_notifications";
+    private static final String KEY_JOURNEY_COMPLETED = "journey_completed";
+    private static final String KEY_NOTIFICATION_SOUND = "notification_sound";
+    private static final String KEY_NOTIFICATION_VIBRATION = "notification_vibration";
+
+    private SharedPreferences prefs;
+
+    public PreferencesManager(Context context) {
+        prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
+    // Theme Methods
+    public void setThemeMode(int themeMode) {
+        prefs.edit().putInt(KEY_THEME_MODE, themeMode).apply();
+        applyTheme(themeMode);
+    }
+
+    public int getThemeMode() {
+        return prefs.getInt(KEY_THEME_MODE, THEME_SYSTEM);
+    }
+
+    public void applyTheme(int themeMode) {
+        switch (themeMode) {
+            case THEME_LIGHT:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case THEME_DARK:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate. MODE_NIGHT_YES);
+                break;
+            case THEME_SYSTEM:
+            default:
+                AppCompatDelegate. setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+        }
+    }
+
+    // Notification Methods
+    public void setNotificationsEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_NOTIFICATIONS_ENABLED, enabled).apply();
+    }
+
+    public boolean isNotificationsEnabled() {
+        return prefs.getBoolean(KEY_NOTIFICATIONS_ENABLED, true);
+    }
+
+    public void setProximityAlertsEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_PROXIMITY_ALERTS, enabled).apply();
+    }
+
+    public boolean isProximityAlertsEnabled() {
+        return prefs. getBoolean(KEY_PROXIMITY_ALERTS, true);
+    }
+
+    public void setBoardingNotificationsEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_BOARDING_NOTIFICATIONS, enabled).apply();
+    }
+
+    public boolean isBoardingNotificationsEnabled() {
+        return prefs.getBoolean(KEY_BOARDING_NOTIFICATIONS, true);
+    }
+
+    public void setJourneyCompletedNotificationsEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_JOURNEY_COMPLETED, enabled).apply();
+    }
+
+    public boolean isJourneyCompletedNotificationsEnabled() {
+        return prefs.getBoolean(KEY_JOURNEY_COMPLETED, true);
+    }
+
+    public void setNotificationSoundEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_NOTIFICATION_SOUND, enabled).apply();
+    }
+
+    public boolean isNotificationSoundEnabled() {
+        return prefs.getBoolean(KEY_NOTIFICATION_SOUND, true);
+    }
+
+    public void setNotificationVibrationEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_NOTIFICATION_VIBRATION, enabled).apply();
+    }
+
+    public boolean isNotificationVibrationEnabled() {
+        return prefs. getBoolean(KEY_NOTIFICATION_VIBRATION, true);
+    }
+}
+```
+
+---
+
+## Feature 9: Settings Activity Implementation
+
+**File:** `com.trms.driver.ui.settings. SettingsActivity.java`
+
+```java
+package com.trms.driver.ui.settings;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import androidx.appcompat. app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material. card.MaterialCardView;
+import com.trms.driver.BuildConfig;
+import com.trms.driver.R;
+import com.trms.driver.data. local.PreferencesManager;
+import com.trms.driver. data.local.TokenManager;
+import com.trms.driver.ui.auth.LoginActivity;
+
+public class SettingsActivity extends AppCompatActivity {
+
+    private MaterialToolbar toolbar;
+    private MaterialCardView profileCard;
+    private TextView tvProfileName, tvProfilePhone, tvProfileInitial, tvThemeValue, tvAppVersion;
+    private View appearanceSetting, notificationsSetting, changePasswordSetting, logoutSetting;
+    private View helpSetting, aboutSetting;
+
+    private TokenManager tokenManager;
+    private PreferencesManager preferencesManager;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
+
+        // Initialize
+        tokenManager = new TokenManager(this);
+        preferencesManager = new PreferencesManager(this);
+
+        // Initialize views
+        initializeViews();
+
+        // Setup toolbar
+        setupToolbar();
+
+        // Load profile data
+        loadProfileData();
+
+        // Setup click listeners
+        setupClickListeners();
+    }
+
+    private void initializeViews() {
+        toolbar = findViewById(R.id.toolbar);
+        profileCard = findViewById(R.id.profileCard);
+        tvProfileName = findViewById(R.id.tvProfileName);
+        tvProfilePhone = findViewById(R.id.tvProfilePhone);
+        tvProfileInitial = findViewById(R.id.tvProfileInitial);
+        tvThemeValue = findViewById(R.id.tvThemeValue);
+        tvAppVersion = findViewById(R. id.tvAppVersion);
+
+        appearanceSetting = findViewById(R.id.appearanceSetting);
+        notificationsSetting = findViewById(R.id.notificationsSetting);
+        changePasswordSetting = findViewById(R.id.changePasswordSetting);
+        logoutSetting = findViewById(R.id.logoutSetting);
+        helpSetting = findViewById(R.id.helpSetting);
+        aboutSetting = findViewById(R.id.aboutSetting);
+    }
+
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+    }
+
+    private void loadProfileData() {
+        // Load driver info
+        if (tokenManager.getDriver() != null) {
+            String driverName = tokenManager.getDriver().getName();
+            String driverPhone = tokenManager.getDriver().getPhone();
+
+            tvProfileName.setText(driverName);
+            tvProfilePhone.setText(driverPhone);
+
+            // Set initials
+            if (driverName != null && ! driverName.isEmpty()) {
+                String[] nameParts = driverName.split(" ");
+                String initials = "";
+                if (nameParts.length >= 2) {
+                    initials = nameParts[0]. substring(0, 1) + nameParts[1].substring(0, 1);
+                } else {
+                    initials = nameParts[0].substring(0, Math.min(2, nameParts[0].length()));
+                }
+                tvProfileInitial.setText(initials. toUpperCase());
+            }
+        }
+
+        // Load theme preference
+        updateThemeValue();
+
+        // Load app version
+        tvAppVersion.setText(getString(R.string.version_format, BuildConfig.VERSION_NAME));
+    }
+
+    private void updateThemeValue() {
+        int themeMode = preferencesManager.getThemeMode();
+        String themeText;
+        switch (themeMode) {
+            case PreferencesManager.THEME_LIGHT:
+                themeText = getString(R.string.light_theme);
+                break;
+            case PreferencesManager. THEME_DARK:
+                themeText = getString(R.string.dark_theme);
+                break;
+            case PreferencesManager.THEME_SYSTEM:
+            default:
+                themeText = getString(R.string.system_default);
+                break;
+        }
+        tvThemeValue.setText(themeText);
+    }
+
+    private void setupClickListeners() {
+        // Profile Card
+        profileCard.setOnClickListener(v -> {
+            Intent intent = new Intent(this, EditProfileActivity.class);
+            startActivity(intent);
+        });
+
+        // Appearance
+        appearanceSetting.setOnClickListener(v -> showThemeDialog());
+
+        // Notifications
+        notificationsSetting.setOnClickListener(v -> {
+            Intent intent = new Intent(this, NotificationSettingsActivity.class);
+            startActivity(intent);
+        });
+
+        // Change Password
+        changePasswordSetting.setOnClickListener(v -> showChangePasswordDialog());
+
+        // Logout
+        logoutSetting.setOnClickListener(v -> showLogoutConfirmation());
+
+        // Help & Support
+        helpSetting.setOnClickListener(v -> {
+            Intent intent = new Intent(this, HelpSupportActivity.class);
+            startActivity(intent);
+        });
+
+        // About
+        aboutSetting.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
+        });
+    }
+
+    private void showThemeDialog() {
+        ThemeSelectionDialog dialog = new ThemeSelectionDialog(this, preferencesManager);
+        dialog.show();
+        dialog.setOnThemeChangedListener(() -> updateThemeValue());
+    }
+
+    private void showChangePasswordDialog() {
+        ChangePasswordDialog dialog = new ChangePasswordDialog(this, tokenManager);
+        dialog.show();
+    }
+
+    private void showLogoutConfirmation() {
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.logout)
+            .setMessage(R. string.logout_confirmation)
+            .setIcon(R.drawable.ic_logout)
+            .setPositiveButton(R.string.logout, (dialog, which) -> {
+                tokenManager.clearAuth();
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent. FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            })
+            .setNegativeButton(R. string.cancel, null)
+            .show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Reload profile in case it was updated
+        loadProfileData();
+    }
+}
+```
+
+---
+
+## Continue to Part 4 for:
+- EditProfileActivity. java implementation
+- NotificationSettingsActivity. java implementation
+- ThemeSelectionDialog.java implementation
+- ChangePasswordDialog.java implementation
+- AboutActivity.java implementation
+- HelpSupportActivity.java implementation
+- String resources (all Module 7 strings)
+- Additional icons
+- Menu resources
+- Update MainActivity to add Settings menu option
+- Dark theme colors (colors-night.xml)
+- Testing checklist
+
+Shall I continue with Part 4 (Final)?  🚖📱

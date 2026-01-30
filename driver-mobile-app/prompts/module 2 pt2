@@ -1,0 +1,247 @@
+# TRMS Driver App - Module 2: Professional Dashboard (Part 2: Seat Card UI and Core Models)
+
+---
+
+## Feature 2: Seat Card Component (Professional UI/UX)
+
+### XML for Individual Seat Card
+
+**File:** `res/layout/item_seat_card.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardSeat"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardElevation="6dp"
+    app:cardCornerRadius="16dp"
+    app:strokeWidth="2dp"
+    app:strokeColor="@color/divider"
+    android:layout_margin="@dimen/seat_card_margin"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:backgroundTint="@color/surface"
+    android:transitionName="seatCard">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- Seat Number -->
+        <TextView
+            android:id="@+id/tvSeatNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SEAT 1"
+            android:textSize="@dimen/text_seat_number"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginTop="8dp"
+            android:gravity="center" />
+
+        <!-- State Icon -->
+        <ImageView
+            android:id="@+id/ivSeatState"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/ic_seat_vacant"
+            android:contentDescription="@string/seat_icon"
+            android:tint="@color/seat_vacant"
+            android:alpha="0.9"/>
+
+        <!-- State Label -->
+        <TextView
+            android:id="@+id/tvSeatState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="VACANT"
+            android:textSize="@dimen/text_seat_status"
+            android:textStyle="bold"
+            android:textColor="@color/status_vacant"
+            android:layout_marginTop="4dp"
+            android:gravity="center" />
+
+        <!-- Timeout Timer / Proximity Alert -->
+        <TextView
+            android:id="@+id/tvSeatTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⏱️ 45s"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/status_awaiting"
+            android:layout_marginTop="2dp"
+            android:visibility="gone" />
+
+        <!-- Destination Name -->
+        <TextView
+            android:id="@+id/tvDestination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="@dimen/text_destination"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:visibility="gone" />
+
+        <!-- Journey Details (distance / ETA) -->
+        <TextView
+            android:id="@+id/tvJourneyDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="@dimen/text_journey_detail"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:visibility="gone" />
+
+        <!-- Alert Icon (e.g. Approaching!) -->
+        <ImageView
+            android:id="@+id/ivAlert"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_alert"
+            android:contentDescription="@string/alert_icon"
+            android:tint="@color/seat_approaching"
+            android:layout_marginTop="4dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
+```
+
+---
+
+## Seat State Drawables
+
+**res/drawable/ic_seat_vacant.xml**
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/seat_vacant"
+        android:pathData="M7,12c1.66,0 3,-1.34 3,-3s-1.34,-3 -3,-3 -3,1.34 -3,3 1.34,3 3,3zM7,14c-2.33,0 -7,1.17 -7,3.5V20h14v-2.5c0,-2.33 -4.67,-3.5 -7,-3.5zM17,12c1.66,0 3,-1.34 3,-3s-1.34,-3 -3,-3 -3,1.34 -3,3 1.34,3 3,3zM17,14c-0.29,0 -0.62,0.02 -0.97,0.05 1.16,0.84 1.97,1.97 1.97,3.45V20h6v-2.5c0,-2.33 -4.67,-3.5 -7,-3.5z"/>
+</vector>
+```
+
+**res/drawable/ic_seat_awaiting.xml**
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/seat_awaiting"
+        android:pathData="M12,17.27L18.18,21l-1.45,-6.26L22,9.74l-6.32,-0.54L12,3 10.32,9.2 4,9.74l5.27,5.01L7.82,21z"/>
+</vector>
+```
+
+**res/drawable/ic_seat_active.xml**
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/seat_active"
+        android:pathData="M12,17.27L18.18,21l-1.45,-6.26L22,9.74l-6.32,-0.54L12,3 10.32,9.2 4,9.74l5.27,5.01L7.82,21z"/>
+</vector>
+```
+
+**res/drawable/ic_seat_approaching.xml**
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/seat_approaching"
+        android:pathData="M1,21h22L12,2 1,21zM12,16h-1v-1h1v1zm0,-2h-1v-4h1v4z"/>
+</vector>
+```
+
+**res/drawable/ic_alert.xml**
+```xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/seat_approaching"
+        android:pathData="M1,21h22L12,2 1,21zM12,16h-1v-1h1v1zm0,-2h-1v-4h1v4z"/>
+</vector>
+```
+
+---
+
+## Data Models for Dashboard and Seat
+
+**File:** `com.trms.driver.data.model.Seat.java`
+```java
+package com.trms.driver.data.model;
+
+public class Seat {
+    private int seat_number;
+    private String status; // "vacant", "awaiting_destination", "active_journey", "approaching_destination"
+    private Integer journey_id;
+    private String destination;
+    private Integer fare;
+    private String boarding_time;
+    private Double distance_to_destination; // kilometers
+    private Integer eta_minutes;
+    private Integer timeout_seconds; // for awaiting
+    private Boolean alert; // for approaching
+    // ...add getters/setters...
+}
+```
+
+**File:** `com.trms.driver.data.model.DashboardResponse.java`
+```java
+package com.trms.driver.data.model;
+
+import java.util.List;
+
+public class DashboardResponse {
+    private String vehicle_id;
+    private String registration;
+    private String status;
+    private String last_updated;
+    private List<Seat> seats;
+    private int active_journeys;
+    private Stats todays_stats;
+
+    public static class Stats {
+        private int passengers;
+        private int revenue;
+        // ...getters/setters...
+    }
+
+    // ...getters/setters...
+}
+```
+
+---
+
+## Continue to Part 3 for:
+- SeatAdapter/ViewHolder (binds seat data to card, handles tap animations)
+- Repository: Dashboard API integration
+- ViewModel: Dashboard state + auto refresh
+- MainActivity: full Java implementation with seat grid interaction and refresh
+
+Shall I proceed with Part 3? 🚖

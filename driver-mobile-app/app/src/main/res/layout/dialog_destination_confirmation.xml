@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_lg">
+
+    <!-- Icon -->
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_destination"
+        app:tint="@color/primary"
+        android:contentDescription="@string/destination_icon" />
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:text="@string/confirm_destination"
+        android:textSize="@dimen/text_title"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary" />
+
+    <!-- Destination Details Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md"
+        app:cardElevation="0dp"
+        app:cardCornerRadius="12dp"
+        app:cardBackgroundColor="#E3F2FD"
+        app:strokeWidth="2dp"
+        app:strokeColor="@color/primary">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
+
+            <!-- Seat Number -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/seat_label"
+                android:textSize="@dimen/text_caption"
+                android:textColor="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/tvSeatNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Seat 1"
+                android:textSize="@dimen/text_body"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="@dimen/spacing_sm" />
+
+            <!-- Destination Name -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/destination_label"
+                android:textSize="@dimen/text_caption"
+                android:textColor="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/tvDestinationName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chichiri Shopping Centre"
+                android:textSize="@dimen/text_destination_name"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="@dimen/spacing_sm" />
+
+            <!-- Fare -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fare_label"
+                android:textSize="@dimen/text_caption"
+                android:textColor="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/tvFare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1,500 MK"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/fare_text"
+                android:layout_marginBottom="@dimen/spacing_sm" />
+
+            <!-- Distance & ETA -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/journey_details_label"
+                android:textSize="@dimen/text_caption"
+                android:textColor="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/tvJourneyDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2.5km · Estimated 8 minutes"
+                android:textSize="@dimen/text_body"
+                android:textColor="@color/text_primary" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Warning Message -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:text="@string/destination_confirmation_warning"
+        android:textSize="@dimen/text_caption"
+        android:textColor="@color/text_secondary"
+        android:gravity="center" />
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:textSize="@dimen/text_body"
+            android:minWidth="100dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:text="@string/confirm"
+            android:textSize="@dimen/text_body"
+            android:minWidth="120dp"
+            app:icon="@drawable/ic_check"
+            app:iconGravity="start" />
+
+    </LinearLayout>
+
+</LinearLayout>
+

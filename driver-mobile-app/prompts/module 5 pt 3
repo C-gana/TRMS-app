@@ -1,0 +1,902 @@
+# TRMS Driver App - Module 5: Journey History (Part 3: Business Logic & Activities)
+
+---
+
+## Feature 6: API Service Extensions
+
+**Update:** `com.trms.driver.data.api.DashboardApiService.java` (or create new JourneyApiService)
+
+**File:** `com.trms.driver.data.api.JourneyApiService.java`
+
+```java
+package com.trms.driver.data.api;
+
+import com.trms.driver. data.model.JourneyDetailResponse;
+import com.trms.driver.data.model.JourneyHistoryResponse;
+import com.trms.driver.data.model.StatisticsResponse;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+
+public interface JourneyApiService {
+
+    @GET("api/mobile/driver/journeys")
+    Call<JourneyHistoryResponse> getJourneys(
+        @Query("vehicleId") String vehicleId,
+        @Query("page") int page,
+        @Query("limit") int limit,
+        @Query("startDate") String startDate,
+        @Query("endDate") String endDate,
+        @Query("search") String search,
+        @Header("Authorization") String token
+    );
+
+    @GET("api/mobile/driver/journeys/{journeyId}")
+    Call<JourneyDetailResponse> getJourneyDetail(
+        @Path("journeyId") int journeyId,
+        @Header("Authorization") String token
+    );
+
+    @GET("api/mobile/driver/statistics")
+    Call<StatisticsResponse> getStatistics(
+        @Query("vehicleId") String vehicleId,
+        @Query("startDate") String startDate,
+        @Query("endDate") String endDate,
+        @Header("Authorization") String token
+    );
+}
+```
+
+**Update RetrofitClient.java:**
+
+```java
+// In RetrofitClient.java, add:
+public JourneyApiService getJourneyApi() {
+    return retrofit.create(JourneyApiService.class);
+}
+```
+
+---
+
+## Feature 7: Journey History Repository
+
+**File:** `com.trms.driver.data.repository.JourneyHistoryRepository. java`
+
+```java
+package com.trms.driver.data. repository;
+
+import androidx.lifecycle. LiveData;
+import androidx.lifecycle. MutableLiveData;
+import com.trms.driver.data. api.JourneyApiService;
+import com.trms.driver.data.api.RetrofitClient;
+import com. trms.driver.data.local.TokenManager;
+import com.trms.driver.data.model.Journey;
+import com.trms. driver.data.model.JourneyDetailResponse;
+import com.trms.driver.data.model.JourneyHistoryResponse;
+import com.trms.driver.data.model.Statistics;
+import com.trms. driver.data.model.StatisticsResponse;
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class JourneyHistoryRepository {
+
+    private JourneyApiService apiService;
+    private TokenManager tokenManager;
+
+    public JourneyHistoryRepository(TokenManager tokenManager) {
+        this.apiService = RetrofitClient.getInstance().getJourneyApi();
+        this.tokenManager = tokenManager;
+    }
+
+    /**
+     * Get journey history with pagination and filters
+     */
+    public LiveData<Result<JourneyHistoryResponse>> getJourneys(String vehicleId, int page,
+                                                                 int limit, String startDate,
+                                                                 String endDate, String search) {
+        MutableLiveData<Result<JourneyHistoryResponse>> result = new MutableLiveData<>();
+
+        String token = tokenManager.getToken();
+        if (token == null) {
+            result.setValue(Result.error("Authentication required"));
+            return result;
+        }
+
+        apiService.getJourneys(vehicleId, page, limit, startDate, endDate, search, "Bearer " + token)
+            .enqueue(new Callback<JourneyHistoryResponse>() {
+                @Override
+                public void onResponse(Call<JourneyHistoryResponse> call,
+                                      Response<JourneyHistoryResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        result.setValue(Result.success(response.body()));
+                    } else {
+                        String error = "Failed to load journeys";
+                        if (response.code() == 401) {
+                            error = "Session expired. Please login again.";
+                        } else if (response.code() == 404) {
+                            error = "No journeys found";
+                        } else if (response.code() >= 500) {
+                            error = "Server error. Please try again. ";
+                        }
+                        result.setValue(Result.error(error));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<JourneyHistoryResponse> call, Throwable t) {
+                    String error = "Network error";
+                    if (t. getMessage() != null) {
+                        if (t.getMessage().contains("timeout")) {
+                            error = "Connection timeout. Check your internet. ";
+                        } else if (t.getMessage().contains("Unable to resolve host")) {
+                            error = "No internet connection";
+                        } else {
+                            error = t.getMessage();
+                        }
+                    }
+                    result. setValue(Result.error(error));
+                }
+            });
+
+        return result;
+    }
+
+    /**
+     * Get journey detail by ID
+     */
+    public LiveData<Result<Journey>> getJourneyDetail(int journeyId) {
+        MutableLiveData<Result<Journey>> result = new MutableLiveData<>();
+
+        String token = tokenManager.getToken();
+        if (token == null) {
+            result.setValue(Result. error("Authentication required"));
+            return result;
+        }
+
+        apiService.getJourneyDetail(journeyId, "Bearer " + token)
+            .enqueue(new Callback<JourneyDetailResponse>() {
+                @Override
+                public void onResponse(Call<JourneyDetailResponse> call,
+                                      Response<JourneyDetailResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        result.setValue(Result.success(response.body().getJourney()));
+                    } else {
+                        String error = "Failed to load journey details";
+                        if (response. code() == 401) {
+                            error = "Session expired";
+                        } else if (response.code() == 404) {
+                            error = "Journey not found";
+                        }
+                        result.setValue(Result.error(error));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<JourneyDetailResponse> call, Throwable t) {
+                    result.setValue(Result.error("Network error:  " + t.getMessage()));
+                }
+            });
+
+        return result;
+    }
+
+    /**
+     * Get statistics for date range
+     */
+    public LiveData<Result<StatisticsResponse>> getStatistics(String vehicleId,
+                                                               String startDate,
+                                                               String endDate) {
+        MutableLiveData<Result<StatisticsResponse>> result = new MutableLiveData<>();
+
+        String token = tokenManager.getToken();
+        if (token == null) {
+            result.setValue(Result.error("Authentication required"));
+            return result;
+        }
+
+        apiService.getStatistics(vehicleId, startDate, endDate, "Bearer " + token)
+            .enqueue(new Callback<StatisticsResponse>() {
+                @Override
+                public void onResponse(Call<StatisticsResponse> call,
+                                      Response<StatisticsResponse> response) {
+                    if (response. isSuccessful() && response.body() != null) {
+                        result.setValue(Result.success(response.body()));
+                    } else {
+                        String error = "Failed to load statistics";
+                        if (response.code() == 401) {
+                            error = "Session expired";
+                        }
+                        result.setValue(Result.error(error));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<StatisticsResponse> call, Throwable t) {
+                    result.setValue(Result.error("Network error: " + t.getMessage()));
+                }
+            });
+
+        return result;
+    }
+
+    // Result wrapper
+    public static class Result<T> {
+        private T data;
+        private String error;
+        private boolean success;
+
+        private Result(T data, String error, boolean success) {
+            this.data = data;
+            this.error = error;
+            this.success = success;
+        }
+
+        public static <T> Result<T> success(T data) {
+            return new Result<>(data, null, true);
+        }
+
+        public static <T> Result<T> error(String error) {
+            return new Result<>(null, error, false);
+        }
+
+        public T getData() { return data; }
+        public String getError() { return error; }
+        public boolean isSuccess() { return success; }
+    }
+}
+```
+
+---
+
+## Feature 8: Journey History ViewModel
+
+**File:** `com.trms.driver.ui.history.JourneyHistoryViewModel. java`
+
+```java
+package com.trms.driver.ui. history;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle. ViewModel;
+import com.trms.driver.data.model.Journey;
+import com.trms. driver.data.model.JourneyHistoryResponse;
+import com.trms.driver.data.repository.JourneyHistoryRepository;
+import java. text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util. Locale;
+
+public class JourneyHistoryViewModel extends ViewModel {
+
+    private static final int PAGE_SIZE = 20;
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
+    private JourneyHistoryRepository repository;
+    private MutableLiveData<JourneyHistoryState> journeyHistoryState = new MutableLiveData<>();
+    private List<Journey> allJourneys = new ArrayList<>();
+
+    private int currentPage = 1;
+    private boolean hasMorePages = true;
+    private String currentStartDate = null;
+    private String currentEndDate = null;
+    private String currentSearch = null;
+
+    public JourneyHistoryViewModel(JourneyHistoryRepository repository) {
+        this.repository = repository;
+        journeyHistoryState.setValue(JourneyHistoryState.idle());
+    }
+
+    public LiveData<JourneyHistoryState> getJourneyHistoryState() {
+        return journeyHistoryState;
+    }
+
+    /**
+     * Load journeys for vehicle
+     */
+    public void loadJourneys(String vehicleId, String startDate, String endDate, String search) {
+        // Reset for new query
+        currentPage = 1;
+        allJourneys.clear();
+        currentStartDate = startDate;
+        currentEndDate = endDate;
+        currentSearch = search;
+        hasMorePages = true;
+
+        fetchJourneys(vehicleId, false);
+    }
+
+    /**
+     * Load more journeys (pagination)
+     */
+    public void loadMoreJourneys(String vehicleId) {
+        if (!hasMorePages) return;
+
+        currentPage++;
+        fetchJourneys(vehicleId, true);
+    }
+
+    /**
+     * Refresh journeys
+     */
+    public void refreshJourneys(String vehicleId) {
+        currentPage = 1;
+        allJourneys.clear();
+        hasMorePages = true;
+        fetchJourneys(vehicleId, false);
+    }
+
+    /**
+     * Filter by date range preset
+     */
+    public void filterByPeriod(String vehicleId, String period) {
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
+        Calendar calendar = Calendar.getInstance();
+
+        String endDate = sdf.format(calendar.getTime());
+        String startDate;
+
+        switch (period) {
+            case "today":
+                calendar.set(Calendar. HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar. SECOND, 0);
+                startDate = sdf.format(calendar.getTime());
+                break;
+
+            case "yesterday":
+                calendar.add(Calendar.DAY_OF_MONTH, -1);
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar. MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                startDate = sdf.format(calendar. getTime());
+
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
+                calendar. set(Calendar.SECOND, 59);
+                endDate = sdf.format(calendar.getTime());
+                break;
+
+            case "week":
+                calendar.add(Calendar.DAY_OF_MONTH, -7);
+                startDate = sdf.format(calendar.getTime());
+                break;
+
+            case "month":
+                calendar.add(Calendar. MONTH, -1);
+                startDate = sdf.format(calendar.getTime());
+                break;
+
+            default:
+                return;
+        }
+
+        loadJourneys(vehicleId, startDate, endDate, currentSearch);
+    }
+
+    /**
+     * Search journeys
+     */
+    public void searchJourneys(String vehicleId, String query) {
+        loadJourneys(vehicleId, currentStartDate, currentEndDate, query);
+    }
+
+    private void fetchJourneys(String vehicleId, boolean isLoadingMore) {
+        if (! isLoadingMore) {
+            journeyHistoryState.setValue(JourneyHistoryState.loading());
+        } else {
+            journeyHistoryState.setValue(JourneyHistoryState.loadingMore());
+        }
+
+        LiveData<JourneyHistoryRepository.Result<JourneyHistoryResponse>> result =
+            repository.getJourneys(vehicleId, currentPage, PAGE_SIZE,
+                                  currentStartDate, currentEndDate, currentSearch);
+
+        result.observeForever(journeyResult -> {
+            if (journeyResult.isSuccess()) {
+                JourneyHistoryResponse response = journeyResult.getData();
+
+                if (response.getJourneys() != null) {
+                    allJourneys.addAll(response.getJourneys());
+                }
+
+                // Check if there are more pages
+                if (response.getPagination() != null) {
+                    hasMorePages = response.getPagination().getCurrent_page()
+                                  < response.getPagination().getTotal_pages();
+                }
+
+                journeyHistoryState.setValue(
+                    JourneyHistoryState.success(new ArrayList<>(allJourneys), hasMorePages)
+                );
+            } else {
+                journeyHistoryState.setValue(JourneyHistoryState.error(journeyResult.getError()));
+            }
+        });
+    }
+
+    // Journey History State
+    public static class JourneyHistoryState {
+        public enum Status { IDLE, LOADING, LOADING_MORE, SUCCESS, ERROR }
+
+        private Status status;
+        private List<Journey> journeys;
+        private boolean hasMore;
+        private String error;
+
+        private JourneyHistoryState(Status status, List<Journey> journeys,
+                                   boolean hasMore, String error) {
+            this. status = status;
+            this. journeys = journeys;
+            this.hasMore = hasMore;
+            this.error = error;
+        }
+
+        public static JourneyHistoryState idle() {
+            return new JourneyHistoryState(Status. IDLE, new ArrayList<>(), false, null);
+        }
+
+        public static JourneyHistoryState loading() {
+            return new JourneyHistoryState(Status. LOADING, new ArrayList<>(), false, null);
+        }
+
+        public static JourneyHistoryState loadingMore() {
+            return new JourneyHistoryState(Status.LOADING_MORE, new ArrayList<>(), false, null);
+        }
+
+        public static JourneyHistoryState success(List<Journey> journeys, boolean hasMore) {
+            return new JourneyHistoryState(Status.SUCCESS, journeys, hasMore, null);
+        }
+
+        public static JourneyHistoryState error(String error) {
+            return new JourneyHistoryState(Status. ERROR, new ArrayList<>(), false, error);
+        }
+
+        public Status getStatus() { return status; }
+        public List<Journey> getJourneys() { return journeys; }
+        public boolean hasMore() { return hasMore; }
+        public String getError() { return error; }
+    }
+}
+```
+
+**File:** `com.trms.driver.ui.history.JourneyHistoryViewModelFactory.java`
+
+```java
+package com.trms.driver.ui.history;
+
+import androidx.annotation.NonNull;
+import androidx. lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import com.trms.driver. data.repository.JourneyHistoryRepository;
+
+public class JourneyHistoryViewModelFactory implements ViewModelProvider.Factory {
+
+    private JourneyHistoryRepository repository;
+
+    public JourneyHistoryViewModelFactory(JourneyHistoryRepository repository) {
+        this.repository = repository;
+    }
+
+    @NonNull
+    @Override
+    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+        if (modelClass. isAssignableFrom(JourneyHistoryViewModel.class)) {
+            return (T) new JourneyHistoryViewModel(repository);
+        }
+        throw new IllegalArgumentException("Unknown ViewModel class");
+    }
+}
+```
+
+---
+
+## Feature 9: Journey Adapter
+
+**File:** `com.trms.driver.ui.history. JourneyAdapter.java`
+
+```java
+package com.trms.driver.ui.history;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view. View;
+import android.view. ViewGroup;
+import android.widget.ImageView;
+import android.widget. TextView;
+import androidx.annotation. NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import com.trms.driver.R;
+import com.trms. driver.data.model.Journey;
+import com.trms.driver.utils.DateUtils;
+import java. util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+public class JourneyAdapter extends RecyclerView.Adapter<JourneyAdapter.JourneyViewHolder> {
+
+    public interface OnJourneyClickListener {
+        void onJourneyClick(Journey journey);
+    }
+
+    private Context context;
+    private List<Journey> journeys;
+    private OnJourneyClickListener listener;
+
+    public JourneyAdapter(Context context, OnJourneyClickListener listener) {
+        this.context = context;
+        this.journeys = new ArrayList<>();
+        this.listener = listener;
+    }
+
+    public void setJourneys(List<Journey> journeys) {
+        this.journeys = journeys;
+        notifyDataSetChanged();
+    }
+
+    public void addJourneys(List<Journey> newJourneys) {
+        int startPosition = this.journeys.size();
+        this.journeys.addAll(newJourneys);
+        notifyItemRangeInserted(startPosition, newJourneys. size());
+    }
+
+    public void clearJourneys() {
+        this.journeys.clear();
+        notifyDataSetChanged();
+    }
+
+    @NonNull
+    @Override
+    public JourneyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_journey_card, parent, false);
+        return new JourneyViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull JourneyViewHolder holder, int position) {
+        holder.bind(journeys.get(position));
+    }
+
+    @Override
+    public int getItemCount() {
+        return journeys.size();
+    }
+
+    class JourneyViewHolder extends RecyclerView.ViewHolder {
+        private TextView tvJourneyId, tvSeatNumber, tvDestination, tvTimeInfo, tvFare, tvDistance;
+        private ImageView ivFareStatus;
+
+        public JourneyViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvJourneyId = itemView.findViewById(R.id.tvJourneyId);
+            tvSeatNumber = itemView.findViewById(R.id.tvSeatNumber);
+            tvDestination = itemView.findViewById(R.id.tvDestination);
+            tvTimeInfo = itemView.findViewById(R.id.tvTimeInfo);
+            tvFare = itemView.findViewById(R.id.tvFare);
+            tvDistance = itemView.findViewById(R.id.tvDistance);
+            ivFareStatus = itemView.findViewById(R.id.ivFareStatus);
+        }
+
+        public void bind(Journey journey) {
+            // Journey ID
+            tvJourneyId.setText(context.getString(R.string.journey_id_format, journey.getJourney_id()));
+
+            // Seat Number
+            tvSeatNumber.setText(context.getString(R.string.seat_number_short, journey.getSeat_number()));
+
+            // Destination
+            tvDestination.setText(journey.getDestination());
+
+            // Time Info
+            String boardingTime = DateUtils.formatTime(journey.getBoarding_time());
+            String alightingTime = DateUtils.formatTime(journey. getAlighting_time());
+            String timeInfo = String.format(Locale.getDefault(), "%s → %s (%d min)",
+                    boardingTime, alightingTime, journey.getDuration_minutes());
+            tvTimeInfo. setText(timeInfo);
+
+            // Fare
+            tvFare.setText(String.format(Locale.getDefault(), "%,d MK", journey.getFare()));
+
+            // Fare Status Icon
+            if (journey.isFare_collected()) {
+                ivFareStatus.setImageResource(R.drawable.ic_check_small);
+                ivFareStatus. setColorFilter(ContextCompat.getColor(context, R. color.fare_collected));
+            } else {
+                ivFareStatus.setImageResource(R.drawable.ic_warning_small);
+                ivFareStatus.setColorFilter(ContextCompat.getColor(context, R.color.fare_not_collected));
+            }
+
+            // Distance
+            tvDistance. setText(String.format(Locale.getDefault(), "%.1f km", journey.getDistance_km()));
+
+            // Click listener
+            itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onJourneyClick(journey);
+                }
+            });
+        }
+    }
+}
+```
+
+---
+
+## Feature 10: Journey History Activity
+
+**File:** `com.trms.driver.ui.history. JourneyHistoryActivity.java`
+
+```java
+package com.trms.driver.ui.history;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget. FrameLayout;
+import android.widget.LinearLayout;
+import android.widget. Toast;
+import androidx.annotation.NonNull;
+import androidx. appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout. widget.SwipeRefreshLayout;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.tabs.TabLayout;
+import com. google.android.material.textfield. TextInputEditText;
+import com.trms.driver.R;
+import com.trms.driver.data.local.TokenManager;
+import com.trms.driver.data.model.Journey;
+import com.trms. driver.data.repository.JourneyHistoryRepository;
+
+public class JourneyHistoryActivity extends AppCompatActivity
+        implements JourneyAdapter.OnJourneyClickListener {
+
+    // UI Components
+    private MaterialToolbar toolbar;
+    private TabLayout tabLayout;
+    private TextInputEditText etSearch;
+    private SwipeRefreshLayout swipeRefresh;
+    private RecyclerView recyclerJourneys;
+    private LinearLayout emptyState;
+    private FrameLayout loadingOverlay;
+
+    // ViewModel & Data
+    private JourneyHistoryViewModel viewModel;
+    private JourneyAdapter adapter;
+    private TokenManager tokenManager;
+    private String vehicleId;
+    private boolean isLoadingMore = false;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout. activity_journey_history);
+
+        // Initialize
+        tokenManager = new TokenManager(this);
+        vehicleId = tokenManager.getDriver().getVehicleId();
+
+        // Initialize views
+        initializeViews();
+
+        // Setup toolbar
+        setupToolbar();
+
+        // Initialize ViewModel
+        JourneyHistoryRepository repository = new JourneyHistoryRepository(tokenManager);
+        JourneyHistoryViewModelFactory factory = new JourneyHistoryViewModelFactory(repository);
+        viewModel = new ViewModelProvider(this, factory).get(JourneyHistoryViewModel.class);
+
+        // Setup RecyclerView
+        setupRecyclerView();
+
+        // Setup tabs
+        setupTabs();
+
+        // Setup search
+        setupSearch();
+
+        // Setup SwipeRefresh
+        setupSwipeRefresh();
+
+        // Observe ViewModel
+        observeViewModel();
+
+        // Load today's journeys by default
+        viewModel.filterByPeriod(vehicleId, "today");
+    }
+
+    private void initializeViews() {
+        toolbar = findViewById(R.id.toolbar);
+        tabLayout = findViewById(R. id.tabLayout);
+        etSearch = findViewById(R.id. etSearch);
+        swipeRefresh = findViewById(R.id. swipeRefresh);
+        recyclerJourneys = findViewById(R.id.recyclerJourneys);
+        emptyState = findViewById(R.id.emptyState);
+        loadingOverlay = findViewById(R.id.loadingOverlay);
+    }
+
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+    }
+
+    private void setupRecyclerView() {
+        adapter = new JourneyAdapter(this, this);
+        recyclerJourneys.setLayoutManager(new LinearLayoutManager(this));
+        recyclerJourneys.setAdapter(adapter);
+
+        // Pagination scroll listener
+        recyclerJourneys.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager != null && ! isLoadingMore) {
+                    int visibleItemCount = layoutManager.getChildCount();
+                    int totalItemCount = layoutManager. getItemCount();
+                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                    // Load more when reaching bottom
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                            && firstVisibleItemPosition >= 0) {
+                        viewModel.loadMoreJourneys(vehicleId);
+                    }
+                }
+            }
+        });
+    }
+
+    private void setupTabs() {
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.today));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.yesterday));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.this_week));
+        tabLayout. addTab(tabLayout.newTab().setText(R.string.this_month));
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                String period;
+                switch (tab.getPosition()) {
+                    case 0:  period = "today"; break;
+                    case 1: period = "yesterday"; break;
+                    case 2: period = "week"; break;
+                    case 3: period = "month"; break;
+                    default: period = "today";
+                }
+                viewModel. filterByPeriod(vehicleId, period);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+    }
+
+    private void setupSearch() {
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                viewModel.searchJourneys(vehicleId, s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    private void setupSwipeRefresh() {
+        swipeRefresh. setOnRefreshListener(() -> viewModel.refreshJourneys(vehicleId));
+    }
+
+    private void observeViewModel() {
+        viewModel.getJourneyHistoryState().observe(this, state -> {
+            switch (state.getStatus()) {
+                case LOADING:
+                    showLoading(true);
+                    swipeRefresh.setRefreshing(false);
+                    isLoadingMore = false;
+                    break;
+
+                case LOADING_MORE:
+                    showLoading(false);
+                    swipeRefresh.setRefreshing(false);
+                    isLoadingMore = true;
+                    break;
+
+                case SUCCESS:
+                    showLoading(false);
+                    swipeRefresh.setRefreshing(false);
+                    isLoadingMore = false;
+
+                    if (state. getJourneys() != null && ! state.getJourneys().isEmpty()) {
+                        adapter.setJourneys(state.getJourneys());
+                        recyclerJourneys.setVisibility(View.VISIBLE);
+                        emptyState.setVisibility(View.GONE);
+                    } else {
+                        recyclerJourneys.setVisibility(View.GONE);
+                        emptyState.setVisibility(View.VISIBLE);
+                    }
+                    break;
+
+                case ERROR:
+                    showLoading(false);
+                    swipeRefresh.setRefreshing(false);
+                    isLoadingMore = false;
+                    Toast.makeText(this, state. getError(), Toast.LENGTH_SHORT).show();
+                    break;
+
+                case IDLE:
+                default:
+                    showLoading(false);
+                    swipeRefresh.setRefreshing(false);
+                    isLoadingMore = false;
+                    break;
+            }
+        });
+    }
+
+    @Override
+    public void onJourneyClick(Journey journey) {
+        // Navigate to journey detail
+        Intent intent = new Intent(this, JourneyDetailActivity. class);
+        intent.putExtra("journey_id", journey.getJourney_id());
+        startActivity(intent);
+    }
+
+    private void showLoading(boolean show) {
+        loadingOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_journey_history, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_statistics) {
+            // Navigate to statistics
+            Intent intent = new Intent(this, StatisticsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+}
+```
+
+---
+
+## Continue to Part 4 for:
+- JourneyDetailActivity implementation
+- StatisticsActivity implementation
+- String resources for Module 5
+- Additional drawable icons
+- Menu resources
+- Update MainActivity to add Journey History menu option
+- Testing checklist
+
+Shall I continue with Part 4?  🚖📱
