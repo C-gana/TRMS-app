@@ -207,7 +207,7 @@
     <string name="destination_set_success">Destination set successfully</string>
     <string name="destination_set_failed">Failed to set destination</string>
     <string name="destination_timeout">Destination selection timed out</string>
-    <string name="loading_destinations">Loading destinations...</string>
+    <string name="loading_destinations">Loading destinations…</string>
     <string name="no_destinations_available">No destinations available</string>
     <string name="destination_icon">Destination icon</string>
     <string name="selected_icon">Selected icon</string>
@@ -277,7 +277,7 @@
 
     <!-- Module 5: Journey History -->
     <string name="journey_history">Journey History</string>
-    <string name="search_journeys">Search journeys...</string>
+    <string name="search_journeys">Search journeys…</string>
     <string name="no_journeys_found">No journeys found</string>
     <string name="no_journeys_subtitle">Your completed journeys will appear here</string>
     <string name="no_journeys_icon">No journeys icon</string>

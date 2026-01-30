@@ -156,8 +156,6 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
         tvTodayRevenue = findViewById(R.id.tvTodayRevenue);
         tvLastUpdated = findViewById(R.id.tvLastUpdated);
         loadingOverlay = findViewById(R.id.loadingOverlay);
-
-        // Note: Not using setSupportActionBar() because we inflate menu directly on toolbar
     }
 
     private void setupObservers() {
@@ -267,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
     }
 
     private void setupToolbarMenu() {
-        toolbar.inflateMenu(R.menu.menu_dashboard);
+//        toolbar.inflateMenu(R.menu.menu_dashboard);
         toolbar.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
 
@@ -283,10 +281,10 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
                 showEndDutyDialog();
                 return true;
             } else if (itemId == R.id.action_settings) {
-                showSettingsPlaceholder();
+                showSettings();
                 return true;
             } else if (itemId == R.id.action_help) {
-                showHelpPlaceholder();
+                showHelp();
                 return true;
             } else if (itemId == R.id.action_logout) {
                 showLogoutDialog();
@@ -565,7 +563,7 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
     /**
      * Open Settings Activity (Module 7)
      */
-    private void showSettingsPlaceholder() {
+    private void showSettings() {
         Intent intent = new Intent(this, com.cgana.trmsdriver.ui.settings.SettingsActivity.class);
         startActivity(intent);
     }
@@ -573,12 +571,9 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
     /**
      * Help placeholder (Module 2 Part 5)
      */
-    private void showHelpPlaceholder() {
-        new AlertDialog.Builder(this)
-            .setTitle(R.string.help)
-            .setMessage("TRMS Driver App\nVersion 1.0.0\n\nFor support:\nEmail: support@trms.mw\nPhone: +265 888 123 456")
-            .setPositiveButton(R.string.ok, null)
-            .show();
+    private void showHelp() {
+        Intent intent = new Intent(this, com.cgana.trmsdriver.ui.settings.HelpSupportActivity.class);
+        startActivity(intent);
     }
 
     private void showEndDutyDialog() {

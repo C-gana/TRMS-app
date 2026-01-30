@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary Colors -->
-    <color name="primary">#2196F3</color>
-    <color name="primary_dark">#1976D2</color>
-    <color name="primary_light">#BBDEFB</color>
-    <color name="accent">#FF9800</color>
+    <color name="primary">#F5A623</color>
+    <color name="primary_dark">#D4920E</color>
+    <color name="primary_light">#FFD980</color>
+    <color name="accent">#FFF8E7</color>
 
     <!-- Status Colors -->
     <color name="success">#4CAF50</color>

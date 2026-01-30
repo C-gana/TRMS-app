@@ -22,7 +22,7 @@
             app:title="@string/duty_status"
             app:titleTextColor="@android:color/white"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:menu="@menu/menu_duty_status" />
+            app:menu="@menu/menu_dashboard" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- Main Content -->

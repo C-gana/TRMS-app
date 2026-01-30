@@ -59,7 +59,7 @@
                         android:id="@+id/tvProfileInitial"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="JD"
+                        android:text="PB"
                         android:textSize="48sp"
                         android:textStyle="bold"
                         android:textColor="@android:color/white"
@@ -100,7 +100,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/full_name"
-                        app:startIconDrawable="@drawable/ic_person"
+                        app:startIconDrawable="@drawable/ic_person_baseline"
                         app:startIconTint="?attr/colorPrimary">
 
                         <com.google.android.material.textfield.TextInputEditText
