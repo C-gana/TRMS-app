@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
@@ -19,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.cgana.trmsdriver.MainActivity;
 import com.cgana.trmsdriver.R;
@@ -41,9 +43,18 @@ public class LocationTrackingService extends Service {
     private static final String CHANNEL_ID = "location_tracking_channel";
     private static final int NOTIFICATION_ID = 1001;
 
+    // Broadcast action for last-seen updates
+    public static final String ACTION_LAST_SEEN_UPDATED = "com.cgana.trmsdriver.LAST_SEEN_UPDATED";
+    public static final String EXTRA_LAST_SEEN_TIME = "last_seen_time";
+
     // Location update intervals (in milliseconds)
     private static final long UPDATE_INTERVAL = 30000; // 30 seconds
     private static final long FASTEST_INTERVAL = 15000; // 15 seconds
+
+    // Real-time last-seen ticker (updates UI every second while on duty)
+    private static final long LAST_SEEN_TICK_INTERVAL = 1000; // 1 second
+    private Handler lastSeenHandler;
+    private Runnable lastSeenRunnable;
 
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
@@ -61,6 +72,7 @@ public class LocationTrackingService extends Service {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         tokenManager = new TokenManager(this);
         repository = new LocationTrackingRepository(tokenManager);
+        lastSeenHandler = new Handler(Looper.getMainLooper());
 
         // Get vehicle ID from token manager
         if (tokenManager.getDriver() != null && tokenManager.getDriver().getVehicleId() != null) {
@@ -152,6 +164,10 @@ public class LocationTrackingService extends Service {
             );
 
             isTracking = true;
+
+            // Start real-time last-seen ticker — broadcasts current time every second
+            startLastSeenTicker();
+
             Log.d(TAG, "Location updates requested successfully");
         } else {
             Log.e(TAG, "Location permission not granted");
@@ -173,7 +189,45 @@ public class LocationTrackingService extends Service {
         fusedLocationClient.removeLocationUpdates(locationCallback);
         isTracking = false;
 
+        // Stop real-time last-seen ticker
+        stopLastSeenTicker();
+
         Log.d(TAG, "Location tracking stopped");
+    }
+
+    /**
+     * Start broadcasting current time every second so the UI shows real-time last-seen
+     */
+    private void startLastSeenTicker() {
+        lastSeenRunnable = new Runnable() {
+            @Override
+            public void run() {
+                broadcastLastSeen(System.currentTimeMillis());
+                lastSeenHandler.postDelayed(this, LAST_SEEN_TICK_INTERVAL);
+            }
+        };
+        lastSeenHandler.post(lastSeenRunnable);
+        Log.d(TAG, "Real-time last-seen ticker started");
+    }
+
+    /**
+     * Stop the last-seen ticker
+     */
+    private void stopLastSeenTicker() {
+        if (lastSeenRunnable != null) {
+            lastSeenHandler.removeCallbacks(lastSeenRunnable);
+            lastSeenRunnable = null;
+        }
+        Log.d(TAG, "Real-time last-seen ticker stopped");
+    }
+
+    /**
+     * Broadcast current time as last-seen to any listening UI components
+     */
+    private void broadcastLastSeen(long timestampMillis) {
+        Intent broadcastIntent = new Intent(ACTION_LAST_SEEN_UPDATED);
+        broadcastIntent.putExtra(EXTRA_LAST_SEEN_TIME, timestampMillis);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
     }
 
     /**

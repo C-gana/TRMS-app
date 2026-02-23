@@ -1,7 +1,10 @@
 package com.cgana.trmsdriver.ui.duty;
 
 import android. Manifest;
+import android.content.BroadcastReceiver;
 import android.content. Intent;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
@@ -24,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google. android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
@@ -70,6 +74,10 @@ public class DutyStatusActivity extends AppCompatActivity {
     // Constants
     private static final int LOCATION_PERMISSION_REQUEST = 1001;
     private static final int BACKGROUND_LOCATION_PERMISSION_REQUEST = 1002;
+
+    // Real-time last-seen broadcast receiver
+    private BroadcastReceiver lastSeenReceiver;
+    private final SimpleDateFormat lastSeenFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,9 +215,16 @@ public class DutyStatusActivity extends AppCompatActivity {
                     if (isOnDuty) {
                         android.util.Log.d("DutyStatusActivity", "Starting location tracking service");
                         LocationTrackingService.startTracking(this, driver.getVehicleId());
+                        // Register real-time last-seen receiver
+                        registerLastSeenReceiver();
                     } else {
                         android.util.Log.d("DutyStatusActivity", "Stopping location tracking service");
                         LocationTrackingService.stopTracking(this);
+                        // Unregister last-seen receiver and restore status label
+                        unregisterLastSeenReceiver();
+                        if (tvVehicleStatus != null) {
+                            tvVehicleStatus.setText(R.string.online);
+                        }
                     }
 
                     // Show success message
@@ -624,6 +639,47 @@ public class DutyStatusActivity extends AppCompatActivity {
         Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // If driver is currently on duty, register receiver to show real-time last-seen
+        if (tokenManager != null && tokenManager.getDutyStatus()) {
+            registerLastSeenReceiver();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterLastSeenReceiver();
+    }
+
+    private void registerLastSeenReceiver() {
+        if (lastSeenReceiver != null) return; // already registered
+        lastSeenReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                long timestampMillis = intent.getLongExtra(
+                        LocationTrackingService.EXTRA_LAST_SEEN_TIME, System.currentTimeMillis());
+                String timeStr = lastSeenFormat.format(new Date(timestampMillis));
+                if (tvVehicleStatus != null) {
+                    tvVehicleStatus.setText(getString(R.string.vehicle_last_seen, timeStr));
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                lastSeenReceiver,
+                new IntentFilter(LocationTrackingService.ACTION_LAST_SEEN_UPDATED)
+        );
+    }
+
+    private void unregisterLastSeenReceiver() {
+        if (lastSeenReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(lastSeenReceiver);
+            lastSeenReceiver = null;
+        }
     }
 
     @Override

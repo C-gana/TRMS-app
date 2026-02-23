@@ -99,4 +99,7 @@ dependencies {
 
     // Secure Storage
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+    // LocalBroadcastManager for real-time last-seen updates
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
 }

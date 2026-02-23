@@ -1,7 +1,10 @@
 package com.cgana.trmsdriver;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.cgana.trmsdriver.data.local.TokenManager;
@@ -35,6 +39,7 @@ import com.cgana.trmsdriver.data.repository.DashboardRepository;
 import com.cgana.trmsdriver.ui.dashboard.DashboardViewModelFactory;
 import com.cgana.trmsdriver.ui.dashboard.SeatCardBinder;
 import com.cgana.trmsdriver.ui.duty.DutyStatusActivity;
+import com.cgana.trmsdriver.service.LocationTrackingService;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
@@ -82,6 +87,10 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
 
     // Current vehicle ID
     private String vehicleId;
+
+    // Real-time last-seen broadcast receiver
+    private BroadcastReceiver lastSeenReceiver;
+    private final SimpleDateFormat lastSeenFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -651,6 +660,21 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
         super.onResume();
         // Start ViewModel auto-refresh (Module 2 Part 3)
         viewModel.startAutoRefresh(vehicleId);
+
+        // Register real-time last-seen receiver
+        lastSeenReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                long timestampMillis = intent.getLongExtra(
+                        LocationTrackingService.EXTRA_LAST_SEEN_TIME, System.currentTimeMillis());
+                String timeStr = lastSeenFormat.format(new Date(timestampMillis));
+                tvLastUpdated.setText(getString(R.string.vehicle_last_seen, timeStr));
+            }
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                lastSeenReceiver,
+                new IntentFilter(LocationTrackingService.ACTION_LAST_SEEN_UPDATED)
+        );
     }
 
     @Override
@@ -658,6 +682,12 @@ public class MainActivity extends AppCompatActivity implements BoardingDialog.Bo
         super.onPause();
         // Stop ViewModel auto-refresh to save battery and network
         viewModel.stopAutoRefresh();
+
+        // Unregister last-seen receiver
+        if (lastSeenReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(lastSeenReceiver);
+            lastSeenReceiver = null;
+        }
     }
 
     @Override

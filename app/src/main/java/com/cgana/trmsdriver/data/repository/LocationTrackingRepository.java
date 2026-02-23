@@ -60,7 +60,7 @@ public class LocationTrackingRepository {
                                 Log.e(TAG, "Location update failed: " + locationResponse.getMessage());
                             }
                         } else {
-                            Log.e(TAG, "Location update failed: " + response.code());
+                            Log.e(TAG, "Location update failed: " + response.code() +": " +response);
                         }
                     }
 

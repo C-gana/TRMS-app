@@ -119,6 +119,7 @@
     <string name="just_now">Just now</string>
     <string name="seconds_ago">%d seconds ago</string>
     <string name="minutes_ago">%d minutes ago</string>
+    <string name="vehicle_last_seen">Vehicle last seen: %s</string>
 
     <!-- Seat Status -->
     <string name="seat_vacant">VACANT</string>
