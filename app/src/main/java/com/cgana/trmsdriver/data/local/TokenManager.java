@@ -16,6 +16,7 @@ public class TokenManager {
     private static final String KEY_DUTY_STARTED_AT = "duty_started_at";
     private static final String KEY_REMEMBER_ME = "remember_me";
     private static final String KEY_FCM_TOKEN = "fcm_token";
+    private static final String KEY_USER_ROLE = "user_role";
 
     private SharedPreferences sharedPreferences;
     private Gson gson;
@@ -312,12 +313,14 @@ public class TokenManager {
     // Check if user is logged in
     public boolean isLoggedIn() {
         String token = getToken();
+        String role = getUserRole();
         Driver driver = getDriver();
-        boolean loggedIn = token != null && driver != null;
+        boolean loggedIn = token != null && role != null && (!"driver".equalsIgnoreCase(role) || driver != null);
 
         // Debug logging
         android.util.Log.d("TokenManager", "isLoggedIn() check:");
         android.util.Log.d("TokenManager", "  - Token present: " + (token != null));
+        android.util.Log.d("TokenManager", "  - Role: " + role);
         android.util.Log.d("TokenManager", "  - Driver present: " + (driver != null));
         android.util.Log.d("TokenManager", "  - Result: " + loggedIn);
 
@@ -335,6 +338,14 @@ public class TokenManager {
     // Clear all authentication data
     public void clearAuth() {
         sharedPreferences.edit().clear().apply();
+    }
+
+    public void saveUserRole(String role) {
+        sharedPreferences.edit().putString(KEY_USER_ROLE, role).apply();
+    }
+
+    public String getUserRole() {
+        return sharedPreferences.getString(KEY_USER_ROLE, null);
     }
 
     // Clear only duty-related data (for logout while keeping login credentials if remember me is checked)

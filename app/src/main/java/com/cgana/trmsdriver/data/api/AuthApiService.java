@@ -14,6 +14,9 @@ public interface AuthApiService {
     @POST("api/mobile/auth/driver-login")
     Call<LoginResponse> login(@Body LoginRequest request);
 
+    @POST("api/mobile/auth/login")
+    Call<LoginResponse> unifiedLogin(@Body LoginRequest request);
+
     @POST("api/mobile/driver/duty-status")
     Call<DutyStatusResponse> updateDutyStatus(
             @Body DutyStatusRequest request,

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/dashboardFragment">
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.cgana.trmsownerapp.ui.dashboard.DashboardFragment"
+        android:label="@string/dashboard" />
+
+    <fragment
+        android:id="@+id/journeysFragment"
+        android:name="com.cgana.trmsownerapp.ui.journeys.JourneysFragment"
+        android:label="@string/journeys" />
+
+    <fragment
+        android:id="@+id/analyticsFragment"
+        android:name="com.cgana.trmsownerapp.ui.analytics.AnalyticsFragment"
+        android:label="@string/analytics" />
+
+    <fragment
+        android:id="@+id/destinationsFragment"
+        android:name="com.cgana.trmsownerapp.ui.destinations.DestinationsFragment"
+        android:label="@string/destinations" />
+
+    <fragment
+        android:id="@+id/alertsFragment"
+        android:name="com.cgana.trmsownerapp.ui.alerts.AlertsFragment"
+        android:label="@string/alerts" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.cgana.trmsownerapp.ui.settings.SettingsFragment"
+        android:label="@string/settings" />
+</navigation>
+

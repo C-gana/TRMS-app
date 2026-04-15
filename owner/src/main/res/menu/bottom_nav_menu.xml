@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/dashboardFragment"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="@string/dashboard" />
+
+    <item
+        android:id="@+id/journeysFragment"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="@string/journeys" />
+
+    <item
+        android:id="@+id/analyticsFragment"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="@string/analytics" />
+
+    <item
+        android:id="@+id/destinationsFragment"
+        android:icon="@android:drawable/ic_dialog_map"
+        android:title="@string/destinations" />
+
+    <item
+        android:id="@+id/alertsFragment"
+        android:icon="@android:drawable/ic_popup_reminder"
+        android:title="@string/alerts" />
+</menu>
+

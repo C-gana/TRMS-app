@@ -140,7 +140,8 @@ public class LoginActivity extends AppCompatActivity {
                     tokenManager.saveRememberMe(cbRememberMe.isChecked());
 
                     // Show success message briefly
-                    showSuccessAndNavigate();
+                    String loggedInRole = state.getData() != null ? state.getData().getRole() : tokenManager.getUserRole();
+                    showSuccessAndNavigate(loggedInRole);
                     break;
 
                 case ERROR:
@@ -230,16 +231,23 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
     private void navigateToNextScreen() {
-        android.util.Log.d("LoginActivity", "navigateToNextScreen() called");
-        android.util.Log.d("LoginActivity", "  - Creating intent for DutyStatusActivity");
-        Intent intent = new Intent(this, DutyStatusActivity.class);
+        String role = tokenManager.getUserRole();
+        Intent intent;
+
+        if ("owner".equalsIgnoreCase(role)) {
+            intent = new Intent(this, com.cgana.trmsownerapp.MainActivity.class);
+        } else {
+            intent = new Intent(this, DutyStatusActivity.class);
+        }
+
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        android.util.Log.d("LoginActivity", "  - Starting DutyStatusActivity");
         startActivity(intent);
-        android.util.Log.d("LoginActivity", "  - Calling finish() on LoginActivity");
         finish();
     }
-    private void showSuccessAndNavigate() {
+    private void showSuccessAndNavigate(String role) {
+        if (role != null) {
+            tokenManager.saveUserRole(role);
+        }
         // Show brief success message
         android.widget.Toast.makeText(this, "Login successful!", android.widget.Toast.LENGTH_SHORT).show();
         // Navigate after short delay

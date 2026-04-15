@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "TRMS Driver"
 include(":app")
+include(":owner")

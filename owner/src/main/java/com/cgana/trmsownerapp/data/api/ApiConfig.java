@@ -1,0 +1,10 @@
+package com.cgana.trmsownerapp.data.api;
+
+public class ApiConfig {
+    // Change for production
+//    local  10.80.182.236
+//    network    192.168.43.229
+    public static final String BASE_URL = "http://192.168.43.229:3000/";
+    public static final long TIMEOUT = 30; // seconds
+}
+

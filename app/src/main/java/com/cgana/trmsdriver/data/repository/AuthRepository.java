@@ -36,82 +36,84 @@ public class AuthRepository {
         apiService.login(request).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                android.util.Log.d("AuthRepository", "Login API response received");
-                android.util.Log.d("AuthRepository", "  - Response successful: " + response.isSuccessful());
-                android.util.Log.d("AuthRepository", "  - Response code: " + response.code());
-
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess() && response.body().getDriver() != null) {
                     LoginResponse loginResponse = response.body();
-                    android.util.Log.d("AuthRepository", "  - Login success: " + loginResponse.isSuccess());
-
-                    if (loginResponse.isSuccess()) {
-                        // Log received data
-                        String token = loginResponse.getToken();
-                        Driver driver = loginResponse.getDriver();
-
-                        android.util.Log.d("AuthRepository", "Received data from API:");
-                        android.util.Log.d("AuthRepository", "  - Token: " + (token != null ? "Present (length=" + token.length() + ")" : "NULL"));
-                        android.util.Log.d("AuthRepository", "  - Driver: " + (driver != null ? "Present" : "NULL"));
-
-                        if (driver != null) {
-                            android.util.Log.d("AuthRepository", "  - Driver details:");
-                            android.util.Log.d("AuthRepository", "     - Full Name: " + driver.getFullName());
-                            android.util.Log.d("AuthRepository", "     - Driver ID: " + driver.getDriverId());
-                            android.util.Log.d("AuthRepository", "     - Phone: " + driver.getPhoneNumber());
-                            android.util.Log.d("AuthRepository", "     - Vehicle ID: " + driver.getVehicleId());
-                            android.util.Log.d("AuthRepository", "     - On Duty: " + driver.isOnDuty());
-                        } else {
-                            android.util.Log.e("AuthRepository", "  - ❌ DRIVER IS NULL IN API RESPONSE!");
-                            android.util.Log.e("AuthRepository", "  - ⚠️ THIS IS A BACKEND ISSUE!");
-                            android.util.Log.w("AuthRepository", "  - 🔧 CREATING MOCK DRIVER FOR TESTING...");
-
-                        }
-
-                        if (token == null) {
-                            android.util.Log.e("AuthRepository", "  - ❌ TOKEN IS NULL IN API RESPONSE!");
-                        }
-
-                        // Save token and driver data
-                        android.util.Log.d("AuthRepository", "Saving authentication data...");
-                        tokenManager.saveToken(token);
-                        tokenManager.saveDriver(driver);
-
-                        android.util.Log.d("AuthRepository", "Verifying data was saved...");
-                        String savedToken = tokenManager.getToken();
-                        Driver savedDriver = tokenManager.getDriver();
-
-                        android.util.Log.d("AuthRepository", "  - Token retrieved: " + (savedToken != null ? "✅ YES" : "❌ NULL"));
-                        android.util.Log.d("AuthRepository", "  - Driver retrieved: " + (savedDriver != null ? "✅ YES" : "❌ NULL"));
-
-                        if (savedDriver != null) {
-                            android.util.Log.d("AuthRepository", "  - Saved driver name: " + savedDriver.getFullName());
-                        }
-
-                        // Save duty status if available
-                        if (driver != null) {
-                            boolean onDuty = driver.isOnDuty();
-                            android.util.Log.d("AuthRepository", "  - Initial duty status: " + onDuty);
-                            tokenManager.saveDutyStatus(onDuty);
-
-                            if (driver.getDutyStartedAt() != null) {
-                                tokenManager.saveDutyStartedAt(driver.getDutyStartedAt());
-                            }
-                        }
-
-                        result.setValue(Result.success(loginResponse));
-                    } else {
-                        android.util.Log.w("AuthRepository", "Login failed: " + loginResponse.getMessage());
-                        result.setValue(Result.error(loginResponse.getMessage()));
+                    Driver driver = loginResponse.getDriver();
+                    tokenManager.saveToken(loginResponse.getToken());
+                    tokenManager.saveDriver(driver);
+                    tokenManager.saveUserRole(loginResponse.getRole() != null ? loginResponse.getRole() : "driver");
+                    tokenManager.saveDutyStatus(driver.isOnDuty());
+                    if (driver.getDutyStartedAt() != null) {
+                        tokenManager.saveDutyStartedAt(driver.getDutyStartedAt());
                     }
-                } else {
-                    android.util.Log.e("AuthRepository", "Login request failed with code: " + response.code());
-                    result.setValue(Result.error("Login failed.  Please check your credentials."));
+                    result.setValue(Result.success(loginResponse));
+                    return;
                 }
+
+                apiService.unifiedLogin(request).enqueue(new Callback<LoginResponse>() {
+                    @Override
+                    public void onResponse(Call<LoginResponse> call, Response<LoginResponse> unifiedResponse) {
+                        if (unifiedResponse.isSuccessful() && unifiedResponse.body() != null && unifiedResponse.body().isSuccess()) {
+                            LoginResponse loginResponse = unifiedResponse.body();
+                            String role = loginResponse.getRole() != null ? loginResponse.getRole() : "owner";
+
+                            tokenManager.saveToken(loginResponse.getToken());
+                            tokenManager.saveUserRole(role);
+
+                            if ("driver".equalsIgnoreCase(role) && loginResponse.getDriver() != null) {
+                                Driver driver = loginResponse.getDriver();
+                                tokenManager.saveDriver(driver);
+                                tokenManager.saveDutyStatus(driver.isOnDuty());
+                                if (driver.getDutyStartedAt() != null) {
+                                    tokenManager.saveDutyStartedAt(driver.getDutyStartedAt());
+                                }
+                            }
+
+                            result.setValue(Result.success(loginResponse));
+                        } else {
+                            String message = "Login failed. Please check your credentials.";
+                            if (unifiedResponse.body() != null) {
+                                if (unifiedResponse.body().getMessage() != null) {
+                                    message = unifiedResponse.body().getMessage();
+                                } else if (unifiedResponse.body().getError() != null) {
+                                    message = unifiedResponse.body().getError();
+                                }
+                            }
+                            result.setValue(Result.error(message));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<LoginResponse> call, Throwable t) {
+                        result.setValue(Result.error("Network error: " + t.getMessage()));
+                    }
+                });
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                result.setValue(Result.error("Network error:  " + t.getMessage()));
+                apiService.unifiedLogin(request).enqueue(new Callback<LoginResponse>() {
+                    @Override
+                    public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                            LoginResponse loginResponse = response.body();
+                            String role = loginResponse.getRole() != null ? loginResponse.getRole() : "owner";
+                            tokenManager.saveToken(loginResponse.getToken());
+                            tokenManager.saveUserRole(role);
+                            if ("driver".equalsIgnoreCase(role) && loginResponse.getDriver() != null) {
+                                tokenManager.saveDriver(loginResponse.getDriver());
+                            }
+                            result.setValue(Result.success(loginResponse));
+                        } else {
+                            result.setValue(Result.error("Network error: " + t.getMessage()));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<LoginResponse> call, Throwable fallbackError) {
+                        result.setValue(Result.error("Network error: " + fallbackError.getMessage()));
+                    }
+                });
             }
         });
 

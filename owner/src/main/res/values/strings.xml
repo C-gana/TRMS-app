@@ -1,0 +1,115 @@
+<resources>
+    <string name="app_name">TRMS Owner</string>
+    <string name="owner_login">Owner Login</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="app_logo">App Logo</string>
+    <string name="logout">Logout</string>
+
+    <!-- Bottom Navigation -->
+    <string name="dashboard">Dashboard</string>
+    <string name="journeys">Journeys</string>
+    <string name="analytics">Analytics</string>
+    <string name="destinations">Destinations</string>
+    <string name="alerts">Alerts</string>
+
+    <!-- Dashboard -->
+    <string name="seat_status">Seat Status</string>
+    <string name="today_journeys">Today\'s Journeys</string>
+    <string name="active_journeys">Active</string>
+
+    <!-- Journeys -->
+    <string name="date_range">Date Range</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="this_week">This Week</string>
+    <string name="this_month">This Month</string>
+    <string name="apply_filter">Apply Filter</string>
+    <string name="export_csv">Export CSV</string>
+    <string name="tap_to_expand">Tap to expand ▼</string>
+    <string name="boarding">Boarding</string>
+    <string name="alighting">Alighting</string>
+
+    <!-- Analytics -->
+    <string name="week">Week</string>
+    <string name="month">Month</string>
+    <string name="summary">Summary</string>
+    <string name="total_journeys">Total Journeys</string>
+    <string name="total_revenue">Total Revenue</string>
+    <string name="avg_duration">Avg Duration</string>
+    <string name="top_destination">Top Destination</string>
+    <string name="revenue_by_destination">Revenue by Destination</string>
+    <string name="journeys_by_hour">Journeys by Hour</string>
+    <string name="driver_performance">Driver Performance</string>
+    <string name="destination_compliance">Destination Selection Compliance</string>
+    <string name="missed_stops">Missed Stops</string>
+    <string name="avg_selection_time">Avg Selection Time</string>
+
+    <!-- Destinations -->
+    <string name="add_destination">Add Destination</string>
+    <string name="edit_destination">Edit Destination</string>
+    <string name="destination_name">Destination Name</string>
+    <string name="fare_amount_mk">Fare Amount (MK)</string>
+    <string name="alert_radius">Alert Radius (meters)</string>
+    <string name="tap_map_to_select_location">Tap on map to select location</string>
+    <string name="use_current_location">Use Current Location</string>
+    <string name="save_destination">Save Destination</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="no_destinations">No destinations configured</string>
+    <string name="tap_plus_to_add">Tap + to add a destination</string>
+    <string name="delete_destination">Delete Destination</string>
+    <string name="confirm_delete_destination">Are you sure you want to delete this destination?</string>
+    <string name="cancel">Cancel</string>
+    <string name="location_permission_required">Location permission is required to use this feature</string>
+    <string name="please_select_location">Please select a location on the map</string>
+    <string name="please_enter_name">Please enter a destination name</string>
+    <string name="please_enter_fare">Please enter a fare amount</string>
+
+    <!-- Alerts -->
+    <string name="all">All</string>
+    <string name="unread">Unread</string>
+    <string name="timeout">Timeout</string>
+    <string name="missed_stop_filter">Missed Stop</string>
+    <string name="proximity">Proximity</string>
+    <string name="no_alerts">No alerts</string>
+    <string name="no_alerts_description">All clear! No alerts at this time.</string>
+    <string name="acknowledged_badge">✓ Acked</string>
+    <string name="add_notes_optional">Add Notes (Optional)</string>
+    <string name="notes">Notes</string>
+    <string name="acknowledge">Acknowledge</string>
+    <string name="acknowledged_by">Acknowledged by:</string>
+    <string name="tap_to_collapse">Tap to collapse ▲</string>
+    <string name="seat_format">Seat %d</string>
+    <string name="notes_format">Notes: %s</string>
+
+    <!-- FCM -->
+    <string name="default_notification_channel_id">trms_alerts</string>
+
+    <!-- Google Maps API Key - Replace with your actual API key -->
+    <string name="google_maps_api_key">AIzaSyDwMy2LMI_MPvvL9W_x7lEAcEi1B-UbqnU</string>
+
+    <!-- Settings -->
+    <string name="settings">Settings</string>
+    <string name="profile">Profile</string>
+    <string name="appearance">Appearance</string>
+    <string name="theme">Theme</string>
+    <string name="theme_description">Choose light, dark, or system theme</string>
+    <string name="choose_theme">Choose Theme</string>
+    <string name="notifications">Notifications</string>
+    <string name="push_notifications">Push Notifications</string>
+    <string name="push_notifications_description">Receive alerts and updates</string>
+    <string name="device_information">Device Information</string>
+    <string name="fcm_token">FCM Token</string>
+    <string name="copy">Copy</string>
+    <string name="loading">Loading...</string>
+    <string name="about">About</string>
+    <string name="logout_confirmation">Are you sure you want to logout?</string>
+
+    <!-- Offline Mode -->
+    <string name="offline_mode">Offline Mode - Showing cached data</string>
+    <string name="no_cache_available">No offline data available. Please connect to internet.</string>
+    <string name="export_requires_internet">Export requires internet connection</string>
+</resources>
+
