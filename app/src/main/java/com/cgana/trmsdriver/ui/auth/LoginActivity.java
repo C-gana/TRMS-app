@@ -6,7 +6,7 @@ import android. text. Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.CheckBox;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import android.widget.FrameLayout;
 import android.widget. LinearLayout;
 import android.widget. ProgressBar;
@@ -27,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputLayout tilPhoneNumber, tilPassword;
     private TextInputEditText etPhoneNumber, etPassword;
     private MaterialButton btnLogin;
-    private CheckBox cbRememberMe;
+    private SwitchMaterial cbRememberMe;
     private LinearLayout errorContainer;
     private FrameLayout loadingContainer;
     private TextView tvError;
