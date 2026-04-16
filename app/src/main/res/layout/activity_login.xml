@@ -132,6 +132,7 @@
                     android:letterSpacing="0.08" />
 
                 <TextView
+                    android:id="@+id/tvForgotPassword"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -139,7 +140,10 @@
                     android:text="@string/forgot_password"
                     android:textSize="@dimen/text_caption"
                     android:textColor="@color/primary"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:contentDescription="@string/forgot_password" />
             </RelativeLayout>
 
             <!-- Password Input -->
