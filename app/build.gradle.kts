@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace = "com.cgana.trmsdriver"
-    compileSdk = 33
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.cgana.trmsdriver"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         vectorDrawables.useSupportLibrary = true
