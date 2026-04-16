@@ -34,7 +34,7 @@
         android:layout_marginTop="@dimen/spacing_md"
         app:cardElevation="0dp"
         app:cardCornerRadius="12dp"
-        app:cardBackgroundColor="#E3F2FD"
+        app:cardBackgroundColor="@color/surface_tint"
         app:strokeWidth="2dp"
         app:strokeColor="@color/primary">
 
@@ -159,4 +159,3 @@
     </LinearLayout>
 
 </LinearLayout>
-

@@ -41,7 +41,7 @@
             android:layout_marginTop="@dimen/spacing_md"
             app:cardElevation="0dp"
             app:cardCornerRadius="12dp"
-            app:cardBackgroundColor="#F5F5F5"
+            app:cardBackgroundColor="@color/surface_variant"
             app:strokeWidth="1dp"
             app:strokeColor="@color/divider">
 
@@ -313,4 +313,3 @@
     </LinearLayout>
 
 </ScrollView>
-
