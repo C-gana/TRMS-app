@@ -1,52 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary Colors -->
-    <color name="primary">#F5A623</color>
-    <color name="primary_dark">#D4920E</color>
-    <color name="primary_light">#FFD980</color>
-    <color name="accent">#FFF8E7</color>
+    <color name="primary">#D96C32</color>
+    <color name="primary_dark">#A93800</color>
+    <color name="primary_light">#FB7039</color>
+    <color name="accent">#FAF3EF</color>
 
     <!-- Status Colors -->
-    <color name="success">#4CAF50</color>
-    <color name="warning">#FFC107</color>
-    <color name="danger">#F44336</color>
-    <color name="info">#2196F3</color>
-    <color name="online">#4CAF50</color>
-    <color name="offline">#9E9E9E</color>
-    <color name="active">#2196F3</color>
-    <color name="awaiting">#FF9800</color>
-    <color name="approaching">#FFC107</color>
+    <color name="success">#812900</color>
+    <color name="warning">#EA580C</color>
+    <color name="danger">#93000A</color>
+    <color name="info">#FB7039</color>
+    <color name="online">#D96C32</color>
+    <color name="offline">#A8A29E</color>
+    <color name="active">#D96C32</color>
+    <color name="awaiting">#FB7039</color>
+    <color name="approaching">#EA580C</color>
 
     <!-- Background & Surface -->
-    <color name="background">#F5F5F5</color>
+    <color name="background">#FDF6F3</color>
     <color name="surface">#FFFFFF</color>
-    <color name="surface_variant">#FAFAFA</color>
+    <color name="surface_variant">#FAF3EF</color>
+    <color name="surface_tint">#14FB7039</color>
+    <color name="input_background">#F3F4F6</color>
 
     <!-- Text Colors -->
-    <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
-    <color name="text_hint">#9E9E9E</color>
-    <color name="text_disabled">#BDBDBD</color>
+    <color name="text_primary">#1F1F1F</color>
+    <color name="text_secondary">#5C5552</color>
+    <color name="text_hint">#6B7280</color>
+    <color name="text_disabled">#A8A29E</color>
 
     <!-- Duty Status Colors -->
-    <color name="on_duty">#4CAF50</color>
-    <color name="off_duty">#9E9E9E</color>
-    <color name="duty_pulse">#81C784</color>
+    <color name="on_duty">#D96C32</color>
+    <color name="off_duty">#A8A29E</color>
+    <color name="duty_pulse">#FFDBCF</color>
 
     <!-- Divider -->
-    <color name="divider">#E0E0E0</color>
+    <color name="divider">#EADDD8</color>
 
     <!-- Seat State Colors -->
-    <color name="seat_vacant">#E0E0E0</color>
-    <color name="seat_awaiting">#2196F3</color>
-    <color name="seat_active">#4CAF50</color>
-    <color name="seat_approaching">#FF9800</color>
+    <color name="seat_vacant">#E7DDD8</color>
+    <color name="seat_awaiting">#FB7039</color>
+    <color name="seat_active">#D96C32</color>
+    <color name="seat_approaching">#EA580C</color>
 
     <!-- Status Indicators -->
-    <color name="status_vacant">#9E9E9E</color>
-    <color name="status_awaiting">#1976D2</color>
-    <color name="status_active">#388E3C</color>
-    <color name="status_approaching">#F57C00</color>
+    <color name="status_vacant">#6B7280</color>
+    <color name="status_awaiting">#A93800</color>
+    <color name="status_active">#812900</color>
+    <color name="status_approaching">#A93800</color>
 
     <!-- Legacy Colors -->
     <color name="black">#FF000000</color>
@@ -54,21 +56,23 @@
 
     <!-- Module 3: Destination Selection Colors -->
     <color name="destination_card_background">#FFFFFF</color>
-    <color name="destination_selected">#E3F2FD</color>
-    <color name="destination_selected_border">#2196F3</color>
-    <color name="fare_text">#4CAF50</color>
-    <color name="distance_text">#757575</color>
-    <color name="timeout_warning">#FF9800</color>
-    <color name="timeout_critical">#F44336</color>
+    <color name="destination_selected">#FFDBCF</color>
+    <color name="destination_selected_border">#D96C32</color>
+    <color name="fare_text">#812900</color>
+    <color name="distance_text">#5C5552</color>
+    <color name="timeout_warning">#EA580C</color>
+    <color name="timeout_critical">#93000A</color>
 
     <!-- Module 4: Alighting Colors -->
-    <color name="alighting_success">#4CAF50</color>
-    <color name="alighting_warning">#FF9800</color>
-    <color name="missed_stop">#F44336</color>
-    <color name="fare_collected">#4CAF50</color>
-    <color name="fare_not_collected">#FFC107</color>
+    <color name="alighting_success">#812900</color>
+    <color name="alighting_warning">#EA580C</color>
+    <color name="missed_stop">#93000A</color>
+    <color name="fare_collected">#812900</color>
+    <color name="fare_not_collected">#EA580C</color>
 
     <!-- Module 5: Journey History Colors -->
-    <color name="seat_badge_background">#E3F2FD</color>
+    <color name="seat_badge_background">#FFEEE7</color>
     <color name="journey_card_background">#FFFFFF</color>
+    <color name="success_container">#FFDBCF</color>
+    <color name="error_container">#FFDAD6</color>
 </resources>

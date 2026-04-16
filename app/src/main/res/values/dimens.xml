@@ -35,15 +35,15 @@
     <dimen name="touch_target_xl">88dp</dimen>
 
     <!-- Card Radii -->
-    <dimen name="card_radius_sm">8dp</dimen>
-    <dimen name="card_radius_md">12dp</dimen>
-    <dimen name="card_radius_lg">16dp</dimen>
+    <dimen name="card_radius_sm">14dp</dimen>
+    <dimen name="card_radius_md">14dp</dimen>
+    <dimen name="card_radius_lg">20dp</dimen>
 
     <!-- Elevation -->
-    <dimen name="elevation_sm">2dp</dimen>
-    <dimen name="elevation_md">4dp</dimen>
-    <dimen name="elevation_lg">6dp</dimen>
-    <dimen name="elevation_xl">8dp</dimen>
+    <dimen name="elevation_sm">4dp</dimen>
+    <dimen name="elevation_md">6dp</dimen>
+    <dimen name="elevation_lg">8dp</dimen>
+    <dimen name="elevation_xl">10dp</dimen>
 
     <!-- Module 3: Destination Selection -->
     <dimen name="text_destination_name">20sp</dimen>

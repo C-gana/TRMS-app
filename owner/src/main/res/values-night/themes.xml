@@ -5,11 +5,14 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/accent</item>
-        <item name="colorSecondaryVariant">@color/accent</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/primary_light</item>
+        <item name="colorSecondaryVariant">@color/primary_dark</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSurface">@color/background</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorError">@color/danger</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/surface</item>
         <!-- Window background -->
@@ -17,10 +20,18 @@
         <!-- Text colors -->
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <!-- Card background -->
         <item name="cardBackgroundColor">@color/surface</item>
         <!-- Navigation bar color -->
         <item name="android:navigationBarColor">@color/surface</item>
+        <item name="materialCardViewStyle">@style/Widget.TRMSOwner.CardView</item>
+        <item name="materialButtonStyle">@style/Widget.TRMSOwner.Button.Primary</item>
+        <item name="textInputStyle">@style/Widget.TRMSOwner.TextInputLayout</item>
+        <item name="editTextStyle">@style/Widget.TRMSOwner.TextInputEditText</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.TRMSOwner.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.TRMSOwner.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.TRMSOwner.Large</item>
     </style>
 </resources>
-
