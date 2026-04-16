@@ -7,13 +7,20 @@
     <string name="app_version">Version 1.0.0</string>
 
     <!-- Login Screen -->
+    <string name="login_title">TRMS</string>
+    <string name="login_tagline">Total Visibility and Control</string>
     <string name="welcome_back">Welcome Back</string>
     <string name="login_instruction">Sign in to start your duty</string>
     <string name="phone_number">Phone Number</string>
+    <string name="phone_number_label">PHONE NUMBER</string>
     <string name="password">Password</string>
-    <string name="remember_me">Remember me</string>
+    <string name="password_label">PASSWORD</string>
+    <string name="remember_me">REMEMBER ME</string>
+    <string name="forgot_password">FORGOT?</string>
+    <string name="sign_in">Sign In</string>
     <string name="login_to_drive">LOGIN TO DRIVE</string>
     <string name="logging_in">Logging in…</string>
+    <string name="login_footer">ENTERPRISE GRADE SECURITY &#8226; TRMS V4.2</string>
 
     <!-- Login Errors -->
     <string name="error_phone_required">Phone number is required</string>
